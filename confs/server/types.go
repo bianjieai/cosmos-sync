@@ -23,7 +23,7 @@ type ServerConf struct {
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://seed-pre-s3.binance.org:80"}
+	nodeUrls                = []string{"tcp://192.168.150.31:31557"}
 	network                 = constant.Testnet
 	workerNumExecuteTask    = 60
 	workerMaxSleepTime      = 2 * 60

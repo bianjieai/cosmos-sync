@@ -13,7 +13,7 @@ type (
 	}
 )
 
-func (m *DocMsgSend) Type() string {
+func (m *DocMsgSend) GetType() string {
 	return MsgTypeSend
 }
 
@@ -26,32 +26,32 @@ func (m *DocMsgSend) BuildMsg(v interface{}) {
 
 func (m *DocMsgSend) HandleTxMsg(v interface{}) MsgDocInfo {
 	var (
-		complexMsg       bool
 		from, to, signer string
-		signers          []string
-		amount           []models.Coin
+		coins            []models.Coin
 		docTxMsg         models.DocTxMsg
+		complexMsg       bool
+		signers          []string
 	)
 	msg := v.(types.MsgSend)
 
 	from = msg.FromAddress.String()
 	to = msg.ToAddress.String()
+	coins = models.BuildDocCoins(msg.Amount)
 	signer, signers = models.BuildDocSigners(msg.GetSigners())
-	amount = models.BuildDocCoins(msg.Amount)
 
 	m.BuildMsg(v)
 	docTxMsg = models.DocTxMsg{
-		Type: m.Type(),
+		Type: m.GetType(),
 		Msg:  m,
 	}
 
 	return MsgDocInfo{
-		ComplexMsg: complexMsg,
 		From:       from,
 		To:         to,
-		Coins:      amount,
+		Coins:      coins,
 		Signer:     signer,
-		Signers:    signers,
 		DocTxMsg:   docTxMsg,
+		ComplexMsg: complexMsg,
+		Signers:    signers,
 	}
 }

@@ -13,6 +13,8 @@ const (
 type (
 	Block struct {
 		Height int64     `bson:"height"`
+		Hash   string    `bson:"hash"`
+		Txn    int64     `bson:"txn"`
 		Time   time.Time `bson:"time"`
 	}
 )

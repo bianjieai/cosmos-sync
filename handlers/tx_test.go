@@ -1,13 +1,14 @@
 package handlers
 
 import (
+	"encoding/hex"
 	"gitlab.bianjie.ai/irita/ex-sync/libs/pool"
 	"gitlab.bianjie.ai/irita/ex-sync/utils"
 	"testing"
 )
 
 func TestParseTxs(t *testing.T) {
-	block := int64(52344944)
+	block := int64(18687)
 	c := pool.GetClient()
 	defer func() {
 		c.Release()
@@ -18,5 +19,8 @@ func TestParseTxs(t *testing.T) {
 	} else {
 		t.Log(utils.MarshalJsonIgnoreErr(blockDoc))
 		t.Log(utils.MarshalJsonIgnoreErr(txDocs))
+
+		b, _ := hex.DecodeString("736572766963652063616c6c20726573706f6e7365")
+		t.Log(string(b))
 	}
 }

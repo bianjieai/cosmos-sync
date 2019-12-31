@@ -1,14 +1,14 @@
-db.createCollection("sync_binance_block");
-db.createCollection("sync_binance_task");
-db.createCollection("sync_binance_tx");
-db.createCollection("sync_binance_txn");
+db.createCollection("sync_block");
+db.createCollection("sync_task");
+db.createCollection("sync_tx");
+db.createCollection("sync_txn");
 
 // drop all tables
 
-// db.sync_binance_task.drop({});
-// db.sync_binance_block.drop({});
-// db.sync_binance_tx.drop({});
+// db.sync_task.drop({});
+// db.sync_block.drop({});
+// db.sync_tx.drop({});
 
-// db.sync_binance_txn.drop({});
-// db.sync_binance_txn.stash.drop({});
+// db.sync_txn.drop({});
+// db.sync_txn.stash.drop({});
 

@@ -46,7 +46,7 @@ type (
 	}
 
 	Msg interface {
-		Type() string
+		GetType() string
 		BuildMsg(msg interface{})
 	}
 )
