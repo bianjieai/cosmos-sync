@@ -14,8 +14,8 @@ all: get_deps build
 get_deps:
 	@rm -rf vendor/
 	@echo "--> Downloading dependencies"
-	$(GO_ENV) -w GOPROXY=https://goproxy.io
-    $(GO_ENV) -w GOPRIVATE=gitlab.bianjie.ai/irita/*
+	$(GO_ENV) -w GOPROXY="https://goproxy.io"
+    $(GO_ENV) -w GOPRIVATE="gitlab.bianjie.ai/irita/*"
 	$(GO_MOD) download
 	$(GO_MOD) vendor
 
