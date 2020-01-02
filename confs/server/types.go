@@ -25,9 +25,9 @@ var (
 
 	nodeUrls                = []string{"tcp://192.168.150.31:31557"}
 	network                 = constant.Testnet
-	workerNumExecuteTask    = 60
+	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
-	blockNumPerWorkerHandle = 50
+	blockNumPerWorkerHandle = 100
 )
 
 // get value of env var

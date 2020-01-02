@@ -25,3 +25,17 @@ A server that synchronize irita chain data into a database
 - WORKER_MAX_SLEEP_TIME: `required` `string` 允许线程最大的休眠时间(单位:秒)（example: `90`）
 - BLOCK_NUM_PER_WORKER_HANDLE: `required` `string`  每个任务包含的区块数（example: `50`）
 - NETWORK: `option` `string` 网络类型（example: `testnet,mainnet`）
+
+
+Note: 
+> synchronizes irishub data from specify block height(such as:17908 current time:1576208532)
+  At first,stop the rainbow-sync and create the task. 
+  Run:
+  ```
+  db.sync_iris_task.insert({
+      'start_height':NumberLong(17908),
+      'end_height':NumberLong(0),
+      'current_height':NumberLong(0),
+      'status':'unhandled',
+  })
+  ```

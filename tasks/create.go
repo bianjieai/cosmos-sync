@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const maxRecordNumForBatchInsert = 1000
+
 type SyncTaskService struct {
 	syncTaskModel models.SyncTask
 }
@@ -25,7 +27,7 @@ func (s *SyncTaskService) StartCreateTask() {
 	for {
 		chanLimit <- true
 		go s.createTask(blockNumPerWorkerHandle, chanLimit)
-		time.Sleep(time.Duration(1) * time.Second)
+		time.Sleep(time.Duration(1) * time.Minute)
 	}
 }
 
@@ -156,15 +158,24 @@ func (s *SyncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 	time.Sleep(1 * time.Second)
 }
 
+// max length is 1000
 func createCatchUpTask(maxEndHeight, blockNumPerWorker, currentBlockHeight int64) []*models.SyncTask {
 	var (
 		syncTasks []*models.SyncTask
 	)
 	if length := currentBlockHeight - (maxEndHeight + blockNumPerWorker); length > 0 {
-		syncTasks = make([]*models.SyncTask, 0, length+1)
+		if length >= maxRecordNumForBatchInsert {
+			syncTasks = make([]*models.SyncTask, 0, maxRecordNumForBatchInsert)
+		} else {
+			syncTasks = make([]*models.SyncTask, 0, length+1)
+		}
+
 	}
 
 	for maxEndHeight+blockNumPerWorker <= currentBlockHeight {
+		if len(syncTasks) >= maxRecordNumForBatchInsert {
+			break
+		}
 		syncTask := models.SyncTask{
 			StartHeight:    maxEndHeight + 1,
 			EndHeight:      maxEndHeight + blockNumPerWorker,
