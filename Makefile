@@ -4,6 +4,7 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 GO_MOD=$(GOCMD) mod
+GO_ENV=$(GOCMD) env
 BINARY_NAME=ex-sync
 BINARY_UNIX=$(BINARY_NAME)-unix
 export GO111MODULE = on
@@ -13,6 +14,8 @@ all: get_deps build
 get_deps:
 	@rm -rf vendor/
 	@echo "--> Downloading dependencies"
+	$(GO_ENV) -w GOPROXY=https://goproxy.io,direct
+    $(GO_ENV) -w GOPRIVATE=gitlab.bianjie.ai/irita/*
 	$(GO_MOD) download
 	$(GO_MOD) vendor
 
