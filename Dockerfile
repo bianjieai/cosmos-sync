@@ -11,6 +11,6 @@ RUN apk add --no-cache $PACKAGES && git config --global url."https://bamboo:EAVx
 
 FROM alpine:3.10
 
-COPY --from=builder /go/src/rb-sync-binance /usr/local/bin
+COPY --from=builder /go/src/ex-sync /usr/local/bin
 
 CMD ex-sync
