@@ -8,14 +8,14 @@ GO_ENV=$(GOCMD) env
 BINARY_NAME=ex-sync
 BINARY_UNIX=$(BINARY_NAME)-unix
 export GO111MODULE = on
+export GOPROXY="https://goproxy.io,direct"
+export GOPRIVATE="gitlab.bianjie.ai/irita/*"
 
 all: get_deps build
 
 get_deps:
 	@rm -rf vendor/
 	@echo "--> Downloading dependencies"
-	$(GO_ENV) -w GOPROXY="https://goproxy.io"
-    $(GO_ENV) -w GOPRIVATE="gitlab.bianjie.ai/irita/*"
 	$(GO_MOD) download
 	$(GO_MOD) vendor
 
