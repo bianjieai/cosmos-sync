@@ -8,7 +8,6 @@ GO_ENV=$(GOCMD) env
 BINARY_NAME=ex-sync
 BINARY_UNIX=$(BINARY_NAME)-unix
 export GO111MODULE = on
-export GOPROXY="https://goproxy.io,direct"
 export GOPRIVATE="gitlab.bianjie.ai/irita/*"
 
 all: get_deps build
