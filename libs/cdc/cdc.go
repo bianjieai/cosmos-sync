@@ -1,6 +1,7 @@
 package cdc
 
 import (
+	"github.com/bianjieai/irita/modules/service"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -8,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/irisnet/modules/incubator/nft"
 	"github.com/tendermint/go-amino"
-	"github.com/bianjieai/irita/modules/service"
 )
 
 var (

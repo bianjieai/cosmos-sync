@@ -1,10 +1,6 @@
 package handlers
 
 import (
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	aTypes "github.com/tendermint/tendermint/abci/types"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	"github.com/tendermint/tendermint/types"
 	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
@@ -13,6 +9,10 @@ import (
 	itypes "github.com/bianjieai/irita-sync/types"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	aTypes "github.com/tendermint/tendermint/abci/types"
+	ctypes "github.com/tendermint/tendermint/rpc/core/types"
+	"github.com/tendermint/tendermint/types"
 	"time"
 )
 

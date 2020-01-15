@@ -5,10 +5,10 @@ package pool
 
 import (
 	"context"
-	commonPool "github.com/jolestar/go-commons-pool"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	svrConf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/libs/logger"
+	commonPool "github.com/jolestar/go-commons-pool"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"sync"
 	"time"
 )

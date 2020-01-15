@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	conf "github.com/bianjieai/irita-sync/confs/server"
 	iconfig "github.com/bianjieai/irita/config"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func init() {

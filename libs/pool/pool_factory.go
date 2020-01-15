@@ -3,9 +3,9 @@ package pool
 import (
 	"context"
 	"fmt"
+	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	"github.com/bianjieai/irita-sync/libs/logger"
 	"math/rand"
 	"sync"
 )
