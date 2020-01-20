@@ -37,4 +37,7 @@ Note:
       'end_height':NumberLong(0),
       'current_height':NumberLong(0),
       'status':'unhandled',
+      ﻿'worker_id' : '',
+       'worker_logs' : [],
+      'last_update_time' : NumberLong(0)
   })
