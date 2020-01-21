@@ -32,7 +32,7 @@ var (
 
 // get value of env var
 func init() {
-	if v, ok := os.LookupEnv(constant.EnvNameSerNetworkFullNode); ok {
+	if v, ok := os.LookupEnv(constant.EnvNameSerNetworkFullNodes); ok {
 		nodeUrls = strings.Split(v, ",")
 	}
 
