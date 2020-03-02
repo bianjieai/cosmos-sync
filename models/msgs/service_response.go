@@ -30,7 +30,7 @@ func (m *DocMsgServiceResponse) BuildMsg(msg interface{}) {
 	m.ErrorMsg = hex.EncodeToString(v.ErrorMsg)
 }
 
-func (m *DocMsgServiceResponse) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgServiceResponse) HandleTxMsg(msg types.MsgServiceResponse) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -39,12 +39,11 @@ func (m *DocMsgServiceResponse) HandleTxMsg(v interface{}) MsgDocInfo {
 		signers          []string
 	)
 
-	msg := v.(types.MsgServiceResponse)
 	from = msg.Provider.String()
 	to = ""
 	coins = models.BuildDocCoins(nil)
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,

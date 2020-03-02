@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/bianjieai/irita/modules/record"
 	"github.com/bianjieai/irita/modules/service"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/irisnet/modules/incubator/nft"
@@ -18,4 +19,6 @@ type (
 	MsgServiceBind     = service.MsgSvcBind
 	MsgServiceRequest  = service.MsgSvcRequest
 	MsgServiceResponse = service.MsgSvcResponse
+
+	MsgRecordCreate = record.MsgCreateRecord
 )

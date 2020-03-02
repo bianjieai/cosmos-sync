@@ -33,7 +33,7 @@ func (m *DocMsgServiceDef) BuildMsg(v interface{}) {
 	m.IDLContent = msg.IDLContent
 }
 
-func (m *DocMsgServiceDef) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgServiceDef) HandleTxMsg(msg types.MsgServiceDef) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -42,12 +42,11 @@ func (m *DocMsgServiceDef) HandleTxMsg(v interface{}) MsgDocInfo {
 		signers          []string
 	)
 
-	msg := v.(types.MsgServiceDef)
 	from = msg.Author.String()
 	to = ""
 	coins = models.BuildDocCoins(nil)
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,

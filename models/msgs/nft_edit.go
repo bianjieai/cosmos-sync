@@ -27,7 +27,7 @@ func (m *DocMsgNFTEdit) BuildMsg(v interface{}) {
 	m.TokenURI = msg.TokenURI
 }
 
-func (m *DocMsgNFTEdit) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgNFTEdit) HandleTxMsg(msg types.MsgNFTEdit) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -36,12 +36,11 @@ func (m *DocMsgNFTEdit) HandleTxMsg(v interface{}) MsgDocInfo {
 		signers          []string
 	)
 
-	msg := v.(types.MsgNFTEdit)
 	from = msg.Sender.String()
 	to = ""
 	coins = models.BuildDocCoins(nil)
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,

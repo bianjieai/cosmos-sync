@@ -24,7 +24,7 @@ func (m *DocMsgSend) BuildMsg(v interface{}) {
 	m.Amount = models.BuildDocCoins(msg.Amount)
 }
 
-func (m *DocMsgSend) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgSend) HandleTxMsg(msg types.MsgSend) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -32,14 +32,13 @@ func (m *DocMsgSend) HandleTxMsg(v interface{}) MsgDocInfo {
 		complexMsg       bool
 		signers          []string
 	)
-	msg := v.(types.MsgSend)
 
 	from = msg.FromAddress.String()
 	to = msg.ToAddress.String()
 	coins = models.BuildDocCoins(msg.Amount)
 	signer, signers = models.BuildDocSigners(msg.GetSigners())
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,

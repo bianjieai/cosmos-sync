@@ -38,8 +38,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	blockDoc = models.Block{
 		Height: block.Block.Height,
 		Time:   block.Block.Time,
-		Hash:   block.BlockMeta.Header.Hash().String(),
-		Txn:    block.BlockMeta.Header.NumTxs,
+		Hash:   block.Block.Header.Hash().String(),
+		Txn:    int64(len(block.Block.Data.Txs)),
 	}
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
@@ -132,6 +132,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 			case itypes.MsgServiceResponse:
 				docMsg := mMsg.DocMsgServiceResponse{}
 				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceResponse))
+				break
+			case itypes.MsgRecordCreate:
+				docMsg := mMsg.DocMsgRecordCreate{}
+				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgRecordCreate))
 				break
 			}
 
