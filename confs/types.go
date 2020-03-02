@@ -6,7 +6,7 @@ const (
 	EnvNameDbPassWd   = "DB_PASSWD"
 	EnvNameDbDataBase = "DB_DATABASE"
 
-	EnvNameSerNetworkFullNode      = "SER_BC_FULL_NODE"
+	EnvNameSerNetworkFullNodes     = "SER_BC_FULL_NODES"
 	EnvNameWorkerNumExecuteTask    = "WORKER_NUM_EXECUTE_TASK"
 	EnvNameWorkerMaxSleepTime      = "WORKER_MAX_SLEEP_TIME"
 	EnvNameBlockNumPerWorkerHandle = "BLOCK_NUM_PER_WORKER_HANDLE"

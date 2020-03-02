@@ -40,7 +40,7 @@ func (m *DocMsgServiceRequest) BuildMsg(msg interface{}) {
 	m.Profiling = v.Profiling
 }
 
-func (m *DocMsgServiceRequest) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgServiceRequest) HandleTxMsg(msg types.MsgServiceRequest) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -49,12 +49,11 @@ func (m *DocMsgServiceRequest) HandleTxMsg(v interface{}) MsgDocInfo {
 		signers          []string
 	)
 
-	msg := v.(types.MsgServiceRequest)
 	from = msg.Consumer.String()
 	to = msg.Provider.String()
 	coins = models.BuildDocCoins(msg.ServiceFee)
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,

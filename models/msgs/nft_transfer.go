@@ -29,7 +29,7 @@ func (m *DocMsgNFTTransfer) BuildMsg(v interface{}) {
 	m.TokenURI = msg.TokenURI
 }
 
-func (m *DocMsgNFTTransfer) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgNFTTransfer) HandleTxMsg(msg types.MsgNFTTransfer) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -38,12 +38,11 @@ func (m *DocMsgNFTTransfer) HandleTxMsg(v interface{}) MsgDocInfo {
 		signers          []string
 	)
 
-	msg := v.(types.MsgNFTTransfer)
 	from = msg.Sender.String()
 	to = msg.Recipient.String()
 	coins = models.BuildDocCoins(nil)
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,

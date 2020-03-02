@@ -23,7 +23,7 @@ type ServerConf struct {
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://192.168.150.31:31557"}
+	nodeUrls                = []string{"tcp://localhost:26657"}
 	network                 = constant.Testnet
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
@@ -32,7 +32,7 @@ var (
 
 // get value of env var
 func init() {
-	if v, ok := os.LookupEnv(constant.EnvNameSerNetworkFullNode); ok {
+	if v, ok := os.LookupEnv(constant.EnvNameSerNetworkFullNodes); ok {
 		nodeUrls = strings.Split(v, ",")
 	}
 

@@ -14,6 +14,7 @@ const (
 	MsgTypeServiceBind     = "service_bind"
 	MsgTypeServiceRequest  = "service_request"
 	MsgTypeServiceResponse = "service_response"
+	MsgTypeRecordCreate    = "create_record"
 )
 
 type (

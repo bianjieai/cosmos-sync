@@ -20,7 +20,7 @@ A server that synchronize irita chain data into a database
 
 ### Server config
 
-- SER_BC_FULL_NODE: `required` `string`  full node uri（example: `tcp://127.0.0.1:26657, tcp://127.0.0.2:26657, ...`）
+- SER_BC_FULL_NODES: `required` `string`  full node uri（example: `tcp://127.0.0.1:26657, tcp://127.0.0.2:26657, ...`）
 - WORKER_NUM_EXECUTE_TASK: `required` `string` the maximum time (in seconds) that synchronization TX threads are allowed to be out of work（example: `30`）
 - WORKER_MAX_SLEEP_TIME: `required` `string` num of worker to create tasks(unit: seconds)（example: `90`）
 - BLOCK_NUM_PER_WORKER_HANDLE: `required` `string`  number of blocks per sync TX task（example: `50`）

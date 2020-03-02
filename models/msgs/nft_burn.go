@@ -25,7 +25,7 @@ func (m *DocMsgNFTBurn) BuildMsg(v interface{}) {
 	m.Denom = msg.Denom
 }
 
-func (m *DocMsgNFTBurn) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgNFTBurn) HandleTxMsg(msg types.MsgNFTBurn) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -34,12 +34,11 @@ func (m *DocMsgNFTBurn) HandleTxMsg(v interface{}) MsgDocInfo {
 		signers          []string
 	)
 
-	msg := v.(types.MsgNFTBurn)
 	from = msg.Sender.String()
 	to = ""
 	coins = models.BuildDocCoins(nil)
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,
