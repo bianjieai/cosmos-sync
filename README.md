@@ -33,8 +33,10 @@ Note:
   Run:
   ```
   db.sync_task.insert({
-      'start_height':NumberLong(17908),
+      'start_height':NumberLong(15000),
       'end_height':NumberLong(0),
       'current_height':NumberLong(0),
       'status':'unhandled',
+      'last_update_time': NumberLong(0)
   })
+  ```
