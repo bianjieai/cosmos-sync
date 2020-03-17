@@ -43,7 +43,7 @@ func (m *DocMsgServiceBind) BuildMsg(v interface{}) {
 	}
 }
 
-func (m *DocMsgServiceBind) HandleTxMsg(v interface{}) MsgDocInfo {
+func (m *DocMsgServiceBind) HandleTxMsg(msg types.MsgServiceBind) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
@@ -52,12 +52,11 @@ func (m *DocMsgServiceBind) HandleTxMsg(v interface{}) MsgDocInfo {
 		signers          []string
 	)
 
-	msg := v.(types.MsgServiceBind)
 	from = msg.GetSigners()[0].String()
 	to = ""
 	coins = models.BuildDocCoins(msg.Deposit)
 
-	m.BuildMsg(v)
+	m.BuildMsg(msg)
 	docTxMsg = models.DocTxMsg{
 		Type: m.GetType(),
 		Msg:  m,

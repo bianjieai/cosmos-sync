@@ -16,7 +16,7 @@ type DBConf struct {
 
 var (
 	DbConf   *DBConf
-	addrs    = "10.1.4.130:27217"
+	addrs    = "192.168.1.103:27217"
 	user     = "iris"
 	passwd   = "irispassword"
 	database = "sync-iris"

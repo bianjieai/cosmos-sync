@@ -1,6 +1,7 @@
 package cdc
 
 import (
+	"github.com/bianjieai/irita/modules/record"
 	"github.com/bianjieai/irita/modules/service"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,6 +19,7 @@ var (
 		bank.AppModuleBasic{},
 		service.AppModuleBasic{},
 		nft.AppModuleBasic{},
+		record.AppModuleBasic{},
 	)
 )
 

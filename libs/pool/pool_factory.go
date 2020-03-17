@@ -27,7 +27,12 @@ type (
 
 func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject, error) {
 	endpoint := f.GetEndPoint()
-	return commonPool.NewPooledObject(newClient(endpoint.Address)), nil
+	c, err := newClient(endpoint.Address)
+	if err != nil {
+		return nil, err
+	} else {
+		return commonPool.NewPooledObject(c), nil
+	}
 }
 
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {
@@ -91,11 +96,12 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 	return EndPoint{}
 }
 
-func newClient(nodeUrl string) *Client {
+func newClient(nodeUrl string) (*Client, error) {
+	client, err := rpcclient.NewHTTP(nodeUrl, "/websocket")
 	return &Client{
 		Id:     generateId(nodeUrl),
-		Client: rpcclient.NewHTTP(nodeUrl, "/websocket"),
-	}
+		Client: client,
+	}, err
 }
 
 func generateId(address string) string {
