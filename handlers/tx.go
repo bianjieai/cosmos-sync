@@ -96,46 +96,46 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 			var (
 				msgDocInfo mMsg.MsgDocInfo
 			)
-			switch msgType := v.(type) {
+			switch msgData := v.(type) {
 			case itypes.MsgSend:
 				docMsg := mMsg.DocMsgSend{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgNFTMint:
 				docMsg := mMsg.DocMsgNFTMint{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgNFTEdit:
 				docMsg := mMsg.DocMsgNFTEdit{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgNFTTransfer:
 				docMsg := mMsg.DocMsgNFTTransfer{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgNFTBurn:
 				docMsg := mMsg.DocMsgNFTBurn{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgServiceDef:
 				docMsg := mMsg.DocMsgServiceDef{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgServiceBind:
 				docMsg := mMsg.DocMsgServiceBind{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgServiceRequest:
 				docMsg := mMsg.DocMsgServiceRequest{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgServiceResponse:
 				docMsg := mMsg.DocMsgServiceResponse{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			case itypes.MsgRecordCreate:
 				docMsg := mMsg.DocMsgRecordCreate{}
-				msgDocInfo = docMsg.HandleTxMsg(msgType)
+				msgDocInfo = docMsg.HandleTxMsg(msgData)
 				break
 			}
 
