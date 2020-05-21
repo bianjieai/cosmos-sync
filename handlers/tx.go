@@ -96,46 +96,46 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 			var (
 				msgDocInfo mMsg.MsgDocInfo
 			)
-			switch v.(type) {
+			switch msgType := v.(type) {
 			case itypes.MsgSend:
 				docMsg := mMsg.DocMsgSend{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgSend))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgNFTMint:
 				docMsg := mMsg.DocMsgNFTMint{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTMint))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgNFTEdit:
 				docMsg := mMsg.DocMsgNFTEdit{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTEdit))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgNFTTransfer:
 				docMsg := mMsg.DocMsgNFTTransfer{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTTransfer))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgNFTBurn:
 				docMsg := mMsg.DocMsgNFTBurn{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTBurn))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgServiceDef:
 				docMsg := mMsg.DocMsgServiceDef{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceDef))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgServiceBind:
 				docMsg := mMsg.DocMsgServiceBind{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceBind))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgServiceRequest:
 				docMsg := mMsg.DocMsgServiceRequest{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceRequest))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgServiceResponse:
 				docMsg := mMsg.DocMsgServiceResponse{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceResponse))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			case itypes.MsgRecordCreate:
 				docMsg := mMsg.DocMsgRecordCreate{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgRecordCreate))
+				msgDocInfo = docMsg.HandleTxMsg(msgType)
 				break
 			}
 

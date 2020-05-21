@@ -18,6 +18,12 @@ const (
 )
 
 type (
+	MsgDoc interface {
+		GetType() string
+		BuildMsg(v interface{})
+		HandleTxMsg(msg interface{}) MsgDocInfo
+	}
+
 	MsgDocInfo struct {
 		From       string        // parse from first msg
 		To         string        // parse from first msg
