@@ -5,8 +5,6 @@ import (
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
-	mMsg "github.com/bianjieai/irita-sync/models/msgs"
-	itypes "github.com/bianjieai/irita-sync/types"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -93,52 +91,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 			return docTx
 		}
 		for i, v := range msgs {
-			var (
-				msgDocInfo mMsg.MsgDocInfo
-			)
-			switch msgData := v.(type) {
-			case itypes.MsgSend:
-				docMsg := mMsg.DocMsgSend{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgNFTMint:
-				docMsg := mMsg.DocMsgNFTMint{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgNFTEdit:
-				docMsg := mMsg.DocMsgNFTEdit{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgNFTTransfer:
-				docMsg := mMsg.DocMsgNFTTransfer{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgNFTBurn:
-				docMsg := mMsg.DocMsgNFTBurn{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgServiceDef:
-				docMsg := mMsg.DocMsgServiceDef{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgServiceBind:
-				docMsg := mMsg.DocMsgServiceBind{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgServiceRequest:
-				docMsg := mMsg.DocMsgServiceRequest{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgServiceResponse:
-				docMsg := mMsg.DocMsgServiceResponse{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			case itypes.MsgRecordCreate:
-				docMsg := mMsg.DocMsgRecordCreate{}
-				msgDocInfo = docMsg.HandleTxMsg(msgData)
-				break
-			}
-
+			msgDocInfo := HandleTxMsg(v)
 			if msgDocInfo.Signer == "" {
 				continue
 			}

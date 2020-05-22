@@ -1,8 +1,8 @@
-package msgs
+package iservice
 
 import (
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/types"
+	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 type (
@@ -22,7 +22,7 @@ func (m *DocMsgServiceDef) GetType() string {
 }
 
 func (m *DocMsgServiceDef) BuildMsg(v interface{}) {
-	msg := v.(types.MsgServiceDef)
+	msg := v.(MsgServiceDef)
 
 	m.Name = msg.Name
 	m.ChainId = msg.ChainId
@@ -33,7 +33,7 @@ func (m *DocMsgServiceDef) BuildMsg(v interface{}) {
 	m.IDLContent = msg.IDLContent
 }
 
-func (m *DocMsgServiceDef) HandleTxMsg(msg types.MsgServiceDef) MsgDocInfo {
+func (m *DocMsgServiceDef) HandleTxMsg(msg MsgServiceDef) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin

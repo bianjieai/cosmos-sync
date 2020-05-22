@@ -1,8 +1,8 @@
-package msgs
+package base
 
 import (
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/types"
+	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 type (
@@ -24,7 +24,7 @@ func (d *DocMsgRecordCreate) GetType() string {
 }
 
 func (d *DocMsgRecordCreate) BuildMsg(msg interface{}) {
-	m := msg.(types.MsgRecordCreate)
+	m := msg.(MsgRecordCreate)
 
 	var docContents []Content
 	if len(m.Contents) > 0 {
@@ -42,7 +42,7 @@ func (d *DocMsgRecordCreate) BuildMsg(msg interface{}) {
 	d.Creator = m.Creator.String()
 }
 
-func (d *DocMsgRecordCreate) HandleTxMsg(msg types.MsgRecordCreate) MsgDocInfo {
+func (d *DocMsgRecordCreate) HandleTxMsg(msg MsgRecordCreate) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin

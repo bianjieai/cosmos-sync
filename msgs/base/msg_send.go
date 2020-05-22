@@ -1,8 +1,8 @@
-package msgs
+package base
 
 import (
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/types"
+	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 type (
@@ -18,13 +18,13 @@ func (m *DocMsgSend) GetType() string {
 }
 
 func (m *DocMsgSend) BuildMsg(v interface{}) {
-	msg := v.(types.MsgSend)
+	msg := v.(MsgSend)
 	m.FromAddress = msg.FromAddress.String()
 	m.ToAddress = msg.ToAddress.String()
 	m.Amount = models.BuildDocCoins(msg.Amount)
 }
 
-func (m *DocMsgSend) HandleTxMsg(msg types.MsgSend) MsgDocInfo {
+func (m *DocMsgSend) HandleTxMsg(msg MsgSend) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
