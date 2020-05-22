@@ -2,6 +2,10 @@ package msgs
 
 import (
 	"github.com/bianjieai/irita-sync/models"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/irisnet/modules/incubator/nft"
+	"github.com/bianjieai/irita/modules/service"
+	"github.com/bianjieai/irita/modules/record"
 )
 
 const (
@@ -27,4 +31,18 @@ type (
 		ComplexMsg bool
 		Signers    []string
 	}
+
+	MsgSend = bank.MsgSend
+
+	MsgNFTMint = nft.MsgMintNFT
+	MsgNFTEdit = nft.MsgEditNFTMetadata
+	MsgNFTTransfer = nft.MsgTransferNFT
+	MsgNFTBurn = nft.MsgBurnNFT
+
+	MsgServiceDef = service.MsgSvcDef
+	MsgServiceBind = service.MsgSvcBind
+	MsgServiceRequest = service.MsgSvcRequest
+	MsgServiceResponse = service.MsgSvcResponse
+
+	MsgRecordCreate = record.MsgCreateRecord
 )

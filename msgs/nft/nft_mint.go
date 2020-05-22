@@ -1,26 +1,26 @@
-package msgs
+package nft
 
 import (
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/types"
+	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 type (
-	DocMsgNFTTransfer struct {
+	DocMsgNFTMint struct {
 		Sender    string `bson:"sender"`
 		Recipient string `bson:"recipient"`
-		TokenURI  string `bson:"token_uri"`
-		Denom     string `bson:"denom"`
 		ID        string `bson:"id"`
+		Denom     string `bson:"denom"`
+		TokenURI  string `bson:"token_uri"`
 	}
 )
 
-func (m *DocMsgNFTTransfer) GetType() string {
-	return MsgTypeNFTTransfer
+func (m *DocMsgNFTMint) GetType() string {
+	return MsgTypeNFTMint
 }
 
-func (m *DocMsgNFTTransfer) BuildMsg(v interface{}) {
-	msg := v.(types.MsgNFTTransfer)
+func (m *DocMsgNFTMint) BuildMsg(v interface{}) {
+	msg := v.(MsgNFTMint)
 
 	m.Sender = msg.Sender.String()
 	m.Recipient = msg.Recipient.String()
@@ -29,7 +29,7 @@ func (m *DocMsgNFTTransfer) BuildMsg(v interface{}) {
 	m.TokenURI = msg.TokenURI
 }
 
-func (m *DocMsgNFTTransfer) HandleTxMsg(msg types.MsgNFTTransfer) MsgDocInfo {
+func (m *DocMsgNFTMint) HandleTxMsg(msg MsgNFTMint) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin

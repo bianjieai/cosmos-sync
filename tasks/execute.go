@@ -11,8 +11,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2/txn"
-	"os"
 	"time"
+	"os"
 )
 
 func (s *SyncTaskService) StartExecuteTask() {
@@ -29,6 +29,7 @@ func (s *SyncTaskService) StartExecuteTask() {
 	}
 
 	logger.Info("init execute task")
+	s.hostname, _ = os.Hostname()
 
 	// buffer channel to limit goroutine num
 	chanLimit := make(chan bool, svrConf.SvrConf.WorkerNumExecuteTask)
@@ -41,18 +42,18 @@ func (s *SyncTaskService) StartExecuteTask() {
 }
 
 func (s *SyncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTime int64, chanLimit chan bool) {
-	var (
-		workerId, taskType     string
-		blockChainLatestHeight int64
-	)
-	genWorkerId := func() string {
-		// generate worker id use hostname@xxx
-		hostname, _ := os.Hostname()
-		return fmt.Sprintf("%v@%v", hostname, bson.NewObjectId().Hex())
-	}
+	//var (
+	//	workerId, taskType     string
+	//	blockChainLatestHeight int64
+	//)
+	//genWorkerId := func() string {
+	//	// generate worker id use hostname@xxx
+	//	hostname, _ := os.Hostname()
+	//	return fmt.Sprintf("%v@%v", hostname, bson.NewObjectId().Hex())
+	//}
 
 	healthCheckQuit := make(chan bool)
-	workerId = genWorkerId()
+	//workerId = genWorkerId()
 	client := pool.GetClient()
 
 	defer func() {
@@ -80,7 +81,12 @@ func (s *SyncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 	// take over sync task
 	// attempt to update status, worker_id and worker_logs
 	task := tasks[utils.RandInt(len(tasks))]
-	err = s.syncTaskModel.TakeOverTask(task, workerId)
+	s.TakeOverTaskAndExecute(task, client, healthCheckQuit, blockNumPerWorkerHandle)
+}
+func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *pool.Client, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
+	var taskType string
+	workerId := fmt.Sprintf("%v@%v", s.hostname, bson.NewObjectId().Hex())
+	err := s.syncTaskModel.TakeOverTask(task, workerId)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			// this task has been take over by other goroutine

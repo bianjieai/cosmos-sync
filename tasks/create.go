@@ -14,6 +14,7 @@ const maxRecordNumForBatchInsert = 1000
 
 type SyncTaskService struct {
 	syncTaskModel models.SyncTask
+	hostname      string
 }
 
 func (s *SyncTaskService) StartCreateTask() {
@@ -57,17 +58,16 @@ func (s *SyncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 		logger.Error("Query sync task failed", logger.String("err", err.Error()))
 		return
 	}
+	blockChainLatestHeight, err := getBlockChainLatestHeight()
+	if err != nil {
+		logger.Error("Get current block height failed", logger.String("err", err.Error()))
+		return
+	}
 	if len(validFollowTasks) == 0 {
 		// get max end_height from sync_task
 		maxEndHeight, err := s.syncTaskModel.GetMaxBlockHeight()
 		if err != nil {
 			logger.Error("Get max endBlock failed", logger.String("err", err.Error()))
-			return
-		}
-
-		blockChainLatestHeight, err := getBlockChainLatestHeight()
-		if err != nil {
-			logger.Error("Get current block height failed", logger.String("err", err.Error()))
 			return
 		}
 
@@ -92,12 +92,6 @@ func (s *SyncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 		followedHeight := followTask.CurrentHeight
 		if followedHeight == 0 {
 			followedHeight = followTask.StartHeight - 1
-		}
-
-		blockChainLatestHeight, err := getBlockChainLatestHeight()
-		if err != nil {
-			logger.Error("Get blockChain latest height failed", logger.String("err", err.Error()))
-			return
 		}
 
 		if followedHeight+blockNumPerWorkerHandle <= blockChainLatestHeight {

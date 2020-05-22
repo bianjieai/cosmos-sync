@@ -1,9 +1,9 @@
-package msgs
+package iservice
 
 import (
 	"encoding/hex"
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/types"
+	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 type (
@@ -26,7 +26,7 @@ func (m *DocMsgServiceRequest) GetType() string {
 }
 
 func (m *DocMsgServiceRequest) BuildMsg(msg interface{}) {
-	v := msg.(types.MsgServiceRequest)
+	v := msg.(MsgServiceRequest)
 
 	m.DefChainID = v.DefChainID
 	m.DefName = v.DefName
@@ -40,7 +40,7 @@ func (m *DocMsgServiceRequest) BuildMsg(msg interface{}) {
 	m.Profiling = v.Profiling
 }
 
-func (m *DocMsgServiceRequest) HandleTxMsg(msg types.MsgServiceRequest) MsgDocInfo {
+func (m *DocMsgServiceRequest) HandleTxMsg(msg MsgServiceRequest) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin

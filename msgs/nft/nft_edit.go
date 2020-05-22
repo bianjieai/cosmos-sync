@@ -1,8 +1,8 @@
-package msgs
+package nft
 
 import (
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/types"
+	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 type (
@@ -19,7 +19,7 @@ func (m *DocMsgNFTEdit) GetType() string {
 }
 
 func (m *DocMsgNFTEdit) BuildMsg(v interface{}) {
-	msg := v.(types.MsgNFTEdit)
+	msg := v.(MsgNFTEdit)
 
 	m.Sender = msg.Sender.String()
 	m.ID = msg.ID
@@ -27,7 +27,7 @@ func (m *DocMsgNFTEdit) BuildMsg(v interface{}) {
 	m.TokenURI = msg.TokenURI
 }
 
-func (m *DocMsgNFTEdit) HandleTxMsg(msg types.MsgNFTEdit) MsgDocInfo {
+func (m *DocMsgNFTEdit) HandleTxMsg(msg MsgNFTEdit) MsgDocInfo {
 	var (
 		from, to, signer string
 		coins            []models.Coin
