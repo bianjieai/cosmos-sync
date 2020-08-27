@@ -1,8 +1,7 @@
-package msgs
+package record
 
 import (
-	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/types"
+	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 type (
@@ -24,7 +23,7 @@ func (d *DocMsgRecordCreate) GetType() string {
 }
 
 func (d *DocMsgRecordCreate) BuildMsg(msg interface{}) {
-	m := msg.(types.MsgRecordCreate)
+	m := msg.(MsgRecordCreate)
 
 	var docContents []Content
 	if len(m.Contents) > 0 {
@@ -42,33 +41,15 @@ func (d *DocMsgRecordCreate) BuildMsg(msg interface{}) {
 	d.Creator = m.Creator.String()
 }
 
-func (d *DocMsgRecordCreate) HandleTxMsg(msg types.MsgRecordCreate) MsgDocInfo {
+func (m *DocMsgRecordCreate) HandleTxMsg(msg MsgRecordCreate) MsgDocInfo {
 	var (
-		from, to, signer string
-		coins            []models.Coin
-		docTxMsg         models.DocTxMsg
-		complexMsg       bool
-		signers          []string
+		addrs []string
 	)
 
-	from = msg.Creator.String()
-	to = ""
-
-	d.BuildMsg(msg)
-	docTxMsg = models.DocTxMsg{
-		Type: d.GetType(),
-		Msg:  d,
+	addrs = append(addrs, m.Creator)
+	handler := func() (Msg,  []string) {
+		return m,  addrs
 	}
-	complexMsg = false
-	signer, signers = models.BuildDocSigners(msg.GetSigners())
 
-	return MsgDocInfo{
-		From:       from,
-		To:         to,
-		Coins:      coins,
-		Signer:     signer,
-		DocTxMsg:   docTxMsg,
-		ComplexMsg: complexMsg,
-		Signers:    signers,
-	}
+	return CreateMsgDocInfo(msg, handler)
 }

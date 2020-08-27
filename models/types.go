@@ -50,6 +50,7 @@ func ensureDocsIndexes() {
 	}
 }
 
+
 func BuildDocCoins(coins sdk.Coins) []Coin {
 	var (
 		res []Coin

@@ -18,16 +18,20 @@ type ServerConf struct {
 
 	MaxConnectionNum  int
 	InitConnectionNum int
+	Bech32AccPrefix   string
+	ChainId           string
 }
 
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://localhost:26657"}
+	nodeUrls                = []string{"tcp://192.168.150.32:36657"}
 	network                 = constant.Testnet
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
+	bech32AccPrefix         = "iaa"
+	chainId                 = ""
 )
 
 // get value of env var
@@ -69,6 +73,14 @@ func init() {
 		}
 	}
 
+	if v, ok := os.LookupEnv(constant.EnvNameBech32AccPrefix); ok {
+		bech32AccPrefix = v
+	}
+
+	if v, ok := os.LookupEnv(constant.EnvNameChainId); ok {
+		chainId = v
+	}
+
 	SvrConf = &ServerConf{
 		NodeUrls:                nodeUrls,
 		NetWork:                 network,
@@ -79,6 +91,9 @@ func init() {
 
 		MaxConnectionNum:  100,
 		InitConnectionNum: 5,
+
+		Bech32AccPrefix: bech32AccPrefix,
+		ChainId:         chainId,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"math/rand"
 	"sync"
 )
@@ -21,7 +21,7 @@ type (
 	}
 	Client struct {
 		Id string
-		rpcclient.Client
+		*rpcclient.HTTP
 	}
 )
 
@@ -97,10 +97,10 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 }
 
 func newClient(nodeUrl string) (*Client, error) {
-	client, err := rpcclient.NewHTTP(nodeUrl, "/websocket")
+	client, err := rpcclient.New(nodeUrl, "/websocket")
 	return &Client{
 		Id:     generateId(nodeUrl),
-		Client: client,
+		HTTP: client,
 	}, err
 }
 

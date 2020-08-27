@@ -5,8 +5,6 @@ import (
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
-	mMsg "github.com/bianjieai/irita-sync/models/msgs"
-	itypes "github.com/bianjieai/irita-sync/types"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -36,17 +34,18 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		block = v
 	}
 	blockDoc = models.Block{
-		Height: block.Block.Height,
-		Time:   block.Block.Time,
-		Hash:   block.Block.Header.Hash().String(),
-		Txn:    int64(len(block.Block.Data.Txs)),
+		Height:   block.Block.Height,
+		Time:     block.Block.Time.Unix(),
+		Hash:     block.Block.Header.Hash().String(),
+		Txn:      int64(len(block.Block.Data.Txs)),
+		Proposer: block.Block.ProposerAddress.String(),
 	}
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for _, v := range block.Block.Txs {
 			txDoc := parseTx(client, v, block.Block.Time)
-			if txDoc.TxHash != "" {
+			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
 			}
 		}
@@ -60,12 +59,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 		stdTx auth.StdTx
 		docTx models.Tx
 
-		complexMsg       bool
-		txType, from, to string
-		coins            []models.Coin
-		signer           string
-		docTxMsgs        []models.DocTxMsg
-		signers          []string
+		docTxMsgs []models.DocTxMsg
 	)
 
 	if txResult, err := c.Tx(txBytes.Hash(), false); err != nil {
@@ -73,18 +67,19 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 			logger.String("err", err.Error()))
 		return docTx
 	} else {
-		docTx.Time = blockTime
+		docTx.Time = blockTime.Unix()
 		docTx.Height = txResult.Height
 		docTx.TxHash = utils.BuildHex(txBytes.Hash())
 		docTx.Status = parseTxStatus(txResult.TxResult.Code)
 		docTx.Log = txResult.TxResult.Log
 		docTx.Events = parseEvents(txResult.TxResult.Events)
 
-		if err := cdc.Cdc.UnmarshalBinaryLengthPrefixed(txResult.Tx, &stdTx); err != nil {
+		if err := cdc.Cdc.UnmarshalBinaryBare(txResult.Tx, &stdTx); err != nil {
 			logger.Error("unmarshal tx fail", logger.String("txHash", docTx.TxHash),
 				logger.String("err", err.Error()))
 			return docTx
 		}
+		docTx.Fee = BuildFee(stdTx.Fee)
 
 		docTx.Memo = stdTx.Memo
 
@@ -92,86 +87,21 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 		if len(msgs) == 0 {
 			return docTx
 		}
-		for i, v := range msgs {
-			var (
-				msgDocInfo mMsg.MsgDocInfo
-			)
-			switch v.(type) {
-			case itypes.MsgSend:
-				docMsg := mMsg.DocMsgSend{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgSend))
-				break
-			case itypes.MsgNFTMint:
-				docMsg := mMsg.DocMsgNFTMint{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTMint))
-				break
-			case itypes.MsgNFTEdit:
-				docMsg := mMsg.DocMsgNFTEdit{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTEdit))
-				break
-			case itypes.MsgNFTTransfer:
-				docMsg := mMsg.DocMsgNFTTransfer{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTTransfer))
-				break
-			case itypes.MsgNFTBurn:
-				docMsg := mMsg.DocMsgNFTBurn{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgNFTBurn))
-				break
-			case itypes.MsgServiceDef:
-				docMsg := mMsg.DocMsgServiceDef{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceDef))
-				break
-			case itypes.MsgServiceBind:
-				docMsg := mMsg.DocMsgServiceBind{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceBind))
-				break
-			case itypes.MsgServiceRequest:
-				docMsg := mMsg.DocMsgServiceRequest{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceRequest))
-				break
-			case itypes.MsgServiceResponse:
-				docMsg := mMsg.DocMsgServiceResponse{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgServiceResponse))
-				break
-			case itypes.MsgRecordCreate:
-				docMsg := mMsg.DocMsgRecordCreate{}
-				msgDocInfo = docMsg.HandleTxMsg(v.(itypes.MsgRecordCreate))
-				break
-			}
-
-			if msgDocInfo.Signer == "" {
+		for _, v := range msgs {
+			msgDocInfo := HandleTxMsg(v)
+			if len(msgDocInfo.Addrs) == 0 {
 				continue
 			}
 
-			if !complexMsg {
-				complexMsg = msgDocInfo.ComplexMsg
-			}
-			if i == 0 {
-				txType = msgDocInfo.DocTxMsg.Type
-				from = msgDocInfo.From
-				to = msgDocInfo.To
-				coins = msgDocInfo.Coins
-				signer = msgDocInfo.Signer
-			}
+			docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
 			docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
-			signers = msgDocInfo.Signers
+			docTx.Type = append(docTx.Type, msgDocInfo.DocTxMsg.Type)
 		}
 
-		if !complexMsg && len(msgs) > 1 {
-			complexMsg = true
-		}
-
-		docTx.ComplexMsg = complexMsg
-		docTx.Type = txType
-		docTx.From = from
-		docTx.To = to
-		docTx.Coins = coins
-		docTx.Signer = signer
 		docTx.DocTxMsgs = docTxMsgs
-		docTx.Signers = signers
 
 		// don't save txs which have not parsed
-		if docTx.Type == "" {
+		if len(docTx.Type) == 0 {
 			return models.Tx{}
 		}
 
@@ -208,4 +138,11 @@ func parseEvents(events []aTypes.Event) []models.Event {
 	}
 
 	return eventDocs
+}
+
+func BuildFee(fee auth.StdFee) *models.Fee {
+	return &models.Fee{
+		Amount: models.BuildDocCoins(fee.Amount),
+		Gas:    int64(fee.Gas),
+	}
 }

@@ -4,6 +4,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
+	"fmt"
+	"github.com/bianjieai/irita-sync/confs/server"
 )
 
 const (
@@ -43,7 +45,10 @@ type (
 )
 
 func (d SyncTask) Name() string {
-	return CollectionNameSyncTask
+	if server.SvrConf.ChainId == "" {
+		return CollectionNameSyncTask
+	}
+	return fmt.Sprintf("sync_%v_task", server.SvrConf.ChainId)
 }
 
 func (d SyncTask) EnsureIndexes() {
