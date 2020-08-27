@@ -26,6 +26,9 @@ A server that synchronize irita chain data into a database
 - BLOCK_NUM_PER_WORKER_HANDLE: `required` `string`  number of blocks per sync TX task（example: `50`）
 - NETWORK: `option` `string` network type（example: `testnet,mainnet`）
 
+- BECH32_ACC_PREFIX: `option` `string` block chain address prefix（example: `iaa`）
+- CHAIN_ID: `option` `string` block chain id for mongodb create collection name（example: `cschain-bond`）
+
 
 Note: 
 > synchronizes irita data from specify block height(such as:17908 current time:1576208532)
