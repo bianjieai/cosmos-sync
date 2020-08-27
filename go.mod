@@ -4,6 +4,8 @@ go 1.14
 
 require (
 	github.com/cosmos/cosmos-sdk v0.38.2
+	github.com/irismod/coinswap v0.0.0-20200722055706-deeded9d99b8 // indirect
+	github.com/irismod/htlc v0.0.0-20200722060015-b71f49c9b167 // indirect
 	github.com/irismod/nft v1.2.0
 	github.com/irismod/record v1.1.0
 	github.com/irismod/service v1.1.0
@@ -11,7 +13,7 @@ require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/tendermint/go-amino v0.15.1
-	github.com/tendermint/tendermint v0.33.4
+	github.com/tendermint/tendermint v0.33.6
 	go.uber.org/zap v1.15.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

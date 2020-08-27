@@ -7,6 +7,15 @@ import (
 	"github.com/irismod/service"
 	"github.com/irismod/record"
 	"github.com/irismod/token"
+	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	dtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
+	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	//coinswap "github.com/irismod/coinswap/types"
+	//htlc "github.com/irismod/htlc/types"
 )
 
 const (
@@ -38,6 +47,31 @@ const (
 	MsgTypeKillRequestContext    = "kill_request_context"    // type for MsgKillRequestContext
 	MsgTypeUpdateRequestContext  = "update_request_context"  // type for MsgUpdateRequestContext
 	MsgTypeWithdrawEarnedFees    = "withdraw_earned_fees"    // type for MsgWithdrawEarnedFees
+
+	TxTypeStakeCreateValidator           = "CreateValidator"
+	TxTypeStakeEditValidator             = "EditValidator"
+	TxTypeStakeDelegate                  = "Delegate"
+	TxTypeStakeBeginUnbonding            = "BeginUnbonding"
+	TxTypeBeginRedelegate                = "BeginRedelegate"
+	TxTypeUnjail                         = "Unjail"
+	TxTypeSetWithdrawAddress             = "SetWithdrawAddress"
+	TxTypeWithdrawDelegatorReward        = "WithdrawDelegatorReward"
+	TxTypeMsgFundCommunityPool           = "FundCommunityPool"
+	TxTypeMsgWithdrawValidatorCommission = "WithdrawValidatorCommission"
+	TxTypeSubmitProposal                 = "SubmitProposal"
+	TxTypeDeposit                        = "Deposit"
+	TxTypeVote                           = "Vote"
+
+	TxTypeCreateHTLC = "CreateHTLC"
+	TxTypeClaimHTLC  = "ClaimHTLC"
+	TxTypeRefundHTLC = "RefundHTLC"
+
+	TxTypeAddLiquidity    = "AddLiquidity"
+	TxTypeRemoveLiquidity = "RemoveLiquidity"
+	TxTypeSwapOrder       = "SwapOrder"
+
+	TxTypeSubmitEvidence  = "SubmitEvidence"
+	TxTypeVerifyInvariant = "VerifyInvariant"
 )
 
 type (
@@ -83,4 +117,37 @@ type (
 	MsgEditToken = token.MsgEditToken
 	MsgMintToken = token.MsgMintToken
 	MsgTransferTokenOwner = token.MsgTransferTokenOwner
+
+	MsgStakeCreate = stake.MsgCreateValidator
+	MsgStakeEdit = stake.MsgEditValidator
+	MsgStakeDelegate = stake.MsgDelegate
+	MsgStakeBeginUnbonding = stake.MsgUndelegate
+	MsgBeginRedelegate = stake.MsgBeginRedelegate
+	MsgUnjail = slashing.MsgUnjail
+	MsgStakeSetWithdrawAddress = dtypes.MsgSetWithdrawAddress
+	MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
+	MsgFundCommunityPool = distribution.MsgFundCommunityPool
+	MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
+	StakeValidator = stake.Validator
+	Delegation = stake.Delegation
+	UnbondingDelegation = stake.UnbondingDelegation
+
+	MsgDeposit = gov.MsgDeposit
+	MsgSubmitProposal = gov.MsgSubmitProposal
+	TextProposal = gov.TextProposal
+	MsgVote = gov.MsgVote
+	Proposal = gov.Proposal
+	SdkVote = gov.Vote
+
+	//MsgSwapOrder = coinswap.MsgSwapOrder
+	//MsgAddLiquidity = coinswap.MsgAddLiquidity
+	//MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
+	//
+	//MsgClaimHTLC = htlc.MsgClaimHTLC
+	//MsgCreateHTLC = htlc.MsgCreateHTLC
+	//MsgRefundHTLC = htlc.MsgRefundHTLC
+
+
+	MsgSubmitEvidence = evidence.MsgSubmitEvidence
+	MsgVerifyInvariant = crisis.MsgVerifyInvariant
 )

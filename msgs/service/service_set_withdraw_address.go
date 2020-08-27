@@ -1,4 +1,4 @@
-package iservice
+package service
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
