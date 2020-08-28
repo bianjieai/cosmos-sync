@@ -62,10 +62,6 @@ const (
 	MsgTypeDeposit                        = "deposit"
 	MsgTypeVote                           = "vote"
 
-	TxTypeCreateHTLC = "CreateHTLC"
-	TxTypeClaimHTLC  = "ClaimHTLC"
-	TxTypeRefundHTLC = "RefundHTLC"
-
 	MsgTypeCreateHTLC = "CreateHTLC"
 	MsgTypeClaimHTLC  = "ClaimHTLC"
 	MsgTypeRefundHTLC = "RefundHTLC"
@@ -153,11 +149,4 @@ type (
 
 	MsgSubmitEvidence = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant
-
-	MsgIBCTransfer = ibctransfer.MsgTransfer
-	MsgIBCPacket = ibcchannel.MsgPacket
-	MsgIBCTimeout = ibcchannel.MsgTimeout
-	MsgUpdateClient = ibctendermint.MsgUpdateClient
-	MsgCreateClient = ibctendermint.MsgCreateClient
-	MsgSubmitClientMisbehaviour = ibctendermint.MsgSubmitClientMisbehaviour
 )
