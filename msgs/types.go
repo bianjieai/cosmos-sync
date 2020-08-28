@@ -62,16 +62,16 @@ const (
 	MsgTypeDeposit                        = "deposit"
 	MsgTypeVote                           = "vote"
 
-	MsgTypeCreateHTLC = "CreateHTLC"
-	MsgTypeClaimHTLC  = "ClaimHTLC"
-	MsgTypeRefundHTLC = "RefundHTLC"
+	MsgTypeCreateHTLC = "create_htlc"
+	MsgTypeClaimHTLC  = "claim_htlc"
+	MsgTypeRefundHTLC = "refund_htlc"
 
-	MsgTypeAddLiquidity    = "AddLiquidity"
-	MsgTypeRemoveLiquidity = "RemoveLiquidity"
-	MsgTypeSwapOrder       = "SwapOrder"
+	MsgTypeAddLiquidity    = "add_liquidity"
+	MsgTypeRemoveLiquidity = "remove_liquidity"
+	MsgTypeSwapOrder       = "swap_order"
 
-	MsgTypeSubmitEvidence  = "SubmitEvidence"
-	MsgTypeVerifyInvariant = "VerifyInvariant"
+	MsgTypeSubmitEvidence  = "submit_evidence"
+	MsgTypeVerifyInvariant = "verify_invariant"
 )
 
 type (
