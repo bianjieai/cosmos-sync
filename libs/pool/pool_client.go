@@ -8,7 +8,6 @@ import (
 	svrConf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"sync"
 	"time"
 )
@@ -28,7 +27,6 @@ func init() {
 		key := generateId(url)
 		endPoint := EndPoint{
 			Address:   url,
-			Network:   conf.NetWork,
 			Available: true,
 		}
 
@@ -72,7 +70,7 @@ func (c *Client) Release() {
 }
 
 func (c *Client) HeartBeat() error {
-	http := c.Client.(*rpcclient.HTTP)
+	http := c.HTTP
 	_, err := http.Health()
 	return err
 }

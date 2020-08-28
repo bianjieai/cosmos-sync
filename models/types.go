@@ -38,9 +38,21 @@ type (
 	}
 
 	Coins []*Coin
-
-	Tag map[string]string
 )
+
+// Description
+type ValDescription struct {
+	Moniker  string `bson:"moniker"`
+	Identity string `bson:"identity"`
+	Website  string `bson:"website"`
+	Details  string `bson:"details"`
+}
+
+type CommissionMsg struct {
+	Rate          string `bson:"rate"`            // the commission rate charged to delegators
+	MaxRate       string `bson:"max_rate"`        // maximum commission rate which validator can ever charge
+	MaxChangeRate string `bson:"max_change_rate"` // maximum daily increase of the validator commission
+}
 
 func ensureDocsIndexes() {
 	if len(Collections) > 0 {
@@ -65,6 +77,13 @@ func BuildDocCoins(coins sdk.Coins) []Coin {
 	}
 
 	return res
+}
+
+func BuildDocCoin(coin sdk.Coin) Coin {
+	return Coin{
+		Denom:  coin.Denom,
+		Amount: coin.Amount.String(),
+	}
 }
 
 func BuildDocSigners(signers []sdk.AccAddress) (string, []string) {
