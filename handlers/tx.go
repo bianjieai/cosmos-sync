@@ -87,15 +87,18 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 		if len(msgs) == 0 {
 			return docTx
 		}
-		for _, v := range msgs {
+		for i, v := range msgs {
 			msgDocInfo := HandleTxMsg(v)
 			if len(msgDocInfo.Addrs) == 0 {
 				continue
 			}
+			if i == 0 {
+				docTx.Type = msgDocInfo.DocTxMsg.Type
+			}
 
 			docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
 			docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
-			docTx.Type = append(docTx.Type, msgDocInfo.DocTxMsg.Type)
+			docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
 		}
 
 		docTx.DocTxMsgs = docTxMsgs

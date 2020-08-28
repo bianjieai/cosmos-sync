@@ -16,11 +16,12 @@ type (
 		Time      int64       `bson:"time"`
 		Height    int64       `bson:"height"`
 		TxHash    string      `bson:"tx_hash"`
+		Type      string      `bson:"type"` // parse from first msg
 		Memo      string      `bson:"memo"`
 		Status    uint32      `bson:"status"`
 		Log       string      `bson:"log"`
 		Fee       *Fee        `bson:"fee"`
-		Type      []string    `bson:"type"`
+		Types     []string    `bson:"types"`
 		Events    []Event     `bson:"events"`
 		DocTxMsgs []DocTxMsg  `bson:"msgs"`
 		Addrs     []string    `bson:"addrs"`
