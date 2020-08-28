@@ -104,7 +104,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 		docTx.DocTxMsgs = docTxMsgs
 
 		// don't save txs which have not parsed
-		if len(docTx.Type) == 0 {
+		if docTx.Type == "" || docTx.TxHash == "" {
 			return models.Tx{}
 		}
 
