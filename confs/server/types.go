@@ -10,7 +10,6 @@ import (
 
 type ServerConf struct {
 	NodeUrls                []string
-	NetWork                 string
 	WorkerNumCreateTask     int
 	WorkerNumExecuteTask    int
 	WorkerMaxSleepTime      int
@@ -26,7 +25,6 @@ var (
 	SvrConf *ServerConf
 
 	nodeUrls                = []string{"tcp://192.168.150.32:36657"}
-	network                 = constant.Testnet
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
@@ -40,14 +38,6 @@ func init() {
 		nodeUrls = strings.Split(v, ",")
 	}
 
-	if v, ok := os.LookupEnv(constant.EnvNameBlockChainNetwork); ok {
-		switch v {
-		case constant.Testnet, constant.Mainnet:
-			network = v
-		default:
-			logger.Fatal("unknown network", logger.String(constant.EnvNameBlockChainNetwork, v))
-		}
-	}
 
 	if v, ok := os.LookupEnv(constant.EnvNameWorkerNumExecuteTask); ok {
 		if n, err := utils.ConvStrToInt(v); err != nil {
@@ -83,7 +73,6 @@ func init() {
 
 	SvrConf = &ServerConf{
 		NodeUrls:                nodeUrls,
-		NetWork:                 network,
 		WorkerNumCreateTask:     1,
 		WorkerNumExecuteTask:    workerNumExecuteTask,
 		WorkerMaxSleepTime:      workerMaxSleepTime,

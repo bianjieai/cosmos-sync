@@ -16,7 +16,6 @@ type (
 	}
 	EndPoint struct {
 		Address   string
-		Network   string
 		Available bool
 	}
 	Client struct {

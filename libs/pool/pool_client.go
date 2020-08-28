@@ -27,7 +27,6 @@ func init() {
 		key := generateId(url)
 		endPoint := EndPoint{
 			Address:   url,
-			Network:   conf.NetWork,
 			Available: true,
 		}
 
