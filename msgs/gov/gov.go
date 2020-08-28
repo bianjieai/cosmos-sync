@@ -1,4 +1,4 @@
-package msg
+package gov
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"

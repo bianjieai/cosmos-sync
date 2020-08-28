@@ -9,10 +9,10 @@ import (
 	"github.com/bianjieai/irita-sync/msgs/token"
 	"github.com/bianjieai/irita-sync/msgs/bank"
 	"github.com/bianjieai/irita-sync/msgs/distribution"
-	//"github.com/bianjieai/irita-sync/msgs/coinswap"
 	"github.com/bianjieai/irita-sync/msgs/crisis"
 	"github.com/bianjieai/irita-sync/msgs/evidence"
 	"github.com/bianjieai/irita-sync/msgs/staking"
+	"github.com/bianjieai/irita-sync/msgs/gov"
 )
 
 func HandleTxMsg(v types.Msg) (MsgDocInfo) {
@@ -31,26 +31,26 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo) {
 	if TokenDocInfo, ok := token.HandleTxMsg(v); ok {
 		return TokenDocInfo
 	}
-	//if TokenDocInfo, ok := coinswap.HandleTxMsg(v); ok {
-	//	return TokenDocInfo
+	//if CoinswapDocInfo, ok := coinswap.HandleTxMsg(v); ok {
+	//	return CoinswapDocInfo
 	//}
-	if TokenDocInfo, ok := crisis.HandleTxMsg(v); ok {
-		return TokenDocInfo
+	if CrisisDocInfo, ok := crisis.HandleTxMsg(v); ok {
+		return CrisisDocInfo
 	}
-	if TokenDocInfo, ok := distribution.HandleTxMsg(v); ok {
-		return TokenDocInfo
+	if DistrubutionDocInfo, ok := distribution.HandleTxMsg(v); ok {
+		return DistrubutionDocInfo
 	}
-	if TokenDocInfo, ok := evidence.HandleTxMsg(v); ok {
-		return TokenDocInfo
+	if EvidenceDocInfo, ok := evidence.HandleTxMsg(v); ok {
+		return EvidenceDocInfo
 	}
-	//if TokenDocInfo, ok := htlc.HandleTxMsg(v); ok {
-	//	return TokenDocInfo
+	//if HtlcDocInfo, ok := htlc.HandleTxMsg(v); ok {
+	//	return HtlcDocInfo
 	//}
-	if TokenDocInfo, ok := staking.HandleTxMsg(v); ok {
-		return TokenDocInfo
+	if StakingDocInfo, ok := staking.HandleTxMsg(v); ok {
+		return StakingDocInfo
 	}
-	if TokenDocInfo, ok := token.HandleTxMsg(v); ok {
-		return TokenDocInfo
+	if GovDocInfo, ok := gov.HandleTxMsg(v); ok {
+		return GovDocInfo
 	}
 	return MsgDocInfo{}
 }
