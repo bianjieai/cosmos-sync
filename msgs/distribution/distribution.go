@@ -12,7 +12,7 @@ type DocTxMsgSetWithdrawAddress struct {
 }
 
 func (doctx *DocTxMsgSetWithdrawAddress) GetType() string {
-	return TxTypeSetWithdrawAddress
+	return MsgTypeSetWithdrawAddress
 }
 
 func (doctx *DocTxMsgSetWithdrawAddress) BuildMsg(txMsg interface{}) {
@@ -42,7 +42,7 @@ type DocTxMsgWithdrawDelegatorReward struct {
 }
 
 func (doctx *DocTxMsgWithdrawDelegatorReward) GetType() string {
-	return TxTypeWithdrawDelegatorReward
+	return MsgTypeWithdrawDelegatorReward
 }
 
 func (doctx *DocTxMsgWithdrawDelegatorReward) BuildMsg(txMsg interface{}) {
@@ -71,7 +71,7 @@ type DocTxMsgFundCommunityPool struct {
 }
 
 func (doctx *DocTxMsgFundCommunityPool) GetType() string {
-	return TxTypeMsgFundCommunityPool
+	return MsgTypeMsgFundCommunityPool
 }
 
 func (doctx *DocTxMsgFundCommunityPool) BuildMsg(txMsg interface{}) {
@@ -98,7 +98,7 @@ type DocTxMsgWithdrawValidatorCommission struct {
 }
 
 func (doctx *DocTxMsgWithdrawValidatorCommission) GetType() string {
-	return TxTypeMsgWithdrawValidatorCommission
+	return MsgTypeMsgWithdrawValidatorCommission
 }
 
 func (doctx *DocTxMsgWithdrawValidatorCommission) BuildMsg(txMsg interface{}) {

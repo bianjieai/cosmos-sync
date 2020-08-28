@@ -16,7 +16,7 @@ type DocTxMsgBeginRedelegate struct {
 }
 
 func (doctx *DocTxMsgBeginRedelegate) GetType() string {
-	return TxTypeBeginRedelegate
+	return MsgTypeBeginRedelegate
 }
 
 func (doctx *DocTxMsgBeginRedelegate) BuildMsg(txMsg interface{}) {
@@ -46,7 +46,7 @@ type DocTxMsgUnjail struct {
 }
 
 func (doctx *DocTxMsgUnjail) GetType() string {
-	return TxTypeUnjail
+	return MsgTypeUnjail
 }
 
 func (doctx *DocTxMsgUnjail) BuildMsg(txMsg interface{}) {
@@ -75,7 +75,7 @@ type DocTxMsgBeginUnbonding struct {
 }
 
 func (doctx *DocTxMsgBeginUnbonding) GetType() string {
-	return TxTypeStakeBeginUnbonding
+	return MsgTypeStakeBeginUnbonding
 }
 
 func (doctx *DocTxMsgBeginUnbonding) BuildMsg(txMsg interface{}) {
@@ -106,7 +106,7 @@ type DocTxMsgDelegate struct {
 }
 
 func (doctx *DocTxMsgDelegate) GetType() string {
-	return TxTypeStakeDelegate
+	return MsgTypeStakeDelegate
 }
 
 func (doctx *DocTxMsgDelegate) BuildMsg(txMsg interface{}) {
@@ -137,7 +137,7 @@ type DocTxMsgStakeEdit struct {
 }
 
 func (doctx *DocTxMsgStakeEdit) GetType() string {
-	return TxTypeStakeEditValidator
+	return MsgTypeStakeEditValidator
 }
 
 func (doctx *DocTxMsgStakeEdit) BuildMsg(txMsg interface{}) {
@@ -177,7 +177,7 @@ type DocTxMsgCreateValidator struct {
 }
 
 func (doctx *DocTxMsgCreateValidator) GetType() string {
-	return TxTypeStakeCreateValidator
+	return MsgTypeStakeCreateValidator
 }
 
 func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {

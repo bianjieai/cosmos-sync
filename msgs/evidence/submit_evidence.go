@@ -14,7 +14,7 @@ type DocMsgSubmitEvidence struct {
 }
 
 func (m *DocMsgSubmitEvidence) GetType() string {
-	return TxTypeSubmitEvidence
+	return MsgTypeSubmitEvidence
 }
 
 func (m *DocMsgSubmitEvidence) BuildMsg(v interface{}) {

@@ -33,45 +33,45 @@ const (
 	MsgTypeIssueToken         = "issue_token"
 	MsgTypeTransferTokenOwner = "transfer_token_owner"
 
-	MsgTypeDefineService         = "define_service"          // type for MsgDefineService
-	MsgTypeBindService           = "bind_service"            // type for MsgBindService
-	MsgTypeUpdateServiceBinding  = "update_service_binding"  // type for MsgUpdateServiceBinding
-	MsgTypeSetWithdrawAddress    = "set_withdraw_address"    // type for MsgSetWithdrawAddress
-	MsgTypeDisableServiceBinding = "disable_service_binding" // type for MsgDisableServiceBinding
-	MsgTypeEnableServiceBinding  = "enable_service_binding"  // type for MsgEnableServiceBinding
-	MsgTypeRefundServiceDeposit  = "refund_service_deposit"  // type for MsgRefundServiceDeposit
-	MsgTypeCallService           = "call_service"            // type for MsgCallService
-	MsgTypeRespondService        = "respond_service"         // type for MsgRespondService
-	MsgTypePauseRequestContext   = "pause_request_context"   // type for MsgPauseRequestContext
-	MsgTypeStartRequestContext   = "start_request_context"   // type for MsgStartRequestContext
-	MsgTypeKillRequestContext    = "kill_request_context"    // type for MsgKillRequestContext
-	MsgTypeUpdateRequestContext  = "update_request_context"  // type for MsgUpdateRequestContext
-	MsgTypeWithdrawEarnedFees    = "withdraw_earned_fees"    // type for MsgWithdrawEarnedFees
+	MsgTypeDefineService             = "define_service"               // type for MsgDefineService
+	MsgTypeBindService               = "bind_service"                 // type for MsgBindService
+	MsgTypeUpdateServiceBinding      = "update_service_binding"       // type for MsgUpdateServiceBinding
+	MsgTypeServiceSetWithdrawAddress = "service/set_withdraw_address" // type for MsgSetWithdrawAddress
+	MsgTypeDisableServiceBinding     = "disable_service_binding"      // type for MsgDisableServiceBinding
+	MsgTypeEnableServiceBinding      = "enable_service_binding"       // type for MsgEnableServiceBinding
+	MsgTypeRefundServiceDeposit      = "refund_service_deposit"       // type for MsgRefundServiceDeposit
+	MsgTypeCallService               = "call_service"                 // type for MsgCallService
+	MsgTypeRespondService            = "respond_service"              // type for MsgRespondService
+	MsgTypePauseRequestContext       = "pause_request_context"        // type for MsgPauseRequestContext
+	MsgTypeStartRequestContext       = "start_request_context"        // type for MsgStartRequestContext
+	MsgTypeKillRequestContext        = "kill_request_context"         // type for MsgKillRequestContext
+	MsgTypeUpdateRequestContext      = "update_request_context"       // type for MsgUpdateRequestContext
+	MsgTypeWithdrawEarnedFees        = "withdraw_earned_fees"         // type for MsgWithdrawEarnedFees
 
-	TxTypeStakeCreateValidator           = "CreateValidator"
-	TxTypeStakeEditValidator             = "EditValidator"
-	TxTypeStakeDelegate                  = "Delegate"
-	TxTypeStakeBeginUnbonding            = "BeginUnbonding"
-	TxTypeBeginRedelegate                = "BeginRedelegate"
-	TxTypeUnjail                         = "Unjail"
-	TxTypeSetWithdrawAddress             = "SetWithdrawAddress"
-	TxTypeWithdrawDelegatorReward        = "WithdrawDelegatorReward"
-	TxTypeMsgFundCommunityPool           = "FundCommunityPool"
-	TxTypeMsgWithdrawValidatorCommission = "WithdrawValidatorCommission"
-	TxTypeSubmitProposal                 = "SubmitProposal"
-	TxTypeDeposit                        = "Deposit"
-	TxTypeVote                           = "Vote"
+	MsgTypeStakeCreateValidator           = "create_validator"
+	MsgTypeStakeEditValidator             = "edit_validator"
+	MsgTypeStakeDelegate                  = "delegate"
+	MsgTypeStakeBeginUnbonding            = "begin_unbonding"
+	MsgTypeBeginRedelegate                = "begin_redelegate"
+	MsgTypeUnjail                         = "unjail"
+	MsgTypeSetWithdrawAddress             = "set_withdraw_address"
+	MsgTypeWithdrawDelegatorReward        = "withdraw_delegator_reward"
+	MsgTypeMsgFundCommunityPool           = "fund_community_pool"
+	MsgTypeMsgWithdrawValidatorCommission = "withdraw_validator_commission"
+	MsgTypeSubmitProposal                 = "submit_proposal"
+	MsgTypeDeposit                        = "deposit"
+	MsgTypeVote                           = "vote"
 
-	TxTypeCreateHTLC = "CreateHTLC"
-	TxTypeClaimHTLC  = "ClaimHTLC"
-	TxTypeRefundHTLC = "RefundHTLC"
+	MsgTypeCreateHTLC = "create_htlc"
+	MsgTypeClaimHTLC  = "claim_htlc"
+	MsgTypeRefundHTLC = "refund_htlc"
 
-	TxTypeAddLiquidity    = "AddLiquidity"
-	TxTypeRemoveLiquidity = "RemoveLiquidity"
-	TxTypeSwapOrder       = "SwapOrder"
+	MsgTypeAddLiquidity    = "add_liquidity"
+	MsgTypeRemoveLiquidity = "remove_liquidity"
+	MsgTypeSwapOrder       = "swap_order"
 
-	TxTypeSubmitEvidence  = "SubmitEvidence"
-	TxTypeVerifyInvariant = "VerifyInvariant"
+	MsgTypeSubmitEvidence  = "submit_evidence"
+	MsgTypeVerifyInvariant = "verify_invariant"
 )
 
 type (
@@ -146,7 +146,6 @@ type (
 	//MsgClaimHTLC = htlc.MsgClaimHTLC
 	//MsgCreateHTLC = htlc.MsgCreateHTLC
 	//MsgRefundHTLC = htlc.MsgRefundHTLC
-
 
 	MsgSubmitEvidence = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant

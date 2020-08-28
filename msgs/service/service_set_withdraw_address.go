@@ -12,7 +12,7 @@ type (
 )
 
 func (m *DocMsgSetWithdrawAddress) GetType() string {
-	return MsgTypeSetWithdrawAddress
+	return MsgTypeServiceSetWithdrawAddress
 }
 
 func (m *DocMsgSetWithdrawAddress) BuildMsg(v interface{}) {
