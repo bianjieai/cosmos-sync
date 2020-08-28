@@ -14,7 +14,7 @@ type DocTxMsgSubmitProposal struct {
 }
 
 func (doctx *DocTxMsgSubmitProposal) GetType() string {
-	return TxTypeSubmitProposal
+	return MsgTypeSubmitProposal
 }
 
 func (doctx *DocTxMsgSubmitProposal) BuildMsg(txMsg interface{}) {
@@ -47,7 +47,7 @@ type DocTxMsgVote struct {
 }
 
 func (doctx *DocTxMsgVote) GetType() string {
-	return TxTypeVote
+	return MsgTypeVote
 }
 
 func (doctx *DocTxMsgVote) BuildMsg(txMsg interface{}) {
@@ -78,7 +78,7 @@ type DocTxMsgDeposit struct {
 }
 
 func (doctx *DocTxMsgDeposit) GetType() string {
-	return TxTypeDeposit
+	return MsgTypeDeposit
 }
 
 func (doctx *DocTxMsgDeposit) BuildMsg(txMsg interface{}) {

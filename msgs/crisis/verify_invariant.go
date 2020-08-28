@@ -14,7 +14,7 @@ type DocMsgVerifyInvariant struct {
 }
 
 func (m *DocMsgVerifyInvariant) GetType() string {
-	return TxTypeVerifyInvariant
+	return MsgTypeVerifyInvariant
 }
 
 func (m *DocMsgVerifyInvariant) BuildMsg(v interface{}) {
