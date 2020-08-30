@@ -31,7 +31,7 @@ func (m *DocMsgEditToken) HandleTxMsg(msg MsgEditToken) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Owner)
+	addrs = append(addrs, msg.Owner.String())
 	handler := func() (Msg,  []string) {
 		return m,  addrs
 	}

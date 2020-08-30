@@ -35,7 +35,7 @@ func (m *DocMsgDefineService) HandleTxMsg(msg MsgDefineService) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Author)
+	addrs = append(addrs, msg.Author.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

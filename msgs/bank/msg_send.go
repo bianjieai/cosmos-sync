@@ -29,7 +29,7 @@ func (m *DocMsgSend) HandleTxMsg(msg MsgSend) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.FromAddress, m.ToAddress)
+	addrs = append(addrs, msg.FromAddress.String(), msg.ToAddress.String())
 
 	handler := func() (Msg, []string) {
 		return m, addrs

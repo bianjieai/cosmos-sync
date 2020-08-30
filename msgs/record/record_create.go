@@ -46,7 +46,7 @@ func (m *DocMsgRecordCreate) HandleTxMsg(msg MsgRecordCreate) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Creator)
+	addrs = append(addrs, msg.Creator.String())
 	handler := func() (Msg,  []string) {
 		return m,  addrs
 	}

@@ -33,7 +33,7 @@ func (m *DocMsgServiceResponse) HandleTxMsg(msg MsgRespondService) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Provider, m.Provider)
+	addrs = append(addrs, msg.Provider.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

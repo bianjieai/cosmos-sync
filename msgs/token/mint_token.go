@@ -29,7 +29,7 @@ func (m *DocMsgMintToken) HandleTxMsg(msg MsgMintToken) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Owner, m.To)
+	addrs = append(addrs, msg.Owner.String(), msg.To.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

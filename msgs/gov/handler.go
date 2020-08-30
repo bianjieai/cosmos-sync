@@ -7,16 +7,16 @@ import (
 
 func HandleTxMsg(msg sdk.Msg) (MsgDocInfo, bool) {
 	ok := true
-	switch msg.(type) {
+	switch msgData := msg.(type) {
 	case MsgSubmitProposal:
 		docMsg := DocTxMsgSubmitProposal{}
-		return docMsg.HandleTxMsg(msg), ok
+		return docMsg.HandleTxMsg(msgData), ok
 	case MsgVote:
 		docMsg := DocTxMsgVote{}
-		return docMsg.HandleTxMsg(msg), ok
+		return docMsg.HandleTxMsg(msgData), ok
 	case MsgDeposit:
 		docMsg := DocTxMsgDeposit{}
-		return docMsg.HandleTxMsg(msg), ok
+		return docMsg.HandleTxMsg(msgData), ok
 	default:
 		ok = false
 	}

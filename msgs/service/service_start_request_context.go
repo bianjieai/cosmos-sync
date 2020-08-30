@@ -29,7 +29,7 @@ func (m *DocMsgStartRequestContext) HandleTxMsg(msg MsgStartRequestContext) MsgD
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Consumer)
+	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

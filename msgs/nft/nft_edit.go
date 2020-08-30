@@ -36,7 +36,7 @@ func (m *DocMsgNFTEdit) HandleTxMsg(msg MsgNFTEdit) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Sender)
+	addrs = append(addrs, msg.Sender.String())
 	handler := func() (Msg,  []string) {
 		return m,  addrs
 	}

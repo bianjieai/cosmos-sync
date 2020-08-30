@@ -2,7 +2,6 @@ package evidence
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"encoding/json"
 )
 
@@ -25,13 +24,13 @@ func (m *DocMsgSubmitEvidence) BuildMsg(v interface{}) {
 
 }
 
-func (m *DocMsgSubmitEvidence) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocMsgSubmitEvidence) HandleTxMsg(msg MsgSubmitEvidence) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Submitter)
+	addrs = append(addrs, msg.Submitter.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

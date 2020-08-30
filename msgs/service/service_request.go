@@ -27,19 +27,12 @@ func (m *DocMsgCallService) GetType() string {
 func (m *DocMsgCallService) BuildMsg(msg interface{}) {
 	v := msg.(MsgCallService)
 
-	loadProviders := func() (ret []string) {
-		for _, one := range v.Providers {
-			ret = append(ret, one.String())
-		}
-		return
-	}
-
 	var coins models.Coins
 	for _, one := range v.ServiceFeeCap {
 		coins = append(coins, &models.Coin{Denom: one.Denom, Amount: one.Amount.String()})
 	}
 	m.ServiceName = v.ServiceName
-	m.Providers = loadProviders()
+	m.Providers = m.loadProviders(v)
 	m.Consumer = v.Consumer.String()
 	m.Input = v.Input
 	m.ServiceFeeCap = coins
@@ -51,13 +44,20 @@ func (m *DocMsgCallService) BuildMsg(msg interface{}) {
 	m.RepeatedTotal = v.RepeatedTotal
 }
 
+func (m *DocMsgCallService)loadProviders(v MsgCallService) (ret []string) {
+	for _, one := range v.Providers {
+		ret = append(ret, one.String())
+	}
+	return
+}
+
 func (m *DocMsgCallService) HandleTxMsg(msg MsgCallService) MsgDocInfo {
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Providers...)
-	addrs = append(addrs, m.Consumer)
+	addrs = append(addrs, m.loadProviders(msg)...)
+	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

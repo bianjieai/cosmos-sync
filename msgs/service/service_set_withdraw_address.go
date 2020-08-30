@@ -27,7 +27,7 @@ func (m *DocMsgSetWithdrawAddress) HandleTxMsg(msg MsgSetWithdrawAddress) MsgDoc
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Owner, m.WithdrawAddress)
+	addrs = append(addrs, msg.Owner.String(), msg.WithdrawAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

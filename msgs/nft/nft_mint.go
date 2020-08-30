@@ -36,7 +36,7 @@ func (m *DocMsgNFTMint) HandleTxMsg(msg MsgNFTMint) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Sender, m.Recipient)
+	addrs = append(addrs, msg.Sender.String(), msg.Recipient.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

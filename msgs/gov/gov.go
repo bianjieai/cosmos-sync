@@ -3,7 +3,6 @@ package gov
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
 	"github.com/bianjieai/irita-sync/models"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"encoding/json"
 )
 
@@ -25,13 +24,13 @@ func (doctx *DocTxMsgSubmitProposal) BuildMsg(txMsg interface{}) {
 	doctx.InitialDeposit = models.BuildDocCoins(msg.InitialDeposit)
 }
 
-func (m *DocTxMsgSubmitProposal) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgSubmitProposal) HandleTxMsg(msg MsgSubmitProposal) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Proposer)
+	addrs = append(addrs, msg.Proposer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -57,13 +56,13 @@ func (doctx *DocTxMsgVote) BuildMsg(txMsg interface{}) {
 	doctx.ProposalID = msg.ProposalID
 }
 
-func (m *DocTxMsgVote) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgVote) HandleTxMsg(msg MsgVote) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Voter)
+	addrs = append(addrs, msg.Voter.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -88,13 +87,13 @@ func (doctx *DocTxMsgDeposit) BuildMsg(txMsg interface{}) {
 	doctx.ProposalID = msg.ProposalID
 }
 
-func (m *DocTxMsgDeposit) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgDeposit) HandleTxMsg(msg MsgDeposit) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Depositor)
+	addrs = append(addrs, msg.Depositor.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
