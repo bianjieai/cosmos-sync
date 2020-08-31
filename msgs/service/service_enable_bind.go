@@ -37,7 +37,7 @@ func (m *DocMsgEnableServiceBinding) HandleTxMsg(msg MsgEnableServiceBinding) Ms
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Owner, m.Provider)
+	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

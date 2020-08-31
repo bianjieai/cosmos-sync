@@ -26,34 +26,32 @@ func (m *DocMsgUpdateRequestContext) GetType() string {
 func (m *DocMsgUpdateRequestContext) BuildMsg(v interface{}) {
 	msg := v.(MsgUpdateRequestContext)
 
-	loadProviders := func() (ret []string) {
-		for _, one := range msg.Providers {
-			ret = append(ret, one.String())
-		}
-		return
-	}
-
 	var coins models.Coins
 	for _, one := range msg.ServiceFeeCap {
 		coins = append(coins, &models.Coin{Denom: one.Denom, Amount: one.Amount.String()})
 	}
 
 	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
-	m.Providers = loadProviders()
+	m.Providers = m.loadProviders(msg)
 	m.Consumer = msg.Consumer.String()
 	m.ServiceFeeCap = coins
 	m.Timeout = msg.Timeout
 	m.RepeatedFrequency = msg.RepeatedFrequency
 	m.RepeatedTotal = msg.RepeatedTotal
 }
-
+func (m *DocMsgUpdateRequestContext)loadProviders(msg MsgUpdateRequestContext) (ret []string) {
+	for _, one := range msg.Providers {
+		ret = append(ret, one.String())
+	}
+	return
+}
 func (m *DocMsgUpdateRequestContext) HandleTxMsg(msg MsgUpdateRequestContext) MsgDocInfo {
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Providers...)
-	addrs = append(addrs, m.Consumer)
+	addrs = append(addrs, m.loadProviders(msg)...)
+	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

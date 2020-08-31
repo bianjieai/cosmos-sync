@@ -3,7 +3,6 @@ package distribution
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
 	"github.com/bianjieai/irita-sync/models"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type DocTxMsgSetWithdrawAddress struct {
@@ -21,13 +20,13 @@ func (doctx *DocTxMsgSetWithdrawAddress) BuildMsg(txMsg interface{}) {
 	doctx.WithdrawAddress = msg.WithdrawAddress.String()
 }
 
-func (m *DocTxMsgSetWithdrawAddress) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgSetWithdrawAddress) HandleTxMsg(msg MsgStakeSetWithdrawAddress) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.DelegatorAddress, m.WithdrawAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.WithdrawAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -50,13 +49,13 @@ func (doctx *DocTxMsgWithdrawDelegatorReward) BuildMsg(txMsg interface{}) {
 	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 }
-func (m *DocTxMsgWithdrawDelegatorReward) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgWithdrawDelegatorReward) HandleTxMsg(msg MsgWithdrawDelegatorReward) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.DelegatorAddress, m.ValidatorAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -79,13 +78,13 @@ func (doctx *DocTxMsgFundCommunityPool) BuildMsg(txMsg interface{}) {
 	doctx.Depositor = msg.Depositor.String()
 	doctx.Amount = models.BuildDocCoins(msg.Amount)
 }
-func (m *DocTxMsgFundCommunityPool) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgFundCommunityPool) HandleTxMsg(msg MsgFundCommunityPool) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Depositor)
+	addrs = append(addrs, msg.Depositor.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -106,13 +105,13 @@ func (doctx *DocTxMsgWithdrawValidatorCommission) BuildMsg(txMsg interface{}) {
 	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 }
 
-func (m *DocTxMsgWithdrawValidatorCommission) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgWithdrawValidatorCommission) HandleTxMsg(msg MsgWithdrawValidatorCommission) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.ValidatorAddress)
+	addrs = append(addrs, msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

@@ -3,7 +3,6 @@ package bank
 import (
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 )
 
 type (
@@ -35,12 +34,17 @@ func (m *DocMsgMultiSend) BuildMsg(v interface{}) {
 
 }
 
-func (m *DocMsgMultiSend) HandleTxMsg(msg bank.MsgMultiSend) MsgDocInfo {
+func (m *DocMsgMultiSend) HandleTxMsg(msg MsgMultiSend) MsgDocInfo {
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.TempData...)
+	for _, one := range msg.Inputs {
+		addrs = append(addrs, one.Address.String())
+	}
+	for _, one := range msg.Outputs {
+		addrs = append(addrs, one.Address.String())
+	}
 
 	handler := func() (Msg, []string) {
 		return m, addrs

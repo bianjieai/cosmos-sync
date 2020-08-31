@@ -1,8 +1,6 @@
 package crisis
 
 import (
-	"encoding/json"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/bianjieai/irita-sync/msgs"
 
 )
@@ -18,19 +16,20 @@ func (m *DocMsgVerifyInvariant) GetType() string {
 }
 
 func (m *DocMsgVerifyInvariant) BuildMsg(v interface{}) {
-	var msg MsgVerifyInvariant
-	data, _ := json.Marshal(v)
-	json.Unmarshal(data, &msg)
+	msg := v.(MsgVerifyInvariant)
+	m.Sender = msg.Sender.String()
+	m.InvariantModuleName= msg.InvariantModuleName
+	m.InvariantRoute = msg.InvariantRoute
 
 }
 
-func (m *DocMsgVerifyInvariant) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocMsgVerifyInvariant) HandleTxMsg(msg MsgVerifyInvariant) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Sender)
+	addrs = append(addrs, msg.Sender.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

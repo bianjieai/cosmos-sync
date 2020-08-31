@@ -27,7 +27,7 @@ func (m *DocMsgTransferTokenOwner) HandleTxMsg(msg MsgTransferTokenOwner) MsgDoc
 		addrs []string
 	)
 
-	addrs = append(addrs, m.SrcOwner, m.DstOwner)
+	addrs = append(addrs, msg.SrcOwner.String(), msg.DstOwner.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

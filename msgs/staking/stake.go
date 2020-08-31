@@ -4,7 +4,6 @@ import (
 	. "github.com/bianjieai/irita-sync/msgs"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/bianjieai/irita-sync/models"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // MsgDelegate - struct for bonding transactions
@@ -26,13 +25,13 @@ func (doctx *DocTxMsgBeginRedelegate) BuildMsg(txMsg interface{}) {
 	doctx.ValidatorDstAddress = msg.ValidatorDstAddress.String()
 	doctx.Amount = msg.Amount.String()
 }
-func (m *DocTxMsgBeginRedelegate) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgBeginRedelegate) HandleTxMsg(msg MsgBeginRedelegate) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.DelegatorAddress, m.ValidatorDstAddress,m.ValidatorSrcAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorDstAddress.String(), msg.ValidatorSrcAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -53,13 +52,13 @@ func (doctx *DocTxMsgUnjail) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(MsgUnjail)
 	doctx.ValidatorAddr = msg.ValidatorAddr.String()
 }
-func (m *DocTxMsgUnjail) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgUnjail) HandleTxMsg(msg MsgUnjail) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.ValidatorAddr)
+	addrs = append(addrs, msg.ValidatorAddr.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -69,9 +68,9 @@ func (m *DocTxMsgUnjail) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
 
 // MsgBeginUnbonding - struct for unbonding transactions
 type DocTxMsgBeginUnbonding struct {
-	DelegatorAddress string `bson:"delegator_addr"`
-	ValidatorAddress string `bson:"validator_addr"`
-	Amount           string `bson:"shares_amount"`
+	DelegatorAddress string `bson:"delegator_address"`
+	ValidatorAddress string `bson:"validator_address"`
+	Amount           string `bson:"amount"`
 }
 
 func (doctx *DocTxMsgBeginUnbonding) GetType() string {
@@ -84,13 +83,13 @@ func (doctx *DocTxMsgBeginUnbonding) BuildMsg(txMsg interface{}) {
 	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.Amount = msg.Amount.String()
 }
-func (m *DocTxMsgBeginUnbonding) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgBeginUnbonding) HandleTxMsg(msg MsgStakeBeginUnbonding) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.DelegatorAddress, m.ValidatorAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -100,9 +99,9 @@ func (m *DocTxMsgBeginUnbonding) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
 
 // MsgDelegate - struct for bonding transactions
 type DocTxMsgDelegate struct {
-	DelegatorAddr string `bson:"delegator_addr"`
-	ValidatorAddr string `bson:"validator_addr"`
-	Delegation    Coin   `bson:"delegation"`
+	DelegatorAddress string `bson:"delegator_address"`
+	ValidatorAddress string `bson:"validator_address"`
+	Delegation       Coin   `bson:"delegation"`
 }
 
 func (doctx *DocTxMsgDelegate) GetType() string {
@@ -111,17 +110,17 @@ func (doctx *DocTxMsgDelegate) GetType() string {
 
 func (doctx *DocTxMsgDelegate) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(MsgStakeDelegate)
-	doctx.ValidatorAddr = msg.ValidatorAddress.String()
-	doctx.DelegatorAddr = msg.DelegatorAddress.String()
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
+	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.Delegation = Coin(models.BuildDocCoin(msg.Amount))
 }
-func (m *DocTxMsgDelegate) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgDelegate) HandleTxMsg(msg MsgStakeDelegate) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.DelegatorAddr, m.ValidatorAddr)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -130,34 +129,35 @@ func (m *DocTxMsgDelegate) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
 }
 
 // MsgEditValidator - struct for editing a validator
-type DocTxMsgStakeEdit struct {
-	models.ValDescription
-	ValidatorAddr  string `bson:"address"`
-	CommissionRate string `bson:"commission_rate"`
+type DocMsgEditValidator struct {
+	Description       models.Description `bson:"description"`
+	ValidatorAddress  string             `bson:"validator_address"`
+	CommissionRate    string             `bson:"commission_rate"`
+	MinSelfDelegation string             `bson:"min_self_delegation"`
 }
 
-func (doctx *DocTxMsgStakeEdit) GetType() string {
+func (doctx *DocMsgEditValidator) GetType() string {
 	return MsgTypeStakeEditValidator
 }
 
-func (doctx *DocTxMsgStakeEdit) BuildMsg(txMsg interface{}) {
+func (doctx *DocMsgEditValidator) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(MsgStakeEdit)
-	doctx.ValidatorAddr = msg.ValidatorAddress.String()
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 	commissionRate := msg.CommissionRate
 	if commissionRate == nil {
 		doctx.CommissionRate = ""
 	} else {
 		doctx.CommissionRate = commissionRate.String()
 	}
-	doctx.ValDescription = loadDescription(msg.Description)
+	doctx.Description = loadDescription(msg.Description)
 }
-func (m *DocTxMsgStakeEdit) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocMsgEditValidator) HandleTxMsg(msg MsgStakeEdit) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.ValidatorAddr)
+	addrs = append(addrs, msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -167,13 +167,13 @@ func (m *DocTxMsgStakeEdit) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
 
 // MsgCreateValidator defines an SDK message for creating a new validator.
 type DocTxMsgCreateValidator struct {
-	Description       models.ValDescription `bson:"description"`
-	Commission        models.CommissionMsg  `bson:"commission"`
-	MinSelfDelegation string                `bson:"min_self_delegation"`
-	DelegatorAddress  string                `bson:"delegator_address"`
-	ValidatorAddress  string                `bson:"validator_address"`
-	Pubkey            string                `bson:"pubkey"`
-	Value             Coin                  `bson:"value"`
+	Description       models.Description     `bson:"description"`
+	Commission        models.CommissionRates `bson:"commission"`
+	MinSelfDelegation string                 `bson:"min_self_delegation"`
+	DelegatorAddress  string                 `bson:"delegator_address"`
+	ValidatorAddress  string                 `bson:"validator_address"`
+	Pubkey            string                 `bson:"pubkey"`
+	Value             Coin                   `bson:"value"`
 }
 
 func (doctx *DocTxMsgCreateValidator) GetType() string {
@@ -190,20 +190,20 @@ func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 	doctx.Pubkey = msg.Pubkey
 	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
-	doctx.Commission = models.CommissionMsg{
+	doctx.Commission = models.CommissionRates{
 		Rate:          msg.Commission.Rate.String(),
 		MaxChangeRate: msg.Commission.MaxChangeRate.String(),
 		MaxRate:       msg.Commission.MaxRate.String(),
 	}
 	doctx.Description = loadDescription(msg.Description)
 }
-func (m *DocTxMsgCreateValidator) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
+func (m *DocTxMsgCreateValidator) HandleTxMsg(msg MsgStakeCreate) MsgDocInfo {
 
 	var (
 		addrs []string
 	)
 
-	addrs = append(addrs, m.DelegatorAddress, m.ValidatorAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -211,11 +211,12 @@ func (m *DocTxMsgCreateValidator) HandleTxMsg(msg sdk.Msg) MsgDocInfo {
 	return CreateMsgDocInfo(msg, handler)
 }
 
-func loadDescription(description stake.Description) models.ValDescription {
-	return models.ValDescription{
-		Moniker:  description.Moniker,
-		Details:  description.Details,
-		Identity: description.Identity,
-		Website:  description.Website,
+func loadDescription(description stake.Description) models.Description {
+	return models.Description{
+		Moniker:         description.Moniker,
+		Details:         description.Details,
+		Identity:        description.Identity,
+		Website:         description.Website,
+		SecurityContact: description.SecurityContact,
 	}
 }

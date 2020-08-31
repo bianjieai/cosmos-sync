@@ -30,7 +30,7 @@ func (m *DocMsgNFTBurn) HandleTxMsg(msg MsgNFTBurn) MsgDocInfo {
 		addrs []string
 	)
 
-	addrs = append(addrs, m.Sender)
+	addrs = append(addrs, msg.Sender.String())
 	handler := func() (Msg,  []string) {
 		return m,  addrs
 	}
