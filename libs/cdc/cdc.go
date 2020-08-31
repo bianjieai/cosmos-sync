@@ -1,15 +1,22 @@
 package cdc
 
 import (
-	"github.com/bianjieai/irita/modules/record"
-	"github.com/bianjieai/irita/modules/service"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/irisnet/modules/incubator/nft"
+	"github.com/irismod/nft"
+	"github.com/irismod/record"
+	"github.com/irismod/service"
 	"github.com/tendermint/go-amino"
+	"github.com/irismod/token"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 )
 
 var (
@@ -20,6 +27,13 @@ var (
 		service.AppModuleBasic{},
 		nft.AppModuleBasic{},
 		record.AppModuleBasic{},
+		token.AppModuleBasic{},
+		gov.AppModuleBasic{},
+		staking.AppModuleBasic{},
+		distribution.AppModuleBasic{},
+		slashing.AppModuleBasic{},
+		evidence.AppModuleBasic{},
+		crisis.AppModuleBasic{},
 	)
 )
 

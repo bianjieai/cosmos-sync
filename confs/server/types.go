@@ -10,7 +10,6 @@ import (
 
 type ServerConf struct {
 	NodeUrls                []string
-	NetWork                 string
 	WorkerNumCreateTask     int
 	WorkerNumExecuteTask    int
 	WorkerMaxSleepTime      int
@@ -18,16 +17,19 @@ type ServerConf struct {
 
 	MaxConnectionNum  int
 	InitConnectionNum int
+	Bech32AccPrefix   string
+	ChainId           string
 }
 
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://localhost:26657"}
-	network                 = constant.Testnet
+	nodeUrls                = []string{"tcp://192.168.150.32:36657"}
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
+	bech32AccPrefix         = "iaa"
+	chainId                 = ""
 )
 
 // get value of env var
@@ -36,14 +38,6 @@ func init() {
 		nodeUrls = strings.Split(v, ",")
 	}
 
-	if v, ok := os.LookupEnv(constant.EnvNameBlockChainNetwork); ok {
-		switch v {
-		case constant.Testnet, constant.Mainnet:
-			network = v
-		default:
-			logger.Fatal("unknown network", logger.String(constant.EnvNameBlockChainNetwork, v))
-		}
-	}
 
 	if v, ok := os.LookupEnv(constant.EnvNameWorkerNumExecuteTask); ok {
 		if n, err := utils.ConvStrToInt(v); err != nil {
@@ -69,9 +63,16 @@ func init() {
 		}
 	}
 
+	if v, ok := os.LookupEnv(constant.EnvNameBech32AccPrefix); ok {
+		bech32AccPrefix = v
+	}
+
+	if v, ok := os.LookupEnv(constant.EnvNameChainId); ok {
+		chainId = v
+	}
+
 	SvrConf = &ServerConf{
 		NodeUrls:                nodeUrls,
-		NetWork:                 network,
 		WorkerNumCreateTask:     1,
 		WorkerNumExecuteTask:    workerNumExecuteTask,
 		WorkerMaxSleepTime:      workerMaxSleepTime,
@@ -79,6 +80,9 @@ func init() {
 
 		MaxConnectionNum:  100,
 		InitConnectionNum: 5,
+
+		Bech32AccPrefix: bech32AccPrefix,
+		ChainId:         chainId,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))
