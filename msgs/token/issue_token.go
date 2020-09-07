@@ -20,7 +20,7 @@ func (m *DocMsgIssueToken) GetType() string {
 }
 
 func (m *DocMsgIssueToken) BuildMsg(v interface{}) {
-	msg := v.(MsgIssueToken)
+	msg := v.(*MsgIssueToken)
 
 	m.Symbol = msg.Symbol
 	m.Name = msg.Name
@@ -32,15 +32,17 @@ func (m *DocMsgIssueToken) BuildMsg(v interface{}) {
 	m.Mintable = msg.Mintable
 }
 
-func (m *DocMsgIssueToken) HandleTxMsg(msg MsgIssueToken) MsgDocInfo {
+func (m *DocMsgIssueToken) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgIssueToken
 	)
 
+	ConvertMsg(v,&msg)
 	addrs = append(addrs, msg.Owner.String())
-	handler := func() (Msg,  []string) {
-		return m,  addrs
+	handler := func() (Msg, []string) {
+		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

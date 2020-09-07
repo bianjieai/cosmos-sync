@@ -17,7 +17,7 @@ func (m *DocMsgIssueDenom) GetType() string {
 }
 
 func (m *DocMsgIssueDenom) BuildMsg(v interface{}) {
-	msg := v.(MsgIssueDenom)
+	msg := v.(*MsgIssueDenom)
 
 	m.Sender = msg.Sender.String()
 	m.Schema = msg.Schema
@@ -25,15 +25,17 @@ func (m *DocMsgIssueDenom) BuildMsg(v interface{}) {
 	m.Name = msg.Name
 }
 
-func (m *DocMsgIssueDenom) HandleTxMsg(msg MsgIssueDenom) MsgDocInfo {
+func (m *DocMsgIssueDenom) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgIssueDenom
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Sender.String())
-	handler := func() (Msg,  []string) {
-		return m,  addrs
+	handler := func() (Msg, []string) {
+		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

@@ -7,19 +7,19 @@ import (
 
 func HandleTxMsg(msg sdk.Msg) (MsgDocInfo, bool) {
 	ok := true
-	switch msgData := msg.(type) {
-	case MsgStakeSetWithdrawAddress:
+	switch msg.Type() {
+	case new(MsgStakeSetWithdrawAddress).Type():
 		docMsg := DocTxMsgSetWithdrawAddress{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgWithdrawDelegatorReward:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgWithdrawDelegatorReward).Type():
 		docMsg := DocTxMsgWithdrawDelegatorReward{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgWithdrawValidatorCommission:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgWithdrawValidatorCommission).Type():
 		docMsg := DocTxMsgWithdrawValidatorCommission{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgFundCommunityPool:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgFundCommunityPool).Type():
 		docMsg := DocTxMsgFundCommunityPool{}
-		return docMsg.HandleTxMsg(msgData), ok
+		return docMsg.HandleTxMsg(msg), ok
 	default:
 		ok = false
 	}

@@ -16,21 +16,23 @@ func (m *DocMsgWithdrawEarnedFees) GetType() string {
 }
 
 func (m *DocMsgWithdrawEarnedFees) BuildMsg(v interface{}) {
-	msg := v.(MsgWithdrawEarnedFees)
+	msg := v.(*MsgWithdrawEarnedFees)
 
 	m.Owner = msg.Owner.String()
 	m.Provider = msg.Provider.String()
 }
 
-func (m *DocMsgWithdrawEarnedFees) HandleTxMsg(msg MsgWithdrawEarnedFees) MsgDocInfo {
+func (m *DocMsgWithdrawEarnedFees) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgWithdrawEarnedFees
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

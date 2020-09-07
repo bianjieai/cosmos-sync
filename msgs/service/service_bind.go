@@ -20,7 +20,7 @@ func (m *DocMsgBindService) GetType() string {
 }
 
 func (m *DocMsgBindService) BuildMsg(v interface{}) {
-	msg := v.(MsgBindService)
+	msg := v.(*MsgBindService)
 
 	var coins Coins
 	for _, one := range msg.Deposit {
@@ -34,15 +34,17 @@ func (m *DocMsgBindService) BuildMsg(v interface{}) {
 	m.Owner = msg.Owner.String()
 }
 
-func (m *DocMsgBindService) HandleTxMsg(msg MsgBindService) MsgDocInfo {
+func (m *DocMsgBindService) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgBindService
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

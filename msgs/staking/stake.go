@@ -19,24 +19,26 @@ func (doctx *DocTxMsgBeginRedelegate) GetType() string {
 }
 
 func (doctx *DocTxMsgBeginRedelegate) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgBeginRedelegate)
+	msg := txMsg.(*MsgBeginRedelegate)
 	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.ValidatorSrcAddress = msg.ValidatorSrcAddress.String()
 	doctx.ValidatorDstAddress = msg.ValidatorDstAddress.String()
 	doctx.Amount = msg.Amount.String()
 }
-func (m *DocTxMsgBeginRedelegate) HandleTxMsg(msg MsgBeginRedelegate) MsgDocInfo {
+func (m *DocTxMsgBeginRedelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgBeginRedelegate
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorDstAddress.String(), msg.ValidatorSrcAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
 
 // MsgUnjail - struct for unjailing jailed validator
@@ -49,21 +51,23 @@ func (doctx *DocTxMsgUnjail) GetType() string {
 }
 
 func (doctx *DocTxMsgUnjail) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgUnjail)
+	msg := txMsg.(*MsgUnjail)
 	doctx.ValidatorAddr = msg.ValidatorAddr.String()
 }
-func (m *DocTxMsgUnjail) HandleTxMsg(msg MsgUnjail) MsgDocInfo {
+func (m *DocTxMsgUnjail) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgUnjail
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.ValidatorAddr.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
 
 // MsgBeginUnbonding - struct for unbonding transactions
@@ -78,23 +82,25 @@ func (doctx *DocTxMsgBeginUnbonding) GetType() string {
 }
 
 func (doctx *DocTxMsgBeginUnbonding) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgStakeBeginUnbonding)
+	msg := txMsg.(*MsgStakeBeginUnbonding)
 	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.Amount = msg.Amount.String()
 }
-func (m *DocTxMsgBeginUnbonding) HandleTxMsg(msg MsgStakeBeginUnbonding) MsgDocInfo {
+func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgStakeBeginUnbonding
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
 
 // MsgDelegate - struct for bonding transactions
@@ -109,23 +115,25 @@ func (doctx *DocTxMsgDelegate) GetType() string {
 }
 
 func (doctx *DocTxMsgDelegate) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgStakeDelegate)
+	msg := txMsg.(*MsgStakeDelegate)
 	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.Delegation = Coin(models.BuildDocCoin(msg.Amount))
 }
-func (m *DocTxMsgDelegate) HandleTxMsg(msg MsgStakeDelegate) MsgDocInfo {
+func (m *DocTxMsgDelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgStakeDelegate
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
 
 // MsgEditValidator - struct for editing a validator
@@ -141,7 +149,7 @@ func (doctx *DocMsgEditValidator) GetType() string {
 }
 
 func (doctx *DocMsgEditValidator) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgStakeEdit)
+	msg := txMsg.(*MsgStakeEdit)
 	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 	commissionRate := msg.CommissionRate
 	if commissionRate == nil {
@@ -151,18 +159,20 @@ func (doctx *DocMsgEditValidator) BuildMsg(txMsg interface{}) {
 	}
 	doctx.Description = loadDescription(msg.Description)
 }
-func (m *DocMsgEditValidator) HandleTxMsg(msg MsgStakeEdit) MsgDocInfo {
+func (m *DocMsgEditValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgStakeEdit
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
 
 // MsgCreateValidator defines an SDK message for creating a new validator.
@@ -181,7 +191,7 @@ func (doctx *DocTxMsgCreateValidator) GetType() string {
 }
 
 func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgStakeCreate)
+	msg := txMsg.(*MsgStakeCreate)
 	//pubKey, err := itypes.Bech32ifyValPub(msg.Pubkey)
 	//if err != nil {
 	//	pubKey = ""
@@ -197,18 +207,20 @@ func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 	}
 	doctx.Description = loadDescription(msg.Description)
 }
-func (m *DocTxMsgCreateValidator) HandleTxMsg(msg MsgStakeCreate) MsgDocInfo {
+func (m *DocTxMsgCreateValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgStakeCreate
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
 
 func loadDescription(description stake.Description) models.Description {

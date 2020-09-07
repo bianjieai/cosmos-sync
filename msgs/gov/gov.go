@@ -17,25 +17,27 @@ func (doctx *DocTxMsgSubmitProposal) GetType() string {
 }
 
 func (doctx *DocTxMsgSubmitProposal) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgSubmitProposal)
+	msg := txMsg.(*MsgSubmitProposal)
 	content, _ := json.Marshal(msg.Content)
 	doctx.Content = string(content)
 	doctx.Proposer = msg.Proposer.String()
 	doctx.InitialDeposit = models.BuildDocCoins(msg.InitialDeposit)
 }
 
-func (m *DocTxMsgSubmitProposal) HandleTxMsg(msg MsgSubmitProposal) MsgDocInfo {
+func (m *DocTxMsgSubmitProposal) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgSubmitProposal
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Proposer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
 
 // MsgVote
@@ -50,25 +52,28 @@ func (doctx *DocTxMsgVote) GetType() string {
 }
 
 func (doctx *DocTxMsgVote) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgVote)
+	msg := txMsg.(*MsgVote)
 	doctx.Voter = msg.Voter.String()
 	doctx.Option = msg.Option.String()
-	doctx.ProposalID = msg.ProposalID
+	doctx.ProposalID = msg.ProposalId
 }
 
-func (m *DocTxMsgVote) HandleTxMsg(msg MsgVote) MsgDocInfo {
+func (m *DocTxMsgVote) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgVote
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Voter.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
+
 // MsgDeposit
 type DocTxMsgDeposit struct {
 	ProposalID uint64        `bson:"proposal_id"` // ID of the proposal
@@ -81,22 +86,24 @@ func (doctx *DocTxMsgDeposit) GetType() string {
 }
 
 func (doctx *DocTxMsgDeposit) BuildMsg(txMsg interface{}) {
-	msg := txMsg.(MsgDeposit)
+	msg := txMsg.(*MsgDeposit)
 	doctx.Depositor = msg.Depositor.String()
 	doctx.Amount = models.BuildDocCoins(msg.Amount)
-	doctx.ProposalID = msg.ProposalID
+	doctx.ProposalID = msg.ProposalId
 }
 
-func (m *DocTxMsgDeposit) HandleTxMsg(msg MsgDeposit) MsgDocInfo {
+func (m *DocTxMsgDeposit) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	var (
 		addrs []string
+		msg   MsgDeposit
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Depositor.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

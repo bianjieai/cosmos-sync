@@ -20,7 +20,7 @@ func (m *DocMsgNFTMint) GetType() string {
 }
 
 func (m *DocMsgNFTMint) BuildMsg(v interface{}) {
-	msg := v.(MsgNFTMint)
+	msg := v.(*MsgNFTMint)
 
 	m.Sender = msg.Sender.String()
 	m.Recipient = msg.Recipient.String()
@@ -31,15 +31,17 @@ func (m *DocMsgNFTMint) BuildMsg(v interface{}) {
 	m.Name = msg.Name
 }
 
-func (m *DocMsgNFTMint) HandleTxMsg(msg MsgNFTMint) MsgDocInfo {
+func (m *DocMsgNFTMint) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgNFTMint
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Sender.String(), msg.Recipient.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

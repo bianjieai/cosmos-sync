@@ -3,6 +3,7 @@ package msgs
 import (
 	"github.com/bianjieai/irita-sync/models"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"encoding/json"
 )
 
 func CreateMsgDocInfo(msg sdk.Msg, handler func() (Msg, []string)) MsgDocInfo {
@@ -29,4 +30,9 @@ func CreateMsgDocInfo(msg sdk.Msg, handler func() (Msg, []string)) MsgDocInfo {
 		Signers:  signers,
 		Addrs:    addrs,
 	}
+}
+
+func ConvertMsg(v sdk.Msg, msg interface{}) {
+	data, _ := json.Marshal(v)
+	json.Unmarshal(data, &msg)
 }

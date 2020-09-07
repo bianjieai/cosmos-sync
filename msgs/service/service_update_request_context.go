@@ -24,7 +24,7 @@ func (m *DocMsgUpdateRequestContext) GetType() string {
 }
 
 func (m *DocMsgUpdateRequestContext) BuildMsg(v interface{}) {
-	msg := v.(MsgUpdateRequestContext)
+	msg := v.(*MsgUpdateRequestContext)
 
 	var coins models.Coins
 	for _, one := range msg.ServiceFeeCap {
@@ -32,7 +32,7 @@ func (m *DocMsgUpdateRequestContext) BuildMsg(v interface{}) {
 	}
 
 	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
-	m.Providers = m.loadProviders(msg)
+	m.Providers = m.loadProviders(*msg)
 	m.Consumer = msg.Consumer.String()
 	m.ServiceFeeCap = coins
 	m.Timeout = msg.Timeout
@@ -45,16 +45,18 @@ func (m *DocMsgUpdateRequestContext)loadProviders(msg MsgUpdateRequestContext) (
 	}
 	return
 }
-func (m *DocMsgUpdateRequestContext) HandleTxMsg(msg MsgUpdateRequestContext) MsgDocInfo {
+func (m *DocMsgUpdateRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgUpdateRequestContext
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, m.loadProviders(msg)...)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

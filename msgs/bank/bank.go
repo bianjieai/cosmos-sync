@@ -10,14 +10,14 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 		msgDocInfo MsgDocInfo
 	)
 	ok := true
-	switch msgData := v.(type) {
-	case MsgSend:
+	switch  v.Type() {
+	case new(MsgSend).Type():
 		docMsg := DocMsgSend{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgMultiSend:
+	case new(MsgMultiSend).Type():
 		docMsg := DocMsgMultiSend{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
 	default:
 		ok = false

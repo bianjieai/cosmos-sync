@@ -19,7 +19,7 @@ func (m *DocMsgEnableServiceBinding) GetType() string {
 }
 
 func (m *DocMsgEnableServiceBinding) BuildMsg(v interface{}) {
-	msg := v.(MsgEnableServiceBinding)
+	msg := v.(*MsgEnableServiceBinding)
 
 	var coins models.Coins
 	for _, one := range msg.Deposit {
@@ -32,15 +32,17 @@ func (m *DocMsgEnableServiceBinding) BuildMsg(v interface{}) {
 	m.Owner = msg.Owner.String()
 }
 
-func (m *DocMsgEnableServiceBinding) HandleTxMsg(msg MsgEnableServiceBinding) MsgDocInfo {
+func (m *DocMsgEnableServiceBinding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgEnableServiceBinding
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

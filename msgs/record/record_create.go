@@ -23,7 +23,7 @@ func (d *DocMsgRecordCreate) GetType() string {
 }
 
 func (d *DocMsgRecordCreate) BuildMsg(msg interface{}) {
-	m := msg.(MsgRecordCreate)
+	m := msg.(*MsgRecordCreate)
 
 	var docContents []Content
 	if len(m.Contents) > 0 {
@@ -41,15 +41,16 @@ func (d *DocMsgRecordCreate) BuildMsg(msg interface{}) {
 	d.Creator = m.Creator.String()
 }
 
-func (m *DocMsgRecordCreate) HandleTxMsg(msg MsgRecordCreate) MsgDocInfo {
+func (m *DocMsgRecordCreate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgRecordCreate
 	)
-
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Creator.String())
-	handler := func() (Msg,  []string) {
-		return m,  addrs
+	handler := func() (Msg, []string) {
+		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

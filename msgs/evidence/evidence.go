@@ -7,10 +7,10 @@ import (
 
 func HandleTxMsg(msg sdk.Msg) (MsgDocInfo, bool) {
 	ok := true
-	switch msgData := msg.(type) {
-	case MsgSubmitEvidence:
+	switch msg.Type() {
+	case new(MsgSubmitEvidence).Type():
 		docMsg := DocMsgSubmitEvidence{}
-		return docMsg.HandleTxMsg(msgData), ok
+		return docMsg.HandleTxMsg(msg), ok
 	default:
 		ok = false
 	}

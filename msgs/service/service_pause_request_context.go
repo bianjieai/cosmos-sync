@@ -18,21 +18,23 @@ func (m *DocMsgPauseRequestContext) GetType() string {
 }
 
 func (m *DocMsgPauseRequestContext) BuildMsg(v interface{}) {
-	msg := v.(MsgPauseRequestContext)
+	msg := v.(*MsgPauseRequestContext)
 
 	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
 	m.Consumer = msg.Consumer.String()
 }
 
-func (m *DocMsgPauseRequestContext) HandleTxMsg(msg MsgPauseRequestContext) MsgDocInfo {
+func (m *DocMsgPauseRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgPauseRequestContext
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

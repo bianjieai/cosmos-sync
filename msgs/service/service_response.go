@@ -19,7 +19,7 @@ func (m *DocMsgServiceResponse) GetType() string {
 }
 
 func (m *DocMsgServiceResponse) BuildMsg(msg interface{}) {
-	v := msg.(MsgRespondService)
+	v := msg.(*MsgRespondService)
 
 	m.RequestID = hex.EncodeToString(v.RequestID)
 	m.Provider = v.Provider.String()
@@ -28,15 +28,17 @@ func (m *DocMsgServiceResponse) BuildMsg(msg interface{}) {
 	m.Result = v.Result
 }
 
-func (m *DocMsgServiceResponse) HandleTxMsg(msg MsgRespondService) MsgDocInfo {
+func (m *DocMsgServiceResponse) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgRespondService
 	)
+	ConvertMsg(v, &msg)
 
 	addrs = append(addrs, msg.Provider.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

@@ -16,21 +16,23 @@ func (m *DocMsgSetWithdrawAddress) GetType() string {
 }
 
 func (m *DocMsgSetWithdrawAddress) BuildMsg(v interface{}) {
-	msg := v.(MsgSetWithdrawAddress)
+	msg := v.(*MsgSetWithdrawAddress)
 
 	m.Owner = msg.Owner.String()
 	m.WithdrawAddress = msg.WithdrawAddress.String()
 }
 
-func (m *DocMsgSetWithdrawAddress) HandleTxMsg(msg MsgSetWithdrawAddress) MsgDocInfo {
+func (m *DocMsgSetWithdrawAddress) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgSetWithdrawAddress
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.WithdrawAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

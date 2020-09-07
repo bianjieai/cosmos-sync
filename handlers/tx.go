@@ -7,11 +7,12 @@ import (
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
-	"github.com/cosmos/cosmos-sdk/x/auth"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"time"
+	"github.com/cosmos/cosmos-sdk/x/auth/signing"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
@@ -56,7 +57,6 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 
 func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 	var (
-		stdTx auth.StdTx
 		docTx models.Tx
 
 		docTxMsgs []models.DocTxMsg
@@ -74,16 +74,16 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 		docTx.Log = txResult.TxResult.Log
 		docTx.Events = parseEvents(txResult.TxResult.Events)
 
-		if err := cdc.Cdc.UnmarshalBinaryBare(txResult.Tx, &stdTx); err != nil {
-			logger.Error("unmarshal tx fail", logger.String("txHash", docTx.TxHash),
-				logger.String("err", err.Error()))
+		Tx, err := cdc.GetTxDecoder()(txBytes)
+		if err != nil {
+			logger.Error(err.Error())
 			return docTx
 		}
-		docTx.Fee = BuildFee(stdTx.Fee)
+		authTx := Tx.(signing.Tx)
+		docTx.Fee = BuildFee(authTx.GetFee(), authTx.GetGas())
+		docTx.Memo = authTx.GetMemo()
 
-		docTx.Memo = stdTx.Memo
-
-		msgs := stdTx.GetMsgs()
+		msgs := authTx.GetMsgs()
 		if len(msgs) == 0 {
 			return docTx
 		}
@@ -101,6 +101,8 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 			docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
 		}
 
+		docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
+		docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 		docTx.DocTxMsgs = docTxMsgs
 
 		// don't save txs which have not parsed
@@ -143,9 +145,9 @@ func parseEvents(events []aTypes.Event) []models.Event {
 	return eventDocs
 }
 
-func BuildFee(fee auth.StdFee) *models.Fee {
+func BuildFee(fee sdk.Coins, gas uint64) *models.Fee {
 	return &models.Fee{
-		Amount: models.BuildDocCoins(fee.Amount),
-		Gas:    int64(fee.Gas),
+		Amount: models.BuildDocCoins(fee),
+		Gas:    int64(gas),
 	}
 }

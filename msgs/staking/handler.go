@@ -7,25 +7,25 @@ import (
 
 func HandleTxMsg(msg sdk.Msg) (MsgDocInfo, bool) {
 	ok := true
-	switch msgData := msg.(type) {
-	case MsgBeginRedelegate:
+	switch msg.Type() {
+	case new(MsgBeginRedelegate).Type():
 		docMsg := DocTxMsgBeginRedelegate{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgUnjail:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgUnjail).Type():
 		docMsg := DocTxMsgUnjail{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgStakeBeginUnbonding:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgStakeBeginUnbonding).Type():
 		docMsg := DocTxMsgBeginUnbonding{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgStakeDelegate:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgStakeDelegate).Type():
 		docMsg := DocTxMsgDelegate{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgStakeEdit:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgStakeEdit).Type():
 		docMsg := DocMsgEditValidator{}
-		return docMsg.HandleTxMsg(msgData), ok
-	case MsgStakeCreate:
+		return docMsg.HandleTxMsg(msg), ok
+	case new(MsgStakeCreate).Type():
 		docMsg := DocTxMsgCreateValidator{}
-		return docMsg.HandleTxMsg(msgData), ok
+		return docMsg.HandleTxMsg(msg), ok
 	default:
 		ok = false
 	}

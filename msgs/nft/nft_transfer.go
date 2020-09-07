@@ -22,7 +22,7 @@ func (m *DocMsgNFTTransfer) GetType() string {
 }
 
 func (m *DocMsgNFTTransfer) BuildMsg(v interface{}) {
-	msg := v.(MsgNFTTransfer)
+	msg := v.(*MsgNFTTransfer)
 
 	m.Sender = msg.Sender.String()
 	m.Recipient = msg.Recipient.String()
@@ -33,15 +33,17 @@ func (m *DocMsgNFTTransfer) BuildMsg(v interface{}) {
 	m.Name = msg.Name
 }
 
-func (m *DocMsgNFTTransfer) HandleTxMsg(msg MsgNFTTransfer) MsgDocInfo {
+func (m *DocMsgNFTTransfer) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgNFTTransfer
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Sender.String(), msg.Recipient.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

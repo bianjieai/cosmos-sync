@@ -18,21 +18,23 @@ func (m *DocMsgKillRequestContext) GetType() string {
 }
 
 func (m *DocMsgKillRequestContext) BuildMsg(v interface{}) {
-	msg := v.(MsgKillRequestContext)
+	msg := v.(*MsgKillRequestContext)
 
 	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
 	m.Consumer = msg.Consumer.String()
 }
 
-func (m *DocMsgKillRequestContext) HandleTxMsg(msg MsgKillRequestContext) MsgDocInfo {
+func (m *DocMsgKillRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgKillRequestContext
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

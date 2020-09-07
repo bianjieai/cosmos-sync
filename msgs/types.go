@@ -2,11 +2,11 @@ package msgs
 
 import (
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/irismod/nft"
-	"github.com/irismod/service"
-	"github.com/irismod/record"
-	"github.com/irismod/token"
+	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
+	nft "github.com/irismod/nft/types"
+	service "github.com/irismod/service/types"
+	record "github.com/irismod/record/types"
+	token "github.com/irismod/token/types"
 	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	dtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -14,8 +14,9 @@ import (
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
 	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	//coinswap "github.com/irismod/coinswap/types"
-	//htlc "github.com/irismod/htlc/types"
+	coinswap "github.com/irismod/coinswap/types"
+	htlc "github.com/irismod/htlc/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
@@ -80,6 +81,7 @@ type (
 		Addrs    []string
 		Signers  []string
 	}
+	SdkMsg sdk.Msg
 	Msg models.Msg
 
 	Coin models.Coin
@@ -139,13 +141,13 @@ type (
 	Proposal = gov.Proposal
 	SdkVote = gov.Vote
 
-	//MsgSwapOrder = coinswap.MsgSwapOrder
-	//MsgAddLiquidity = coinswap.MsgAddLiquidity
-	//MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
-	//
-	//MsgClaimHTLC = htlc.MsgClaimHTLC
-	//MsgCreateHTLC = htlc.MsgCreateHTLC
-	//MsgRefundHTLC = htlc.MsgRefundHTLC
+	MsgSwapOrder = coinswap.MsgSwapOrder
+	MsgAddLiquidity = coinswap.MsgAddLiquidity
+	MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
+
+	MsgClaimHTLC = htlc.MsgClaimHTLC
+	MsgCreateHTLC = htlc.MsgCreateHTLC
+	MsgRefundHTLC = htlc.MsgRefundHTLC
 
 	MsgSubmitEvidence = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant

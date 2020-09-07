@@ -13,6 +13,8 @@ import (
 	"github.com/bianjieai/irita-sync/msgs/evidence"
 	"github.com/bianjieai/irita-sync/msgs/staking"
 	"github.com/bianjieai/irita-sync/msgs/gov"
+	"github.com/bianjieai/irita-sync/msgs/coinswap"
+	"github.com/bianjieai/irita-sync/msgs/htlc"
 )
 
 func HandleTxMsg(v types.Msg) (MsgDocInfo) {
@@ -31,9 +33,9 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo) {
 	if TokenDocInfo, ok := token.HandleTxMsg(v); ok {
 		return TokenDocInfo
 	}
-	//if CoinswapDocInfo, ok := coinswap.HandleTxMsg(v); ok {
-	//	return CoinswapDocInfo
-	//}
+	if CoinswapDocInfo, ok := coinswap.HandleTxMsg(v); ok {
+		return CoinswapDocInfo
+	}
 	if CrisisDocInfo, ok := crisis.HandleTxMsg(v); ok {
 		return CrisisDocInfo
 	}
@@ -43,9 +45,9 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo) {
 	if EvidenceDocInfo, ok := evidence.HandleTxMsg(v); ok {
 		return EvidenceDocInfo
 	}
-	//if HtlcDocInfo, ok := htlc.HandleTxMsg(v); ok {
-	//	return HtlcDocInfo
-	//}
+	if HtlcDocInfo, ok := htlc.HandleTxMsg(v); ok {
+		return HtlcDocInfo
+	}
 	if StakingDocInfo, ok := staking.HandleTxMsg(v); ok {
 		return StakingDocInfo
 	}

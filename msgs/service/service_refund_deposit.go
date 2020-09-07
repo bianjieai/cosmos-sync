@@ -17,22 +17,24 @@ func (m *DocMsgRefundServiceDeposit) GetType() string {
 }
 
 func (m *DocMsgRefundServiceDeposit) BuildMsg(v interface{}) {
-	msg := v.(MsgRefundServiceDeposit)
+	msg := v.(*MsgRefundServiceDeposit)
 
 	m.ServiceName = msg.ServiceName
 	m.Provider = msg.Provider.String()
 	m.Owner = msg.Owner.String()
 }
 
-func (m *DocMsgRefundServiceDeposit) HandleTxMsg(msg MsgRefundServiceDeposit) MsgDocInfo {
+func (m *DocMsgRefundServiceDeposit) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgRefundServiceDeposit
 	)
 
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
