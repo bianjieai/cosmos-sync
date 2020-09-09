@@ -12,6 +12,7 @@ require (
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/tendermint v0.33.6
+	gitlab.bianjie.ai/cschain/cschain v1.0.1-0.20200826054044-98c73fc75924
 	go.uber.org/zap v1.15.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

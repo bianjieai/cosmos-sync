@@ -14,6 +14,7 @@ import (
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
 	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	identity "gitlab.bianjie.ai/cschain/cschain/modules/identity/types"
 	//coinswap "github.com/irismod/coinswap/types"
 	//htlc "github.com/irismod/htlc/types"
 )
@@ -72,6 +73,9 @@ const (
 
 	MsgTypeSubmitEvidence  = "submit_evidence"
 	MsgTypeVerifyInvariant = "verify_invariant"
+
+	MsgTypeUpdateIdentity = "update_identity"
+	MsgTypeCreateIdentity = "create_identity"
 )
 
 type (
@@ -149,4 +153,7 @@ type (
 
 	MsgSubmitEvidence = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant
+
+	MsgCreateIdentity = identity.MsgCreateIdentity
+	MsgUpdateIdentity = identity.MsgUpdateIdentity
 )
