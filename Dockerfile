@@ -7,7 +7,7 @@ COPY  . $GOPATH/src
 WORKDIR $GOPATH/src
 
 # Install minimum necessary dependencies, build binary
-RUN apk add --no-cache $PACKAGES && make all
+RUN apk add --no-cache $PACKAGES && git config --global url."https://bamboo:EAVxPiH3DiuYUaTWRzgz@gitlab.bianjie.ai/cschain/cschain".insteadOf "https://gitlab.bianjie.ai/cschain/cschain" && make all
 
 FROM alpine:3.10
 
