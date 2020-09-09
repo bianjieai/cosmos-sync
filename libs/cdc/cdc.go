@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
+	"gitlab.bianjie.ai/cschain/cschain/modules/identity"
 )
 
 var (
@@ -34,6 +35,7 @@ var (
 		slashing.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
+		identity.AppModuleBasic{},
 	)
 )
 
