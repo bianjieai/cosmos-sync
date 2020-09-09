@@ -2,7 +2,6 @@ package identity
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/models"
 )
 
 // PubKey represents a public key along with the corresponding algorithm
@@ -40,23 +39,13 @@ func (m *DocMsgCreateIdentity) BuildMsg(v interface{}) {
 
 func (m *DocMsgCreateIdentity) HandleTxMsg(msg MsgCreateIdentity) MsgDocInfo {
 	var (
-		docTxMsg models.DocTxMsg
-		signers  []string
-		addrs    []string
+		addrs []string
 	)
-	_, signers = models.BuildDocSigners(msg.GetSigners())
-	addrs = append(addrs, signers...)
 
-	m.BuildMsg(msg)
-	docTxMsg = models.DocTxMsg{
-		Type: m.GetType(),
-		Msg:  m,
+	addrs = append(addrs, msg.Owner.String())
+	handler := func() (Msg, []string) {
+		return m, addrs
 	}
-	addrs = append(addrs, m.Owner)
 
-	return MsgDocInfo{
-		DocTxMsg: docTxMsg,
-		Signers:  signers,
-		Addrs:    addrs,
-	}
+	return CreateMsgDocInfo(msg, handler)
 }
