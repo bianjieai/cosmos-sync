@@ -4,11 +4,17 @@ import (
 	. "github.com/bianjieai/irita-sync/msgs"
 )
 
-// PubKey represents a public key along with the corresponding algorithm
-type PubKeyInfo struct {
-	PubKey    string `bson:"pubkey"`
-	Algorithm int32  `bson:"algorithm"`
-}
+type (
+	// PubKey represents a public key along with the corresponding algorithm
+	PubKeyInfo struct {
+		PubKey    string `bson:"pubkey"`
+		Algorithm int32  `bson:"algorithm"`
+	}
+
+	ExTemporary struct {
+		CertPubKey PubKeyInfo `bson:"cert_pub_key"`
+	}
+)
 
 // MsgCreateIdentity defines a message to create an identity
 type DocMsgCreateIdentity struct {
@@ -17,6 +23,7 @@ type DocMsgCreateIdentity struct {
 	Certificate string      `bson:"certificate"`
 	Credentials string      `bson:"credentials"`
 	Owner       string      `bson:"owner"`
+	ExTemporary ExTemporary `bson:"ex"`
 }
 
 func (m *DocMsgCreateIdentity) GetType() string {
@@ -35,6 +42,12 @@ func (m *DocMsgCreateIdentity) BuildMsg(v interface{}) {
 	}
 	m.Certificate = msg.Certificate
 	m.Credentials = msg.Credentials
+
+	if m.Certificate != "" {
+		m.ExTemporary = ExTemporary{
+			CertPubKey: getPubKeyFromCertificate(m.Certificate),
+		}
+	}
 }
 
 func (m *DocMsgCreateIdentity) HandleTxMsg(msg MsgCreateIdentity) MsgDocInfo {

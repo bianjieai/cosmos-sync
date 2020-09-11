@@ -11,6 +11,7 @@ type DocMsgUpdateIdentity struct {
 	Certificate string      `bson:"certificate"`
 	Credentials string      `bson:"credentials"`
 	Owner       string      `bson:"owner"`
+	ExTemporary ExTemporary `bson:"ex"`
 }
 
 func (m *DocMsgUpdateIdentity) GetType() string {
@@ -29,11 +30,17 @@ func (m *DocMsgUpdateIdentity) BuildMsg(v interface{}) {
 	}
 	m.Certificate = msg.Certificate
 	m.Credentials = msg.Credentials
+
+	if m.Certificate != "" {
+		m.ExTemporary = ExTemporary{
+			CertPubKey: getPubKeyFromCertificate(m.Certificate),
+		}
+	}
 }
 
 func (m *DocMsgUpdateIdentity) HandleTxMsg(msg MsgUpdateIdentity) MsgDocInfo {
 	var (
-		addrs    []string
+		addrs []string
 	)
 
 	addrs = append(addrs, msg.Owner.String())
