@@ -80,10 +80,12 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 
 	txResult, err := c.Tx(txBytes.Hash(), false)
 	if err != nil {
-		logger.Warn("get tx result fail", logger.String("txHash", txBytes.String()),
+		logger.Warn("get tx result fail, now try again", logger.String("txHash", txBytes.String()),
 			logger.String("err", err.Error()))
 		time.Sleep(500 * time.Millisecond)
 		if ret, err := c.Tx(txBytes.Hash(), false); err != nil {
+			logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
+				logger.String("err", err.Error()))
 			return docTx, txnOps
 		} else {
 			txResult = ret
