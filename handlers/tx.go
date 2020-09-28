@@ -12,6 +12,7 @@ import (
 	"github.com/tendermint/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"gopkg.in/mgo.v2/txn"
+	"time"
 )
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, []txn.Op, error) {
@@ -77,11 +78,16 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	fee := models.BuildFee(authTx.GetFee(), authTx.GetGas())
 	memo := authTx.GetMemo()
 
-	txResult, err := c.Tx(txBytes.Hash(), false);
+	txResult, err := c.Tx(txBytes.Hash(), false)
 	if err != nil {
-		logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
+		logger.Warn("get tx result fail", logger.String("txHash", txBytes.String()),
 			logger.String("err", err.Error()))
-		return docTx, txnOps
+		time.Sleep(500 * time.Millisecond)
+		if ret, err := c.Tx(txBytes.Hash(), false); err != nil {
+			return docTx, txnOps
+		} else {
+			txResult = ret
+		}
 	}
 	status := parseTxStatus(txResult.TxResult.Code)
 	log := txResult.TxResult.Log
