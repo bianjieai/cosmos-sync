@@ -2,6 +2,7 @@ package service
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -16,21 +17,23 @@ func (m *DocMsgSetWithdrawAddress) GetType() string {
 }
 
 func (m *DocMsgSetWithdrawAddress) BuildMsg(v interface{}) {
-	msg := v.(MsgSetWithdrawAddress)
+	msg := v.(*MsgSetWithdrawAddress)
 
 	m.Owner = msg.Owner.String()
 	m.WithdrawAddress = msg.WithdrawAddress.String()
 }
 
-func (m *DocMsgSetWithdrawAddress) HandleTxMsg(msg MsgSetWithdrawAddress) MsgDocInfo {
+func (m *DocMsgSetWithdrawAddress) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgSetWithdrawAddress
 	)
 
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.WithdrawAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

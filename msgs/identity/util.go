@@ -1,7 +1,7 @@
 package identity
 
 import (
-	"gitlab.bianjie.ai/cschain/cschain/modules/identity/types"
+	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity/types"
 )
 
 // temporary method getPubKeyFromCertificate

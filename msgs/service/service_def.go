@@ -2,6 +2,7 @@ package service
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -20,7 +21,7 @@ func (m *DocMsgDefineService) GetType() string {
 }
 
 func (m *DocMsgDefineService) BuildMsg(v interface{}) {
-	msg := v.(MsgDefineService)
+	msg := v.(*MsgDefineService)
 
 	m.Name = msg.Name
 	m.Description = msg.Description
@@ -30,15 +31,18 @@ func (m *DocMsgDefineService) BuildMsg(v interface{}) {
 	m.Schemas = msg.Schemas
 }
 
-func (m *DocMsgDefineService) HandleTxMsg(msg MsgDefineService) MsgDocInfo {
+func (m *DocMsgDefineService) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgDefineService
 	)
+
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 
 	addrs = append(addrs, msg.Author.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

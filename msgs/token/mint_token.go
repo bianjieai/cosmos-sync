@@ -2,6 +2,7 @@ package token
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type DocMsgMintToken struct {
@@ -16,7 +17,7 @@ func (m *DocMsgMintToken) GetType() string {
 }
 
 func (m *DocMsgMintToken) BuildMsg(v interface{}) {
-	msg := v.(MsgMintToken)
+	msg := v.(*MsgMintToken)
 
 	m.Symbol = msg.Symbol
 	m.Amount = msg.Amount
@@ -24,15 +25,17 @@ func (m *DocMsgMintToken) BuildMsg(v interface{}) {
 	m.Owner = msg.Owner.String()
 }
 
-func (m *DocMsgMintToken) HandleTxMsg(msg MsgMintToken) MsgDocInfo {
+func (m *DocMsgMintToken) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgMintToken
 	)
 
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.To.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

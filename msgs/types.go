@@ -2,21 +2,14 @@ package msgs
 
 import (
 	"github.com/bianjieai/irita-sync/models"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/irismod/nft"
-	"github.com/irismod/service"
-	"github.com/irismod/record"
-	"github.com/irismod/token"
-	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	dtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
-	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
-	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	identity "gitlab.bianjie.ai/cschain/cschain/modules/identity/types"
-	//coinswap "github.com/irismod/coinswap/types"
-	//htlc "github.com/irismod/htlc/types"
+	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
+	service "github.com/irisnet/irismod/modules/service/types"
+	nft "github.com/irisnet/irismod/modules/nft/types"
+	record "github.com/irisnet/irismod/modules/record/types"
+	token "github.com/irisnet/irismod/modules/token/types"
+	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
 )
 
 const (
@@ -74,6 +67,11 @@ const (
 	MsgTypeSubmitEvidence  = "submit_evidence"
 	MsgTypeVerifyInvariant = "verify_invariant"
 
+	MsgTypeCreateClient = "create_client"
+	MsgTypeUpdateClient = "update_client"
+
+	MsgTypeRecvPacket = "recv_packet"
+
 	MsgTypeUpdateIdentity = "update_identity"
 	MsgTypeCreateIdentity = "create_identity"
 )
@@ -85,6 +83,7 @@ type (
 		Signers  []string
 	}
 	Msg models.Msg
+	SdkMsg sdk.Msg
 
 	Coin models.Coin
 
@@ -122,26 +121,26 @@ type (
 	MsgMintToken = token.MsgMintToken
 	MsgTransferTokenOwner = token.MsgTransferTokenOwner
 
-	MsgStakeCreate = stake.MsgCreateValidator
-	MsgStakeEdit = stake.MsgEditValidator
-	MsgStakeDelegate = stake.MsgDelegate
-	MsgStakeBeginUnbonding = stake.MsgUndelegate
-	MsgBeginRedelegate = stake.MsgBeginRedelegate
-	MsgUnjail = slashing.MsgUnjail
-	MsgStakeSetWithdrawAddress = dtypes.MsgSetWithdrawAddress
-	MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
-	MsgFundCommunityPool = distribution.MsgFundCommunityPool
-	MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
-	StakeValidator = stake.Validator
-	Delegation = stake.Delegation
-	UnbondingDelegation = stake.UnbondingDelegation
-
-	MsgDeposit = gov.MsgDeposit
-	MsgSubmitProposal = gov.MsgSubmitProposal
-	TextProposal = gov.TextProposal
-	MsgVote = gov.MsgVote
-	Proposal = gov.Proposal
-	SdkVote = gov.Vote
+	//MsgStakeCreate = stake.MsgCreateValidator
+	//MsgStakeEdit = stake.MsgEditValidator
+	//MsgStakeDelegate = stake.MsgDelegate
+	//MsgStakeBeginUnbonding = stake.MsgUndelegate
+	//MsgBeginRedelegate = stake.MsgBeginRedelegate
+	//MsgUnjail = slashing.MsgUnjail
+	//MsgStakeSetWithdrawAddress = dtypes.MsgSetWithdrawAddress
+	//MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
+	//MsgFundCommunityPool = distribution.MsgFundCommunityPool
+	//MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
+	//StakeValidator = stake.Validator
+	//Delegation = stake.Delegation
+	//UnbondingDelegation = stake.UnbondingDelegation
+	//
+	//MsgDeposit = gov.MsgDeposit
+	//MsgSubmitProposal = gov.MsgSubmitProposal
+	//TextProposal = gov.TextProposal
+	//MsgVote = gov.MsgVote
+	//Proposal = gov.Proposal
+	//SdkVote = gov.Vote
 
 	//MsgSwapOrder = coinswap.MsgSwapOrder
 	//MsgAddLiquidity = coinswap.MsgAddLiquidity
@@ -151,9 +150,19 @@ type (
 	//MsgCreateHTLC = htlc.MsgCreateHTLC
 	//MsgRefundHTLC = htlc.MsgRefundHTLC
 
-	MsgSubmitEvidence = evidence.MsgSubmitEvidence
-	MsgVerifyInvariant = crisis.MsgVerifyInvariant
-
+	//MsgSubmitEvidence = evidence.MsgSubmitEvidence
+	//MsgVerifyInvariant = crisis.MsgVerifyInvariant
+	//
 	MsgCreateIdentity = identity.MsgCreateIdentity
 	MsgUpdateIdentity = identity.MsgUpdateIdentity
+
+	MsgRecvPacket = ibc.MsgRecvPacket
+
+	MsgCreateClient = ibc.MsgCreateClient
+	MsgUpdateClient = ibc.MsgUpdateClient
+
+	//MsgWutongCreateClient = ibcwutong.MsgCreateClient
+	//MsgWutongUpdateClient = ibcwutong.MsgUpdateClient
+	//MsgTendermintCreateClient = ibctendermint.MsgCreateClient
+	//MsgTendermintUpdateClient = ibctendermint.MsgUpdateClient
 )

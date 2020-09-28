@@ -4,19 +4,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 	. "github.com/bianjieai/irita-sync/msgs"
 )
+
 func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 	var (
-		msgDocInfo  MsgDocInfo
+		msgDocInfo MsgDocInfo
 	)
 	ok := true
-	switch msgData := v.(type) {
-	case MsgCreateIdentity:
+	switch v.Type() {
+	case new(MsgCreateIdentity).Type():
 		docMsg := DocMsgCreateIdentity{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgUpdateIdentity:
+	case new(MsgUpdateIdentity).Type():
 		docMsg := DocMsgUpdateIdentity{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
 	default:
 		ok = false

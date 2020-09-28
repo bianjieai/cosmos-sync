@@ -3,11 +3,12 @@ package service
 import (
 	"encoding/hex"
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
 	DocMsgServiceResponse struct {
-		RequestID string `bson:"request_id" yaml:"request_id"`
+		RequestId string `bson:"request_id" yaml:"request_id"`
 		Provider  string `bson:"provider" yaml:"provider"`
 		Output    string `bson:"output" yaml:"output"`
 		Result    string `bson:"result"`
@@ -19,24 +20,27 @@ func (m *DocMsgServiceResponse) GetType() string {
 }
 
 func (m *DocMsgServiceResponse) BuildMsg(msg interface{}) {
-	v := msg.(MsgRespondService)
+	v := msg.(*MsgRespondService)
 
-	m.RequestID = hex.EncodeToString(v.RequestID)
+	m.RequestId = hex.EncodeToString(v.RequestId)
 	m.Provider = v.Provider.String()
 	//m.Output = hex.EncodeToString(v.Output)
 	m.Output = v.Output
 	m.Result = v.Result
 }
 
-func (m *DocMsgServiceResponse) HandleTxMsg(msg MsgRespondService) MsgDocInfo {
+func (m *DocMsgServiceResponse) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgRespondService
 	)
+
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 
 	addrs = append(addrs, msg.Provider.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

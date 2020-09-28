@@ -3,12 +3,13 @@ package service
 import (
 	"encoding/hex"
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 	"strings"
 )
 
 type (
 	DocMsgStartRequestContext struct {
-		RequestContextID string `bson:"request_context_id" yaml:"request_context_id"`
+		RequestContextId string `bson:"request_context_id" yaml:"request_context_id"`
 		Consumer         string `bson:"consumer" yaml:"consumer"`
 	}
 )
@@ -18,21 +19,23 @@ func (m *DocMsgStartRequestContext) GetType() string {
 }
 
 func (m *DocMsgStartRequestContext) BuildMsg(v interface{}) {
-	msg := v.(MsgStartRequestContext)
+	msg := v.(*MsgStartRequestContext)
 
-	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
+	m.RequestContextId = strings.ToUpper(hex.EncodeToString(msg.RequestContextId))
 	m.Consumer = msg.Consumer.String()
 }
 
-func (m *DocMsgStartRequestContext) HandleTxMsg(msg MsgStartRequestContext) MsgDocInfo {
+func (m *DocMsgStartRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgStartRequestContext
 	)
 
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

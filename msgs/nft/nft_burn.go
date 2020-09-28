@@ -2,13 +2,14 @@ package nft
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 	"strings"
 )
 
 type (
 	DocMsgNFTBurn struct {
 		Sender string `bson:"sender"`
-		ID     string `bson:"id"`
+		Id     string `bson:"id"`
 		Denom  string `bson:"denom"`
 	}
 )
@@ -18,22 +19,24 @@ func (m *DocMsgNFTBurn) GetType() string {
 }
 
 func (m *DocMsgNFTBurn) BuildMsg(v interface{}) {
-	msg := v.(MsgNFTBurn)
+	msg := v.(*MsgNFTBurn)
 
 	m.Sender = msg.Sender.String()
-	m.ID = strings.ToLower(msg.ID)
+	m.Id = strings.ToLower(msg.Id)
 	m.Denom = strings.ToLower(msg.Denom)
 }
 
-func (m *DocMsgNFTBurn) HandleTxMsg(msg MsgNFTBurn) MsgDocInfo {
+func (m *DocMsgNFTBurn) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgNFTBurn
 	)
 
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 	addrs = append(addrs, msg.Sender.String())
-	handler := func() (Msg,  []string) {
-		return m,  addrs
+	handler := func() (Msg, []string) {
+		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }
