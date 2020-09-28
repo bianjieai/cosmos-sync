@@ -4,10 +4,11 @@ go 1.14
 
 require (
 	github.com/cosmos/cosmos-sdk v0.38.2
-	github.com/irisnet/irismod v0.0.0-20200927063845-2c0b5f1b4ca6
+	github.com/irisnet/irismod v0.0.0-20200928025052-eb7d598532a1
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/tendermint/tendermint v0.34.0-rc3.0.20200907055413-3359e0bf2f84
-	gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200925015143-a512f1a33cf2
+	gitlab.bianjie.ai/cschain/cschain v1.0.1-0.20200928025347-d9dd1fa970a6
+	gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200928024153-d0cb33bb4936
 	go.uber.org/zap v1.15.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

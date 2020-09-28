@@ -14,23 +14,27 @@ import (
 	//"github.com/bianjieai/irita-sync/msgs/staking"
 	//"github.com/bianjieai/irita-sync/msgs/gov"
 	"github.com/bianjieai/irita-sync/msgs/identity"
+	"github.com/bianjieai/irita-sync/msgs/ibc"
+	"github.com/bianjieai/irita-sync/models"
+	"gopkg.in/mgo.v2/txn"
+	"gopkg.in/mgo.v2/bson"
 )
 
-func HandleTxMsg(v types.Msg) (MsgDocInfo) {
+func HandleTxMsg(v types.Msg, timestamp int64) (MsgDocInfo, []txn.Op) {
 	if BankDocInfo, ok := bank.HandleTxMsg(v); ok {
-		return BankDocInfo
+		return BankDocInfo, nil
 	}
 	if IServiceDocInfo, ok := service.HandleTxMsg(v); ok {
-		return IServiceDocInfo
+		return IServiceDocInfo, nil
 	}
 	if NftDocInfo, ok := nft.HandleTxMsg(v); ok {
-		return NftDocInfo
+		return NftDocInfo, nil
 	}
 	if RecordDocInfo, ok := record.HandleTxMsg(v); ok {
-		return RecordDocInfo
+		return RecordDocInfo, nil
 	}
 	if TokenDocInfo, ok := token.HandleTxMsg(v); ok {
-		return TokenDocInfo
+		return TokenDocInfo, nil
 	}
 	//if CoinswapDocInfo, ok := coinswap.HandleTxMsg(v); ok {
 	//	return CoinswapDocInfo
@@ -54,9 +58,13 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo) {
 	//	return GovDocInfo
 	//}
 	if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
-		return IdentityDocInfo
+		return IdentityDocInfo, nil
 	}
-	return MsgDocInfo{}
+	if IbcDocinfo, ibcClient, ok := ibc.HandleTxMsg(v, timestamp); ok {
+		ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
+		return IbcDocinfo, ops
+	}
+	return MsgDocInfo{}, nil
 }
 
 func removeDuplicatesFromSlice(data []string) (result []string) {
@@ -69,6 +77,45 @@ func removeDuplicatesFromSlice(data []string) (result []string) {
 	}
 	for one := range tempSet {
 		result = append(result, one)
+	}
+	return
+}
+
+func handlerIbcClient(msgType string, client *models.IbcClient) (Ops []txn.Op) {
+	switch msgType {
+	case MsgTypeCreateClient:
+		client.ID = bson.NewObjectId()
+		op := txn.Op{
+			C:      models.CollectionNameIbcClient,
+			Id:     bson.NewObjectId(),
+			Insert: client,
+		}
+		Ops = append(Ops, op)
+	case MsgTypeUpdateClient:
+		v := client
+		mapObjId, err := client.AllIbcClientMaps()
+		if err != nil {
+			return
+		}
+		if id, ok := mapObjId[v.ClientId]; ok {
+			v.ID = id
+		}
+		if !v.ID.Valid() {
+			return
+		}
+		updateOp := txn.Op{
+			C:      models.CollectionNameIbcClient,
+			Id:     v.ID,
+			Assert: txn.DocExists,
+			Update: bson.M{
+				"$set": bson.M{
+					models.IbcClientHeaderTag:   v.Header,
+					models.IbcClientSignerTag:   v.Signer,
+					models.IbcClientUpdateAtTag: v.UpdateAt,
+				},
+			},
+		}
+		Ops = append(Ops, updateOp)
 	}
 	return
 }

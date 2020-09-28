@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	encodecfg params.EncodingConfig
+	encodecfg    params.EncodingConfig
 	moduleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
@@ -61,4 +61,8 @@ func init() {
 
 func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
+}
+
+func GetAmino() *codec.LegacyAmino {
+	return encodecfg.Amino
 }

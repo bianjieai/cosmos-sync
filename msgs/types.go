@@ -9,7 +9,7 @@ import (
 	token "github.com/irisnet/irismod/modules/token/types"
 	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
 )
 
 const (
@@ -66,6 +66,11 @@ const (
 
 	MsgTypeSubmitEvidence  = "submit_evidence"
 	MsgTypeVerifyInvariant = "verify_invariant"
+
+	MsgTypeCreateClient = "create_client"
+	MsgTypeUpdateClient = "update_client"
+
+	MsgTypeRecvPacket = "recv_packet"
 
 	MsgTypeUpdateIdentity = "update_identity"
 	MsgTypeCreateIdentity = "create_identity"
@@ -150,4 +155,14 @@ type (
 	//
 	MsgCreateIdentity = identity.MsgCreateIdentity
 	MsgUpdateIdentity = identity.MsgUpdateIdentity
+
+	MsgRecvPacket = ibc.MsgRecvPacket
+
+	MsgCreateClient = ibc.MsgCreateClient
+	MsgUpdateClient = ibc.MsgUpdateClient
+
+	//MsgWutongCreateClient = ibcwutong.MsgCreateClient
+	//MsgWutongUpdateClient = ibcwutong.MsgUpdateClient
+	//MsgTendermintCreateClient = ibctendermint.MsgCreateClient
+	//MsgTendermintUpdateClient = ibctendermint.MsgUpdateClient
 )
