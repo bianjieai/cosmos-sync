@@ -603,6 +603,8 @@ gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200925015143-a512f1a33cf2 h1:nFiiq
 gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200925015143-a512f1a33cf2/go.mod h1:P49IaxWHJJFl/nR7kOdXT88FnaqN8E7BEVzOqW7cMbE=
 gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200928024153-d0cb33bb4936 h1:3FU7r9gc6Q6Grnl1cvdJ7zXs8VME0Aqe6oTUa5vHGys=
 gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200928024153-d0cb33bb4936/go.mod h1:P49IaxWHJJFl/nR7kOdXT88FnaqN8E7BEVzOqW7cMbE=
+gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200928060345-896b82236631 h1:5suG4vHxDmuu4gcAYvqyJGt9zLpjMtI1uUyyUxqxNmE=
+gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200928060345-896b82236631/go.mod h1:P49IaxWHJJFl/nR7kOdXT88FnaqN8E7BEVzOqW7cMbE=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5 h1:XAzx9gjCb0Rxj7EoqcClPD1d5ZBxZJk0jbuoPHenBt0=
