@@ -109,7 +109,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		Events: parseEvents(txResult.TxResult.Events),
 	}
 	for i, v := range msgs {
-		msgDocInfo, ops := HandleTxMsg(v, docTx.Time)
+		msgDocInfo, ops := HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
 			continue
 		}

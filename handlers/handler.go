@@ -15,12 +15,10 @@ import (
 	//"github.com/bianjieai/irita-sync/msgs/gov"
 	"github.com/bianjieai/irita-sync/msgs/identity"
 	"github.com/bianjieai/irita-sync/msgs/ibc"
-	"github.com/bianjieai/irita-sync/models"
 	"gopkg.in/mgo.v2/txn"
-	"gopkg.in/mgo.v2/bson"
 )
 
-func HandleTxMsg(v types.Msg, timestamp int64) (MsgDocInfo, []txn.Op) {
+func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
 	if BankDocInfo, ok := bank.HandleTxMsg(v); ok {
 		return BankDocInfo, nil
 	}
@@ -60,9 +58,9 @@ func HandleTxMsg(v types.Msg, timestamp int64) (MsgDocInfo, []txn.Op) {
 	if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
 		return IdentityDocInfo, nil
 	}
-	if IbcDocinfo, ibcClient, ok := ibc.HandleTxMsg(v, timestamp); ok {
-		ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
-		return IbcDocinfo, ops
+	if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
+		//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
+		return IbcDocinfo, nil
 	}
 	return MsgDocInfo{}, nil
 }
@@ -81,41 +79,42 @@ func removeDuplicatesFromSlice(data []string) (result []string) {
 	return
 }
 
-func handlerIbcClient(msgType string, client *models.IbcClient) (Ops []txn.Op) {
-	switch msgType {
-	case MsgTypeCreateClient:
-		client.ID = bson.NewObjectId()
-		op := txn.Op{
-			C:      models.CollectionNameIbcClient,
-			Id:     bson.NewObjectId(),
-			Insert: client,
-		}
-		Ops = append(Ops, op)
-	case MsgTypeUpdateClient:
-		v := client
-		mapObjId, err := client.AllIbcClientMaps()
-		if err != nil {
-			return
-		}
-		if id, ok := mapObjId[v.ClientId]; ok {
-			v.ID = id
-		}
-		if !v.ID.Valid() {
-			return
-		}
-		updateOp := txn.Op{
-			C:      models.CollectionNameIbcClient,
-			Id:     v.ID,
-			Assert: txn.DocExists,
-			Update: bson.M{
-				"$set": bson.M{
-					models.IbcClientHeaderTag:   v.Header,
-					models.IbcClientSignerTag:   v.Signer,
-					models.IbcClientUpdateAtTag: v.UpdateAt,
-				},
-			},
-		}
-		Ops = append(Ops, updateOp)
-	}
-	return
-}
+//
+//func handlerIbcClient(msgType string, client *models.IbcClient) (Ops []txn.Op) {
+//	switch msgType {
+//	case MsgTypeCreateClient:
+//		client.ID = bson.NewObjectId()
+//		op := txn.Op{
+//			C:      models.CollectionNameIbcClient,
+//			Id:     bson.NewObjectId(),
+//			Insert: client,
+//		}
+//		Ops = append(Ops, op)
+//	case MsgTypeUpdateClient:
+//		v := client
+//		mapObjId, err := client.AllIbcClientMaps()
+//		if err != nil {
+//			return
+//		}
+//		if id, ok := mapObjId[v.ClientId]; ok {
+//			v.ID = id
+//		}
+//		if !v.ID.Valid() {
+//			return
+//		}
+//		updateOp := txn.Op{
+//			C:      models.CollectionNameIbcClient,
+//			Id:     v.ID,
+//			Assert: txn.DocExists,
+//			Update: bson.M{
+//				"$set": bson.M{
+//					models.IbcClientHeaderTag:   v.Header,
+//					models.IbcClientSignerTag:   v.Signer,
+//					models.IbcClientUpdateAtTag: v.UpdateAt,
+//				},
+//			},
+//		}
+//		Ops = append(Ops, updateOp)
+//	}
+//	return
+//}
