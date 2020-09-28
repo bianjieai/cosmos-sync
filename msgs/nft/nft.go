@@ -10,26 +10,26 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 		msgDocInfo MsgDocInfo
 	)
 	ok := true
-	switch msgData := v.(type) {
-	case MsgNFTMint:
+	switch v.Type() {
+	case new(MsgNFTMint).Type():
 		docMsg := DocMsgNFTMint{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgNFTEdit:
+	case new(MsgNFTEdit).Type():
 		docMsg := DocMsgNFTEdit{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgNFTTransfer:
+	case new(MsgNFTTransfer).Type():
 		docMsg := DocMsgNFTTransfer{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgNFTBurn:
+	case new(MsgNFTBurn).Type():
 		docMsg := DocMsgNFTBurn{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgIssueDenom:
+	case new(MsgIssueDenom).Type():
 		docMsg := DocMsgIssueDenom{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
 	default:
 		ok = false

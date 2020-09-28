@@ -10,62 +10,62 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 		msgDocInfo MsgDocInfo
 	)
 	ok := true
-	switch msgData := v.(type) {
-	case MsgDefineService:
+	switch v.Type() {
+	case new(MsgDefineService).Type():
 		docMsg := DocMsgDefineService{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgBindService:
+	case new(MsgBindService).Type():
 		docMsg := DocMsgBindService{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgCallService:
+	case new(MsgCallService).Type():
 		docMsg := DocMsgCallService{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgRespondService:
+	case new(MsgRespondService).Type():
 		docMsg := DocMsgServiceResponse{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgUpdateServiceBinding:
+	case new(MsgUpdateServiceBinding).Type():
 		docMsg := DocMsgUpdateServiceBinding{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgSetWithdrawAddress:
+	case new(MsgSetWithdrawAddress).Type():
 		docMsg := DocMsgSetWithdrawAddress{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgDisableServiceBinding:
+	case new(MsgDisableServiceBinding).Type():
 		docMsg := DocMsgDisableServiceBinding{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgEnableServiceBinding:
+	case new(MsgEnableServiceBinding).Type():
 		docMsg := DocMsgEnableServiceBinding{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgRefundServiceDeposit:
+	case new(MsgRefundServiceDeposit).Type():
 		docMsg := DocMsgRefundServiceDeposit{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgUpdateRequestContext:
+	case new(MsgUpdateRequestContext).Type():
 		docMsg := DocMsgUpdateRequestContext{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgPauseRequestContext:
+	case new(MsgPauseRequestContext).Type():
 		docMsg := DocMsgPauseRequestContext{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgStartRequestContext:
+	case new(MsgStartRequestContext).Type():
 		docMsg := DocMsgStartRequestContext{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgKillRequestContext:
+	case new(MsgKillRequestContext).Type():
 		docMsg := DocMsgKillRequestContext{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgWithdrawEarnedFees:
+	case new(MsgWithdrawEarnedFees).Type():
 		docMsg := DocMsgWithdrawEarnedFees{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
 	default:
 		ok = false

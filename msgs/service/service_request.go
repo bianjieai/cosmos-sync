@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -25,7 +26,7 @@ func (m *DocMsgCallService) GetType() string {
 }
 
 func (m *DocMsgCallService) BuildMsg(msg interface{}) {
-	v := msg.(MsgCallService)
+	v := msg.(*MsgCallService)
 
 	var coins models.Coins
 	for _, one := range v.ServiceFeeCap {
@@ -44,23 +45,26 @@ func (m *DocMsgCallService) BuildMsg(msg interface{}) {
 	m.RepeatedTotal = v.RepeatedTotal
 }
 
-func (m *DocMsgCallService)loadProviders(v MsgCallService) (ret []string) {
+func (m *DocMsgCallService)loadProviders(v *MsgCallService) (ret []string) {
 	for _, one := range v.Providers {
 		ret = append(ret, one.String())
 	}
 	return
 }
 
-func (m *DocMsgCallService) HandleTxMsg(msg MsgCallService) MsgDocInfo {
+func (m *DocMsgCallService) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgCallService
 	)
 
-	addrs = append(addrs, m.loadProviders(msg)...)
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+
+	addrs = append(addrs, m.loadProviders(&msg)...)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

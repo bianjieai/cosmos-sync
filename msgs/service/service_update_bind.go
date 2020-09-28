@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -21,7 +22,7 @@ func (m *DocMsgUpdateServiceBinding) GetType() string {
 }
 
 func (m *DocMsgUpdateServiceBinding) BuildMsg(v interface{}) {
-	msg := v.(MsgUpdateServiceBinding)
+	msg := v.(*MsgUpdateServiceBinding)
 
 	var coins models.Coins
 	for _, one := range msg.Deposit {
@@ -36,15 +37,17 @@ func (m *DocMsgUpdateServiceBinding) BuildMsg(v interface{}) {
 	m.Owner = msg.Owner.String()
 }
 
-func (m *DocMsgUpdateServiceBinding) HandleTxMsg(msg MsgUpdateServiceBinding) MsgDocInfo {
+func (m *DocMsgUpdateServiceBinding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgUpdateServiceBinding
 	)
 
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

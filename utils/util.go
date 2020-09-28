@@ -51,6 +51,10 @@ func MarshalJsonIgnoreErr(v interface{}) string {
 	return string(data)
 }
 
+func UnMarshalJsonIgnoreErr(data string, v interface{}) {
+	json.Unmarshal([]byte(data), &v)
+}
+
 func ConvStrToInt(str string) (int, error) {
 	return strconv.Atoi(str)
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -17,22 +18,24 @@ func (m *DocMsgDisableServiceBinding) GetType() string {
 }
 
 func (m *DocMsgDisableServiceBinding) BuildMsg(v interface{}) {
-	msg := v.(MsgDisableServiceBinding)
+	msg := v.(*MsgDisableServiceBinding)
 
 	m.ServiceName = msg.ServiceName
 	m.Provider = msg.Provider.String()
 	m.Owner = msg.Owner.String()
 }
 
-func (m *DocMsgDisableServiceBinding) HandleTxMsg(msg MsgDisableServiceBinding) MsgDocInfo {
+func (m *DocMsgDisableServiceBinding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgDisableServiceBinding
 	)
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 
 	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

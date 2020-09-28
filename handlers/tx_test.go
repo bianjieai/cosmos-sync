@@ -7,7 +7,7 @@ import (
 )
 
 func TestParseTxs(t *testing.T) {
-	block := int64(345219)
+	block := int64(142)
 	c := pool.GetClient()
 	defer func() {
 		c.Release()

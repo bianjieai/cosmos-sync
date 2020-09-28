@@ -10,10 +10,10 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 		msgDocInfo MsgDocInfo
 	)
 	ok := true
-	switch msgData := v.(type) {
-	case MsgRecordCreate:
+	switch v.Type() {
+	case new(MsgRecordCreate).Type():
 		docMsg := DocMsgRecordCreate{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
 	default:
 		ok = false

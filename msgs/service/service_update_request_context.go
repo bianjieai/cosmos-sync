@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 	"strings"
 )
 
@@ -24,14 +25,14 @@ func (m *DocMsgUpdateRequestContext) GetType() string {
 }
 
 func (m *DocMsgUpdateRequestContext) BuildMsg(v interface{}) {
-	msg := v.(MsgUpdateRequestContext)
+	msg := v.(*MsgUpdateRequestContext)
 
 	var coins models.Coins
 	for _, one := range msg.ServiceFeeCap {
 		coins = append(coins, &models.Coin{Denom: one.Denom, Amount: one.Amount.String()})
 	}
 
-	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
+	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextId))
 	m.Providers = m.loadProviders(msg)
 	m.Consumer = msg.Consumer.String()
 	m.ServiceFeeCap = coins
@@ -39,22 +40,24 @@ func (m *DocMsgUpdateRequestContext) BuildMsg(v interface{}) {
 	m.RepeatedFrequency = msg.RepeatedFrequency
 	m.RepeatedTotal = msg.RepeatedTotal
 }
-func (m *DocMsgUpdateRequestContext)loadProviders(msg MsgUpdateRequestContext) (ret []string) {
+func (m *DocMsgUpdateRequestContext)loadProviders(msg *MsgUpdateRequestContext) (ret []string) {
 	for _, one := range msg.Providers {
 		ret = append(ret, one.String())
 	}
 	return
 }
-func (m *DocMsgUpdateRequestContext) HandleTxMsg(msg MsgUpdateRequestContext) MsgDocInfo {
+func (m *DocMsgUpdateRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgUpdateRequestContext
 	)
 
-	addrs = append(addrs, m.loadProviders(msg)...)
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	addrs = append(addrs, m.loadProviders(&msg)...)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

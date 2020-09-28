@@ -2,6 +2,7 @@ package identity
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -18,7 +19,7 @@ type (
 
 // MsgCreateIdentity defines a message to create an identity
 type DocMsgCreateIdentity struct {
-	ID          string      `bson:"id"`
+	Id          string      `bson:"id"`
 	PubKey      *PubKeyInfo `bson:"pubkey"`
 	Certificate string      `bson:"certificate"`
 	Credentials string      `bson:"credentials"`
@@ -31,8 +32,8 @@ func (m *DocMsgCreateIdentity) GetType() string {
 }
 
 func (m *DocMsgCreateIdentity) BuildMsg(v interface{}) {
-	msg := v.(MsgCreateIdentity)
-	m.ID = msg.ID.String()
+	msg := v.(*MsgCreateIdentity)
+	m.Id = msg.Id.String()
 	m.Owner = msg.Owner.String()
 	if msg.PubKey != nil {
 		m.PubKey = &PubKeyInfo{
@@ -50,15 +51,16 @@ func (m *DocMsgCreateIdentity) BuildMsg(v interface{}) {
 	}
 }
 
-func (m *DocMsgCreateIdentity) HandleTxMsg(msg MsgCreateIdentity) MsgDocInfo {
+func (m *DocMsgCreateIdentity) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg MsgCreateIdentity
 	)
-
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 	addrs = append(addrs, msg.Owner.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

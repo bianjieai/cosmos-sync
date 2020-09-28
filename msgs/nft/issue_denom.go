@@ -2,11 +2,12 @@ package nft
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 	"strings"
 )
 
 type DocMsgIssueDenom struct {
-	ID     string `bson:"id"`
+	Id     string `bson:"id"`
 	Name   string `bson:"name"`
 	Sender string `bson:"sender"`
 	Schema string `bson:"schema"`
@@ -17,23 +18,25 @@ func (m *DocMsgIssueDenom) GetType() string {
 }
 
 func (m *DocMsgIssueDenom) BuildMsg(v interface{}) {
-	msg := v.(MsgIssueDenom)
+	msg := v.(*MsgIssueDenom)
 
 	m.Sender = msg.Sender.String()
 	m.Schema = msg.Schema
-	m.ID = strings.ToLower(msg.ID)
+	m.Id = strings.ToLower(msg.Id)
 	m.Name = msg.Name
 }
 
-func (m *DocMsgIssueDenom) HandleTxMsg(msg MsgIssueDenom) MsgDocInfo {
+func (m *DocMsgIssueDenom) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
+		msg   MsgIssueDenom
 	)
 
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 	addrs = append(addrs, msg.Sender.String())
-	handler := func() (Msg,  []string) {
-		return m,  addrs
+	handler := func() (Msg, []string) {
+		return m, addrs
 	}
 
-	return CreateMsgDocInfo(msg, handler)
+	return CreateMsgDocInfo(v, handler)
 }

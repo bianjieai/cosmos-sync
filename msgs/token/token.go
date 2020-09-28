@@ -10,22 +10,22 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 		msgDocInfo MsgDocInfo
 	)
 	ok := true
-	switch msgData := v.(type) {
-	case MsgMintToken:
+	switch v.Type() {
+	case new(MsgMintToken).Type():
 		docMsg := DocMsgMintToken{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgEditToken:
+	case new(MsgEditToken).Type():
 		docMsg := DocMsgEditToken{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgIssueToken:
+	case new(MsgIssueToken).Type():
 		docMsg := DocMsgIssueToken{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
-	case MsgTransferTokenOwner:
+	case new(MsgTransferTokenOwner).Type():
 		docMsg := DocMsgTransferTokenOwner{}
-		msgDocInfo = docMsg.HandleTxMsg(msgData)
+		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
 	default:
 		ok = false
