@@ -21,9 +21,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/admin"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/validator"
-	iritaslash "gitlab.bianjie.ai/irita-pro/iritamod/modules/slashing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
@@ -50,9 +47,9 @@ var (
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		random.AppModuleBasic{},
-		admin.AppModuleBasic{},
-		validator.AppModuleBasic{},
-		iritaslash.AppModuleBasic{},
+		//admin.AppModuleBasic{},
+		//validator.AppModuleBasic{},
+		//iritaslash.AppModuleBasic{},
 	)
 )
 

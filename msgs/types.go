@@ -18,9 +18,6 @@ import (
 	oracle "github.com/irisnet/irismod/modules/oracle/types"
 	htlc "github.com/irisnet/irismod/modules/htlc/types"
 	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/admin"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/validator"
-	iritaslash "gitlab.bianjie.ai/irita-pro/iritamod/modules/slashing"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
 )
@@ -181,16 +178,16 @@ type (
 	MsgCreateClient = ibc.MsgCreateClient
 	MsgUpdateClient = ibc.MsgUpdateClient
 
-	MsgAddRoles = admin.MsgAddRoles
-	MsgRemoveRoles = admin.MsgRemoveRoles
-	MsgUnblockAccount = admin.MsgUnblockAccount
-	MsgBlockAccount = admin.MsgBlockAccount
-
-	MsgCreateValidator = validator.MsgCreateValidator
-	MsgUpdateValidator = validator.MsgUpdateValidator
-	MsgRemoveValidator = validator.MsgRemoveValidator
-
-	MsgUnjailValidator = iritaslash.MsgUnjailValidator
+	//MsgAddRoles = admin.MsgAddRoles
+	//MsgRemoveRoles = admin.MsgRemoveRoles
+	//MsgUnblockAccount = admin.MsgUnblockAccount
+	//MsgBlockAccount = admin.MsgBlockAccount
+	//
+	//MsgCreateValidator = validator.MsgCreateValidator
+	//MsgUpdateValidator = validator.MsgUpdateValidator
+	//MsgRemoveValidator = validator.MsgRemoveValidator
+	//
+	//MsgUnjailValidator = iritaslash.MsgUnjailValidator
 
 	MsgCreateFeed = oracle.MsgCreateFeed
 	MsgEditFeed = oracle.MsgEditFeed

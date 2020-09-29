@@ -9,6 +9,7 @@ import (
 	"github.com/bianjieai/irita-sync/msgs/token"
 	"github.com/bianjieai/irita-sync/msgs/bank"
 	"github.com/bianjieai/irita-sync/msgs/distribution"
+	"github.com/bianjieai/irita-sync/msgs/slashing"
 	"github.com/bianjieai/irita-sync/msgs/crisis"
 	"github.com/bianjieai/irita-sync/msgs/evidence"
 	"github.com/bianjieai/irita-sync/msgs/staking"
@@ -46,6 +47,9 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
 	}
 	if DistrubutionDocInfo, ok := distribution.HandleTxMsg(v); ok {
 		return DistrubutionDocInfo, nil
+	}
+	if SlashingDocInfo, ok := slashing.HandleTxMsg(v); ok {
+		return SlashingDocInfo, nil
 	}
 	if EvidenceDocInfo, ok := evidence.HandleTxMsg(v); ok {
 		return EvidenceDocInfo, nil
