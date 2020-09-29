@@ -8,13 +8,18 @@ import (
 	"github.com/bianjieai/irita-sync/msgs/record"
 	"github.com/bianjieai/irita-sync/msgs/token"
 	"github.com/bianjieai/irita-sync/msgs/bank"
-	//"github.com/bianjieai/irita-sync/msgs/distribution"
-	//"github.com/bianjieai/irita-sync/msgs/crisis"
-	//"github.com/bianjieai/irita-sync/msgs/evidence"
-	//"github.com/bianjieai/irita-sync/msgs/staking"
-	//"github.com/bianjieai/irita-sync/msgs/gov"
+	"github.com/bianjieai/irita-sync/msgs/distribution"
+	"github.com/bianjieai/irita-sync/msgs/slashing"
+	"github.com/bianjieai/irita-sync/msgs/crisis"
+	"github.com/bianjieai/irita-sync/msgs/evidence"
+	"github.com/bianjieai/irita-sync/msgs/staking"
+	"github.com/bianjieai/irita-sync/msgs/gov"
 	"github.com/bianjieai/irita-sync/msgs/identity"
 	"github.com/bianjieai/irita-sync/msgs/ibc"
+	"github.com/bianjieai/irita-sync/msgs/htlc"
+	"github.com/bianjieai/irita-sync/msgs/coinswap"
+	"github.com/bianjieai/irita-sync/msgs/oracle"
+	"github.com/bianjieai/irita-sync/msgs/random"
 	"gopkg.in/mgo.v2/txn"
 )
 
@@ -34,29 +39,38 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
 	if TokenDocInfo, ok := token.HandleTxMsg(v); ok {
 		return TokenDocInfo, nil
 	}
-	//if CoinswapDocInfo, ok := coinswap.HandleTxMsg(v); ok {
-	//	return CoinswapDocInfo
-	//}
-	//if CrisisDocInfo, ok := crisis.HandleTxMsg(v); ok {
-	//	return CrisisDocInfo
-	//}
-	//if DistrubutionDocInfo, ok := distribution.HandleTxMsg(v); ok {
-	//	return DistrubutionDocInfo
-	//}
-	//if EvidenceDocInfo, ok := evidence.HandleTxMsg(v); ok {
-	//	return EvidenceDocInfo
-	//}
-	//if HtlcDocInfo, ok := htlc.HandleTxMsg(v); ok {
-	//	return HtlcDocInfo
-	//}
-	//if StakingDocInfo, ok := staking.HandleTxMsg(v); ok {
-	//	return StakingDocInfo
-	//}
-	//if GovDocInfo, ok := gov.HandleTxMsg(v); ok {
-	//	return GovDocInfo
-	//}
+	if CoinswapDocInfo, ok := coinswap.HandleTxMsg(v); ok {
+		return CoinswapDocInfo, nil
+	}
+	if CrisisDocInfo, ok := crisis.HandleTxMsg(v); ok {
+		return CrisisDocInfo, nil
+	}
+	if DistrubutionDocInfo, ok := distribution.HandleTxMsg(v); ok {
+		return DistrubutionDocInfo, nil
+	}
+	if SlashingDocInfo, ok := slashing.HandleTxMsg(v); ok {
+		return SlashingDocInfo, nil
+	}
+	if EvidenceDocInfo, ok := evidence.HandleTxMsg(v); ok {
+		return EvidenceDocInfo, nil
+	}
+	if HtlcDocInfo, ok := htlc.HandleTxMsg(v); ok {
+		return HtlcDocInfo, nil
+	}
+	if StakingDocInfo, ok := staking.HandleTxMsg(v); ok {
+		return StakingDocInfo, nil
+	}
+	if GovDocInfo, ok := gov.HandleTxMsg(v); ok {
+		return GovDocInfo, nil
+	}
 	if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
 		return IdentityDocInfo, nil
+	}
+	if RandomDocInfo, ok := random.HandleTxMsg(v); ok {
+		return RandomDocInfo, nil
+	}
+	if OracleDocInfo, ok := oracle.HandleTxMsg(v); ok {
+		return OracleDocInfo, nil
 	}
 	if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
 		//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
