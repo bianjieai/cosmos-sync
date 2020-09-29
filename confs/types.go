@@ -12,4 +12,5 @@ const (
 	EnvNameBlockNumPerWorkerHandle = "BLOCK_NUM_PER_WORKER_HANDLE"
 	EnvNameBech32AccPrefix         = "BECH32_ACC_PREFIX"
 	EnvNameChainId                 = "CHAIN_ID"
+	EnvNameChainBlockInterval      = "CHAIN_BLOCK_INTERVAL"
 )
