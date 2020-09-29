@@ -10,12 +10,14 @@ import (
 	"github.com/irisnet/irismod/modules/record"
 	"github.com/irisnet/irismod/modules/service"
 	"github.com/irisnet/irismod/modules/token"
-	//"github.com/cosmos/cosmos-sdk/x/distribution"
-	//"github.com/cosmos/cosmos-sdk/x/gov"
-	//"github.com/cosmos/cosmos-sdk/x/slashing"
-	//"github.com/cosmos/cosmos-sdk/x/staking"
-	//"github.com/cosmos/cosmos-sdk/x/evidence"
-	//"github.com/cosmos/cosmos-sdk/x/crisis"
+	"github.com/irisnet/irismod/modules/htlc"
+	"github.com/irisnet/irismod/modules/coinswap"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -32,13 +34,15 @@ var (
 		nft.AppModuleBasic{},
 		record.AppModuleBasic{},
 		token.AppModuleBasic{},
-		//gov.AppModuleBasic{},
-		//staking.AppModuleBasic{},
-		//distribution.AppModuleBasic{},
-		//slashing.AppModuleBasic{},
-		//evidence.AppModuleBasic{},
-		//crisis.AppModuleBasic{},
+		gov.AppModuleBasic{},
+		staking.AppModuleBasic{},
+		distribution.AppModuleBasic{},
+		slashing.AppModuleBasic{},
+		evidence.AppModuleBasic{},
+		crisis.AppModuleBasic{},
 		identity.AppModuleBasic{},
+		htlc.AppModuleBasic{},
+		coinswap.AppModuleBasic{},
 	)
 )
 

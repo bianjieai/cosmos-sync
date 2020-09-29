@@ -3,10 +3,18 @@ package msgs
 import (
 	"github.com/bianjieai/irita-sync/models"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
+	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
+	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	service "github.com/irisnet/irismod/modules/service/types"
 	nft "github.com/irisnet/irismod/modules/nft/types"
 	record "github.com/irisnet/irismod/modules/record/types"
 	token "github.com/irisnet/irismod/modules/token/types"
+	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
+	htlc "github.com/irisnet/irismod/modules/htlc/types"
 	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
@@ -121,38 +129,38 @@ type (
 	MsgMintToken = token.MsgMintToken
 	MsgTransferTokenOwner = token.MsgTransferTokenOwner
 
-	//MsgStakeCreate = stake.MsgCreateValidator
-	//MsgStakeEdit = stake.MsgEditValidator
-	//MsgStakeDelegate = stake.MsgDelegate
-	//MsgStakeBeginUnbonding = stake.MsgUndelegate
-	//MsgBeginRedelegate = stake.MsgBeginRedelegate
-	//MsgUnjail = slashing.MsgUnjail
-	//MsgStakeSetWithdrawAddress = dtypes.MsgSetWithdrawAddress
-	//MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
-	//MsgFundCommunityPool = distribution.MsgFundCommunityPool
-	//MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
-	//StakeValidator = stake.Validator
-	//Delegation = stake.Delegation
-	//UnbondingDelegation = stake.UnbondingDelegation
-	//
-	//MsgDeposit = gov.MsgDeposit
-	//MsgSubmitProposal = gov.MsgSubmitProposal
-	//TextProposal = gov.TextProposal
-	//MsgVote = gov.MsgVote
-	//Proposal = gov.Proposal
-	//SdkVote = gov.Vote
+	MsgStakeCreate = stake.MsgCreateValidator
+	MsgStakeEdit = stake.MsgEditValidator
+	MsgStakeDelegate = stake.MsgDelegate
+	MsgStakeBeginUnbonding = stake.MsgUndelegate
+	MsgBeginRedelegate = stake.MsgBeginRedelegate
+	MsgUnjail = slashing.MsgUnjail
+	MsgStakeSetWithdrawAddress = distribution.MsgSetWithdrawAddress
+	MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
+	MsgFundCommunityPool = distribution.MsgFundCommunityPool
+	MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
+	StakeValidator = stake.Validator
+	Delegation = stake.Delegation
+	UnbondingDelegation = stake.UnbondingDelegation
 
-	//MsgSwapOrder = coinswap.MsgSwapOrder
-	//MsgAddLiquidity = coinswap.MsgAddLiquidity
-	//MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
-	//
-	//MsgClaimHTLC = htlc.MsgClaimHTLC
-	//MsgCreateHTLC = htlc.MsgCreateHTLC
-	//MsgRefundHTLC = htlc.MsgRefundHTLC
+	MsgDeposit = gov.MsgDeposit
+	MsgSubmitProposal = gov.MsgSubmitProposal
+	TextProposal = gov.TextProposal
+	MsgVote = gov.MsgVote
+	Proposal = gov.Proposal
+	SdkVote = gov.Vote
 
-	//MsgSubmitEvidence = evidence.MsgSubmitEvidence
-	//MsgVerifyInvariant = crisis.MsgVerifyInvariant
-	//
+	MsgSwapOrder = coinswap.MsgSwapOrder
+	MsgAddLiquidity = coinswap.MsgAddLiquidity
+	MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
+
+	MsgClaimHTLC = htlc.MsgClaimHTLC
+	MsgCreateHTLC = htlc.MsgCreateHTLC
+	MsgRefundHTLC = htlc.MsgRefundHTLC
+
+	MsgSubmitEvidence = evidence.MsgSubmitEvidence
+	MsgVerifyInvariant = crisis.MsgVerifyInvariant
+
 	MsgCreateIdentity = identity.MsgCreateIdentity
 	MsgUpdateIdentity = identity.MsgUpdateIdentity
 
