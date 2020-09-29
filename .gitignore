@@ -2,3 +2,4 @@
 vendor
 irita-sync
 *.log
+build/

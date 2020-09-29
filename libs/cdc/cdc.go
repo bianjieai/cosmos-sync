@@ -12,6 +12,8 @@ import (
 	"github.com/irisnet/irismod/modules/token"
 	"github.com/irisnet/irismod/modules/htlc"
 	"github.com/irisnet/irismod/modules/coinswap"
+	"github.com/irisnet/irismod/modules/random"
+	"github.com/irisnet/irismod/modules/oracle"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -19,6 +21,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
+	"gitlab.bianjie.ai/irita-pro/iritamod/modules/admin"
+	"gitlab.bianjie.ai/irita-pro/iritamod/modules/validator"
+	iritaslash "gitlab.bianjie.ai/irita-pro/iritamod/modules/slashing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
@@ -43,6 +48,11 @@ var (
 		identity.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
+		oracle.AppModuleBasic{},
+		random.AppModuleBasic{},
+		admin.AppModuleBasic{},
+		validator.AppModuleBasic{},
+		iritaslash.AppModuleBasic{},
 	)
 )
 

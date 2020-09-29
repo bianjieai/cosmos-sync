@@ -17,6 +17,8 @@ import (
 	"github.com/bianjieai/irita-sync/msgs/ibc"
 	"github.com/bianjieai/irita-sync/msgs/htlc"
 	"github.com/bianjieai/irita-sync/msgs/coinswap"
+	"github.com/bianjieai/irita-sync/msgs/oracle"
+	"github.com/bianjieai/irita-sync/msgs/random"
 	"gopkg.in/mgo.v2/txn"
 )
 
@@ -59,6 +61,12 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
 	}
 	if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
 		return IdentityDocInfo, nil
+	}
+	if RandomDocInfo, ok := random.HandleTxMsg(v); ok {
+		return RandomDocInfo, nil
+	}
+	if OracleDocInfo, ok := oracle.HandleTxMsg(v); ok {
+		return OracleDocInfo, nil
 	}
 	if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
 		//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
