@@ -33,6 +33,11 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 		break
 	case new(MsgSetWithdrawAddress).Type():
 		docMsg := DocMsgSetWithdrawAddress{}
+		ConvertMsg(v, &docMsg)
+		if docMsg.WithdrawAddress == "" {
+			ok = false
+			return msgDocInfo, ok
+		}
 		msgDocInfo = docMsg.HandleTxMsg(v)
 		break
 	case new(MsgDisableServiceBinding).Type():
