@@ -28,7 +28,7 @@ func (s *SyncTaskService) StartCreateTask() {
 	for {
 		chanLimit <- true
 		go s.createTask(blockNumPerWorkerHandle, chanLimit)
-		time.Sleep(time.Duration(1) * time.Minute)
+		time.Sleep(time.Duration(conf.SvrConf.SleepTimeCreateTaskWorker) * time.Second)
 	}
 }
 

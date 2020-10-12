@@ -180,7 +180,7 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 
 		// parse data from block
-		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
+		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
 			logger.Error("Parse block fail", logger.Int64("block", inProcessBlock),
 				logger.String("err", err.Error()))
@@ -201,7 +201,7 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 				taskDoc.Status = models.SyncTaskStatusCompleted
 			}
 
-			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc)
+			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc, ops)
 			if err != nil {
 				logger.Error("save docs fail", logger.String("err", err.Error()))
 			} else {
@@ -294,7 +294,7 @@ func getBlockChainLatestHeight() (int64, error) {
 	return status.SyncInfo.LatestBlockHeight, nil
 }
 
-func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask) error {
+func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask, opsDoc []txn.Op) error {
 	var (
 		ops, binanceTxsOps []txn.Op
 	)
@@ -337,6 +337,9 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models
 
 	ops = make([]txn.Op, 0, len(binanceTxsOps)+2)
 	ops = append(append(ops, blockOp, updateOp), binanceTxsOps...)
+	if len(opsDoc) > 0 {
+		ops = append(ops, opsDoc...)
+	}
 
 	if len(ops) > 0 {
 		err := models.Txn(ops)

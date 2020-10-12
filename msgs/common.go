@@ -2,8 +2,8 @@ package msgs
 
 import (
 	"github.com/bianjieai/irita-sync/models"
+	"github.com/bianjieai/irita-sync/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"encoding/json"
 )
 
 func CreateMsgDocInfo(msg sdk.Msg, handler func() (Msg, []string)) MsgDocInfo {
@@ -32,7 +32,6 @@ func CreateMsgDocInfo(msg sdk.Msg, handler func() (Msg, []string)) MsgDocInfo {
 	}
 }
 
-func ConvertMsg(v sdk.Msg, msg interface{}) {
-	data, _ := json.Marshal(v)
-	json.Unmarshal(data, &msg)
+func ConvertMsg(v interface{}, msg interface{}) {
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 }

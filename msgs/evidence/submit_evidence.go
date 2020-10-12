@@ -17,7 +17,7 @@ func (m *DocMsgSubmitEvidence) GetType() string {
 }
 
 func (m *DocMsgSubmitEvidence) BuildMsg(v interface{}) {
-	msg := v.(*MsgSubmitEvidence)
+	msg := v.(MsgSubmitEvidence)
 	m.Submitter = msg.Submitter
 	evidence, _ := json.Marshal(msg.Evidence)
 	m.Evidence = string(evidence)

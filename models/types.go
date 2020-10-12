@@ -105,3 +105,10 @@ func BuildDocSigners(signers []sdk.AccAddress) (string, []string) {
 
 	return firstSigner, allSigners
 }
+
+func BuildFee(fee sdk.Coins, gas uint64) Fee {
+	return Fee{
+		Amount: BuildDocCoins(fee),
+		Gas:    int64(gas),
+	}
+}

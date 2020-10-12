@@ -3,20 +3,25 @@ package msgs
 import (
 	"github.com/bianjieai/irita-sync/models"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
-	nft "github.com/irisnet/irismod/modules/nft/types"
-	service "github.com/irisnet/irismod/modules/service/types"
-	record "github.com/irisnet/irismod/modules/record/types"
-	token "github.com/irisnet/irismod/modules/token/types"
 	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	dtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
 	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	random "github.com/irisnet/irismod/modules/random/types"
+	oracle "github.com/irisnet/irismod/modules/oracle/types"
+	service "github.com/irisnet/irismod/modules/service/types"
+	random "github.com/irisnet/irismod/modules/random/types"
+	nft "github.com/irisnet/irismod/modules/nft/types"
+	record "github.com/irisnet/irismod/modules/record/types"
+	token "github.com/irisnet/irismod/modules/token/types"
 	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
+	oracle "github.com/irisnet/irismod/modules/oracle/types"
 	htlc "github.com/irisnet/irismod/modules/htlc/types"
+	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
 )
 
 const (
@@ -73,6 +78,21 @@ const (
 
 	MsgTypeSubmitEvidence  = "submit_evidence"
 	MsgTypeVerifyInvariant = "verify_invariant"
+
+	MsgTypeCreateClient = "create_client"
+	MsgTypeUpdateClient = "update_client"
+
+	MsgTypeRecvPacket = "recv_packet"
+
+	MsgTypeUpdateIdentity = "update_identity"
+	MsgTypeCreateIdentity = "create_identity"
+
+	TxTypeRequestRand = "request_rand"
+
+	TxTypeCreateFeed = "create_feed"
+	TxTypeEditFeed   = "edit_feed"
+	TxTypePauseFeed  = "pause_feed"
+	TxTypeStartFeed  = "start_feed"
 )
 
 type (
@@ -126,7 +146,7 @@ type (
 	MsgStakeBeginUnbonding = stake.MsgUndelegate
 	MsgBeginRedelegate = stake.MsgBeginRedelegate
 	MsgUnjail = slashing.MsgUnjail
-	MsgStakeSetWithdrawAddress = dtypes.MsgSetWithdrawAddress
+	MsgStakeSetWithdrawAddress = distribution.MsgSetWithdrawAddress
 	MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
 	MsgFundCommunityPool = distribution.MsgFundCommunityPool
 	MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
@@ -151,4 +171,30 @@ type (
 
 	MsgSubmitEvidence = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant
+
+	MsgCreateIdentity = identity.MsgCreateIdentity
+	MsgUpdateIdentity = identity.MsgUpdateIdentity
+
+	MsgRecvPacket = ibc.MsgRecvPacket
+
+	MsgCreateClient = ibc.MsgCreateClient
+	MsgUpdateClient = ibc.MsgUpdateClient
+
+	//MsgAddRoles = admin.MsgAddRoles
+	//MsgRemoveRoles = admin.MsgRemoveRoles
+	//MsgUnblockAccount = admin.MsgUnblockAccount
+	//MsgBlockAccount = admin.MsgBlockAccount
+	//
+	//MsgCreateValidator = validator.MsgCreateValidator
+	//MsgUpdateValidator = validator.MsgUpdateValidator
+	//MsgRemoveValidator = validator.MsgRemoveValidator
+	//
+	//MsgUnjailValidator = iritaslash.MsgUnjailValidator
+
+	MsgCreateFeed = oracle.MsgCreateFeed
+	MsgEditFeed = oracle.MsgEditFeed
+	MsgPauseFeed = oracle.MsgPauseFeed
+	MsgStartFeed = oracle.MsgStartFeed
+
+	MsgRequestRandom = random.MsgRequestRandom
 )

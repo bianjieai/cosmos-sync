@@ -10,16 +10,17 @@ import (
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
-	"time"
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gopkg.in/mgo.v2/txn"
 	"golang.org/x/net/context"
 )
 
-func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
+func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, []txn.Op, error) {
 	var (
 		blockDoc models.Block
 		block    *ctypes.ResultBlock
+		txnOps   []txn.Op
 	)
 	ctx := context.Background()
 
@@ -29,7 +30,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		if v2, err := client.Block(ctx, &b); err != nil {
 			logger.Error("parse block fail", logger.Int64("height", b),
 				logger.String("err", err.Error()))
-			return &blockDoc, nil, err
+			return &blockDoc, nil, txnOps, err
 		} else {
 			block = v2
 		}
@@ -47,27 +48,31 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for _, v := range block.Block.Txs {
-			txDoc := parseTx(client, v, block.Block.Time)
+			txDoc, ops := parseTx(client, v, block.Block)
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
+				if len(ops) > 0 {
+					txnOps = append(txnOps, ops...)
+				}
 			}
 		}
 	}
 
-	return &blockDoc, txDocs, nil
+	return &blockDoc, txDocs, txnOps, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
+func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, []txn.Op) {
 	var (
 		docTx models.Tx
 
 		docTxMsgs []models.DocTxMsg
+		txnOps    []txn.Op
 	)
 	ctx := context.Background()
 	if txResult, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
 		logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
 			logger.String("err", err.Error()))
-		return docTx
+		return docTx, txnOps
 	} else {
 		docTx.Time = blockTime.Unix()
 		docTx.Height = txResult.Height
@@ -79,7 +84,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 		Tx, err := cdc.GetTxDecoder()(txBytes)
 		if err != nil {
 			logger.Error(err.Error())
-			return docTx
+			return docTx, txnOps
 		}
 		authTx := Tx.(signing.Tx)
 		docTx.Fee = BuildFee(authTx.GetFee(), authTx.GetGas())
@@ -87,10 +92,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 
 		msgs := authTx.GetMsgs()
 		if len(msgs) == 0 {
-			return docTx
+			return docTx, txnOps
 		}
 		for i, v := range msgs {
-			msgDocInfo := HandleTxMsg(v)
+			msgDocInfo, ops := HandleTxMsg(v)
 			if len(msgDocInfo.Addrs) == 0 {
 				continue
 			}
@@ -101,19 +106,22 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 			docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
 			docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
 			docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
+			if len(ops) > 0 {
+				txnOps = append(txnOps, ops...)
+			}
 		}
-
-		docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
-		docTx.Types = removeDuplicatesFromSlice(docTx.Types)
-		docTx.DocTxMsgs = docTxMsgs
-
-		// don't save txs which have not parsed
-		if docTx.Type == "" || docTx.TxHash == "" {
-			return models.Tx{}
-		}
-
-		return docTx
 	}
+	docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
+	docTx.Types = removeDuplicatesFromSlice(docTx.Types)
+	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
+	docTx.DocTxMsgs = docTxMsgs
+
+	// don't save txs which have not parsed
+	if docTx.Type == "" || docTx.TxHash == "" {
+		return models.Tx{}, txnOps
+	}
+
+	return docTx, txnOps
 }
 
 func parseTxStatus(code uint32) uint32 {

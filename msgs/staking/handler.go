@@ -11,9 +11,6 @@ func HandleTxMsg(msg sdk.Msg) (MsgDocInfo, bool) {
 	case new(MsgBeginRedelegate).Type():
 		docMsg := DocTxMsgBeginRedelegate{}
 		return docMsg.HandleTxMsg(msg), ok
-	case new(MsgUnjail).Type():
-		docMsg := DocTxMsgUnjail{}
-		return docMsg.HandleTxMsg(msg), ok
 	case new(MsgStakeBeginUnbonding).Type():
 		docMsg := DocTxMsgBeginUnbonding{}
 		return docMsg.HandleTxMsg(msg), ok

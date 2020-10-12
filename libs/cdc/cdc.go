@@ -12,6 +12,8 @@ import (
 	"github.com/irisnet/irismod/modules/htlc"
 	"github.com/irisnet/irismod/modules/coinswap"
 	"github.com/irisnet/irismod/modules/token"
+	"github.com/irisnet/irismod/modules/random"
+	"github.com/irisnet/irismod/modules/oracle"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -22,6 +24,7 @@ import (
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
@@ -42,9 +45,18 @@ var (
 		slashing.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
+		identity.AppModuleBasic{},
+		htlc.AppModuleBasic{},
+		coinswap.AppModuleBasic{},
+		oracle.AppModuleBasic{},
+		random.AppModuleBasic{},
+		//admin.AppModuleBasic{},
+		//validator.AppModuleBasic{},
+		//iritaslash.AppModuleBasic{},
 	)
 )
 
+// 初始化账户地址前缀
 func init() {
 	var cdc = codec.NewLegacyAmino()
 	cryptocodec.RegisterCrypto(cdc)
@@ -65,4 +77,8 @@ func init() {
 
 func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
+}
+
+func GetAmino() *codec.LegacyAmino {
+	return encodecfg.Amino
 }

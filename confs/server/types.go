@@ -14,11 +14,13 @@ type ServerConf struct {
 	WorkerNumExecuteTask    int
 	WorkerMaxSleepTime      int
 	BlockNumPerWorkerHandle int
+	SleepTimeCreateTaskWorker int
 
 	MaxConnectionNum  int
 	InitConnectionNum int
 	Bech32ChainPrefix string
 	ChainId           string
+	ChainBlockInterval int
 }
 
 var (
@@ -30,6 +32,7 @@ var (
 	blockNumPerWorkerHandle = 100
 	bech32ChainPrefix       = "i"
 	chainId                 = ""
+	chainBlockInterval      = 5
 )
 
 // get value of env var
@@ -37,7 +40,6 @@ func init() {
 	if v, ok := os.LookupEnv(constant.EnvNameSerNetworkFullNodes); ok {
 		nodeUrls = strings.Split(v, ",")
 	}
-
 
 	if v, ok := os.LookupEnv(constant.EnvNameWorkerNumExecuteTask); ok {
 		if n, err := utils.ConvStrToInt(v); err != nil {
@@ -71,18 +73,37 @@ func init() {
 		chainId = v
 	}
 
+	if v, ok := os.LookupEnv(constant.EnvNameChainBlockInterval); ok {
+		if n, err := utils.ConvStrToInt(v); err != nil {
+			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameChainBlockInterval, v))
+		} else {
+			chainBlockInterval = n
+		}
+	}
+
+	// calculate sleep time of create task goroutine, time unit is second
+	// 1. sleepTime must less than blockNumPerWorkerHandle*chainTimeInterval,
+	//    otherwise create task goroutine can't succeed create follow task
+	// 2. use value of sleepTime/5 to make create task worker do task in time
+	sleepTimeCreateTaskWorker := (blockNumPerWorkerHandle * chainBlockInterval) / 5
+	if sleepTimeCreateTaskWorker == 0 {
+		sleepTimeCreateTaskWorker = 1
+	}
+
 	SvrConf = &ServerConf{
-		NodeUrls:                nodeUrls,
-		WorkerNumCreateTask:     1,
-		WorkerNumExecuteTask:    workerNumExecuteTask,
-		WorkerMaxSleepTime:      workerMaxSleepTime,
-		BlockNumPerWorkerHandle: blockNumPerWorkerHandle,
+		NodeUrls:                  nodeUrls,
+		WorkerNumCreateTask:       1,
+		WorkerNumExecuteTask:      workerNumExecuteTask,
+		WorkerMaxSleepTime:        workerMaxSleepTime,
+		BlockNumPerWorkerHandle:   blockNumPerWorkerHandle,
+		SleepTimeCreateTaskWorker: sleepTimeCreateTaskWorker,
 
 		MaxConnectionNum:  100,
 		InitConnectionNum: 5,
 
 		Bech32ChainPrefix: bech32ChainPrefix,
-		ChainId:           chainId,
+		ChainId:            chainId,
+		ChainBlockInterval: chainBlockInterval,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))

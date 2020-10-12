@@ -30,7 +30,6 @@ func (m *DocMsgPauseRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg MsgPauseRequestContext
 	)
 
-	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs

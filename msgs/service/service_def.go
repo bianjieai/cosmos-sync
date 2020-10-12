@@ -2,6 +2,7 @@ package service
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -36,6 +37,8 @@ func (m *DocMsgDefineService) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg   MsgDefineService
 	)
 	ConvertMsg(v, &msg)
+
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 
 	addrs = append(addrs, msg.Author.String())
 	handler := func() (Msg, []string) {

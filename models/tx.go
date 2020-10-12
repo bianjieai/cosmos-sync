@@ -23,6 +23,7 @@ type (
 		Fee       *Fee        `bson:"fee"`
 		Types     []string    `bson:"types"`
 		Events    []Event     `bson:"events"`
+		Signers   []string    `bson:"signers"`
 		DocTxMsgs []DocTxMsg  `bson:"msgs"`
 		Addrs     []string    `bson:"addrs"`
 		Ext       interface{} `bson:"ext"`
