@@ -21,7 +21,7 @@ func (m *DocMsgServiceResponse) GetType() string {
 func (m *DocMsgServiceResponse) BuildMsg(msg interface{}) {
 	v := msg.(*MsgRespondService)
 
-	m.RequestID = hex.EncodeToString(v.RequestID)
+	m.RequestID = hex.EncodeToString(v.RequestId)
 	m.Provider = v.Provider.String()
 	//m.Output = hex.EncodeToString(v.Output)
 	m.Output = v.Output

@@ -3,16 +3,10 @@ module github.com/bianjieai/irita-sync
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200825201020-d9fd4d2ca9a3
-	github.com/irismod/coinswap v0.0.0-20200901103745-f38672ac63ec
-	github.com/irismod/htlc v0.0.0-20200901103718-c3bf89708dce
-	github.com/irismod/nft v1.1.1-0.20200827095318-d16861212579
-	github.com/irismod/record v1.1.1-0.20200827095301-3e27fc43ae73
-	github.com/irismod/service v1.1.1-0.20200901115916-d898b826bf10
-	github.com/irismod/token v1.1.1-0.20200901121217-d3aa04e760e3
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200914022129-c26ef79ed0a2
+	github.com/irisnet/irismod v1.1.1-0.20200930082942-4882cf4fd17a
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/onsi/ginkgo v1.14.0 // indirect
-	github.com/tendermint/tendermint v0.34.0-rc3
+	github.com/tendermint/tendermint v0.34.0-rc4
 	go.uber.org/zap v1.15.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -20,6 +14,6 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/irisnet/cosmos-sdk v0.34.4-0.20200827085823-7b1a0adbfd1e
+	github.com/cosmos/cosmos-sdk => github.com/irisnet/cosmos-sdk v0.28.2-0.20200930073142-1e1bec2e65a6
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 )

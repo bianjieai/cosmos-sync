@@ -6,7 +6,7 @@ import (
 )
 
 type DocMsgIssueDenom struct {
-	ID     string `bson:"id"`
+	Id     string `bson:"id"`
 	Name   string `bson:"name"`
 	Sender string `bson:"sender"`
 	Schema string `bson:"schema"`
@@ -21,7 +21,7 @@ func (m *DocMsgIssueDenom) BuildMsg(v interface{}) {
 
 	m.Sender = msg.Sender.String()
 	m.Schema = msg.Schema
-	m.ID = strings.ToLower(msg.ID)
+	m.Id = strings.ToLower(msg.Id)
 	m.Name = msg.Name
 }
 

@@ -3,10 +3,10 @@ package msgs
 import (
 	"github.com/bianjieai/irita-sync/models"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
-	nft "github.com/irismod/nft/types"
-	service "github.com/irismod/service/types"
-	record "github.com/irismod/record/types"
-	token "github.com/irismod/token/types"
+	nft "github.com/irisnet/irismod/modules/nft/types"
+	service "github.com/irisnet/irismod/modules/service/types"
+	record "github.com/irisnet/irismod/modules/record/types"
+	token "github.com/irisnet/irismod/modules/token/types"
 	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	dtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -14,8 +14,8 @@ import (
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
 	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	coinswap "github.com/irismod/coinswap/types"
-	htlc "github.com/irismod/htlc/types"
+	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
+	htlc "github.com/irisnet/irismod/modules/htlc/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

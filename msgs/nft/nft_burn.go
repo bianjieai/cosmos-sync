@@ -8,7 +8,7 @@ import (
 type (
 	DocMsgNFTBurn struct {
 		Sender string `bson:"sender"`
-		ID     string `bson:"id"`
+		Id     string `bson:"id"`
 		Denom  string `bson:"denom"`
 	}
 )
@@ -21,7 +21,7 @@ func (m *DocMsgNFTBurn) BuildMsg(v interface{}) {
 	msg := v.(*MsgNFTBurn)
 
 	m.Sender = msg.Sender.String()
-	m.ID = strings.ToLower(msg.ID)
+	m.Id = strings.ToLower(msg.Id)
 	m.Denom = strings.ToLower(msg.Denom)
 }
 

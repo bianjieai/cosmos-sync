@@ -9,7 +9,7 @@ type DocMsgNFTMint struct {
 	Sender    string `bson:"sender"`
 	Recipient string `bson:"recipient"`
 	Denom     string `bson:"denom"`
-	ID        string `bson:"id"`
+	Id        string `bson:"id"`
 	URI       string `bson:"uri"`
 	Data      string `bson:"data"`
 	Name      string `bson:"name"`
@@ -24,7 +24,7 @@ func (m *DocMsgNFTMint) BuildMsg(v interface{}) {
 
 	m.Sender = msg.Sender.String()
 	m.Recipient = msg.Recipient.String()
-	m.ID = strings.ToLower(msg.ID)
+	m.Id = strings.ToLower(msg.Id)
 	m.Denom = strings.ToLower(msg.Denom)
 	m.URI = msg.URI
 	m.Data = msg.Data

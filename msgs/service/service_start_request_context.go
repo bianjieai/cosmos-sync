@@ -20,7 +20,7 @@ func (m *DocMsgStartRequestContext) GetType() string {
 func (m *DocMsgStartRequestContext) BuildMsg(v interface{}) {
 	msg := v.(*MsgStartRequestContext)
 
-	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
+	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextId))
 	m.Consumer = msg.Consumer.String()
 }
 

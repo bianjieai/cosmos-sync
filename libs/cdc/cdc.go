@@ -6,12 +6,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/irismod/nft"
-	"github.com/irismod/record"
-	"github.com/irismod/service"
-	"github.com/irismod/htlc"
-	"github.com/irismod/coinswap"
-	"github.com/irismod/token"
+	"github.com/irisnet/irismod/modules/nft"
+	"github.com/irisnet/irismod/modules/record"
+	"github.com/irisnet/irismod/modules/service"
+	"github.com/irisnet/irismod/modules/htlc"
+	"github.com/irisnet/irismod/modules/coinswap"
+	"github.com/irisnet/irismod/modules/token"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -21,11 +21,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
 var (
-	encodecfg params.EncodingConfig
+	encodecfg    params.EncodingConfig
 	moduleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
@@ -45,13 +46,14 @@ var (
 )
 
 func init() {
-	var cdc = codec.New()
+	var cdc = codec.NewLegacyAmino()
+	cryptocodec.RegisterCrypto(cdc)
 
 	interfaceRegistry := ctypes.NewInterfaceRegistry()
 	moduleBasics.RegisterInterfaces(interfaceRegistry)
-	sdk.RegisterInterfaces(interfaceRegistry)
+	std.RegisterInterfaces(interfaceRegistry)
 	marshaler := codec.NewProtoCodec(interfaceRegistry)
-	txCfg := tx.NewTxConfig(marshaler, std.DefaultPublicKeyCodec{}, tx.DefaultSignModes)
+	txCfg := tx.NewTxConfig(marshaler, tx.DefaultSignModes)
 
 	encodecfg = params.EncodingConfig{
 		InterfaceRegistry: interfaceRegistry,

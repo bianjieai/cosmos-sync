@@ -12,7 +12,7 @@ type (
 		URI       string `bson:"uri"`
 		Name      string `bson:"name"`
 		Denom     string `bson:"denom"`
-		ID        string `bson:"id"`
+		Id        string `bson:"id"`
 		Data      string `bson:"data"`
 	}
 )
@@ -26,7 +26,7 @@ func (m *DocMsgNFTTransfer) BuildMsg(v interface{}) {
 
 	m.Sender = msg.Sender.String()
 	m.Recipient = msg.Recipient.String()
-	m.ID = strings.ToLower(msg.ID)
+	m.Id = strings.ToLower(msg.Id)
 	m.Denom = strings.ToLower(msg.Denom)
 	m.URI = msg.URI
 	m.Data = msg.Data

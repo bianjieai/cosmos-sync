@@ -13,6 +13,7 @@ import (
 	"time"
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"golang.org/x/net/context"
 )
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
@@ -20,11 +21,12 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		blockDoc models.Block
 		block    *ctypes.ResultBlock
 	)
+	ctx := context.Background()
 
-	if v, err := client.Block(&b); err != nil {
+	if v, err := client.Block(ctx, &b); err != nil {
 		logger.Warn("parse block fail, now try again", logger.Int64("height", b),
 			logger.String("err", err.Error()))
-		if v2, err := client.Block(&b); err != nil {
+		if v2, err := client.Block(ctx, &b); err != nil {
 			logger.Error("parse block fail", logger.Int64("height", b),
 				logger.String("err", err.Error()))
 			return &blockDoc, nil, err
@@ -61,8 +63,8 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) models.Tx {
 
 		docTxMsgs []models.DocTxMsg
 	)
-
-	if txResult, err := c.Tx(txBytes.Hash(), false); err != nil {
+	ctx := context.Background()
+	if txResult, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
 		logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
 			logger.String("err", err.Error()))
 		return docTx

@@ -31,7 +31,7 @@ func (m *DocMsgUpdateRequestContext) BuildMsg(v interface{}) {
 		coins = append(coins, &models.Coin{Denom: one.Denom, Amount: one.Amount.String()})
 	}
 
-	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextID))
+	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextId))
 	m.Providers = m.loadProviders(*msg)
 	m.Consumer = msg.Consumer.String()
 	m.ServiceFeeCap = coins

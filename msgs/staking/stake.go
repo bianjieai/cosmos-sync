@@ -20,9 +20,9 @@ func (doctx *DocTxMsgBeginRedelegate) GetType() string {
 
 func (doctx *DocTxMsgBeginRedelegate) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgBeginRedelegate)
-	doctx.DelegatorAddress = msg.DelegatorAddress.String()
-	doctx.ValidatorSrcAddress = msg.ValidatorSrcAddress.String()
-	doctx.ValidatorDstAddress = msg.ValidatorDstAddress.String()
+	doctx.DelegatorAddress = msg.DelegatorAddress
+	doctx.ValidatorSrcAddress = msg.ValidatorSrcAddress
+	doctx.ValidatorDstAddress = msg.ValidatorDstAddress
 	doctx.Amount = msg.Amount.String()
 }
 func (m *DocTxMsgBeginRedelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -33,7 +33,7 @@ func (m *DocTxMsgBeginRedelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorDstAddress.String(), msg.ValidatorSrcAddress.String())
+	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorDstAddress, msg.ValidatorSrcAddress)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -52,7 +52,7 @@ func (doctx *DocTxMsgUnjail) GetType() string {
 
 func (doctx *DocTxMsgUnjail) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgUnjail)
-	doctx.ValidatorAddr = msg.ValidatorAddr.String()
+	doctx.ValidatorAddr = msg.ValidatorAddr
 }
 func (m *DocTxMsgUnjail) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -62,7 +62,7 @@ func (m *DocTxMsgUnjail) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.ValidatorAddr.String())
+	addrs = append(addrs, msg.ValidatorAddr)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -83,8 +83,8 @@ func (doctx *DocTxMsgBeginUnbonding) GetType() string {
 
 func (doctx *DocTxMsgBeginUnbonding) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeBeginUnbonding)
-	doctx.ValidatorAddress = msg.ValidatorAddress.String()
-	doctx.DelegatorAddress = msg.DelegatorAddress.String()
+	doctx.ValidatorAddress = msg.ValidatorAddress
+	doctx.DelegatorAddress = msg.DelegatorAddress
 	doctx.Amount = msg.Amount.String()
 }
 func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -95,7 +95,7 @@ func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
+	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -116,8 +116,8 @@ func (doctx *DocTxMsgDelegate) GetType() string {
 
 func (doctx *DocTxMsgDelegate) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeDelegate)
-	doctx.ValidatorAddress = msg.ValidatorAddress.String()
-	doctx.DelegatorAddress = msg.DelegatorAddress.String()
+	doctx.ValidatorAddress = msg.ValidatorAddress
+	doctx.DelegatorAddress = msg.DelegatorAddress
 	doctx.Delegation = Coin(models.BuildDocCoin(msg.Amount))
 }
 func (m *DocTxMsgDelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -128,7 +128,7 @@ func (m *DocTxMsgDelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
+	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -150,7 +150,7 @@ func (doctx *DocMsgEditValidator) GetType() string {
 
 func (doctx *DocMsgEditValidator) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeEdit)
-	doctx.ValidatorAddress = msg.ValidatorAddress.String()
+	doctx.ValidatorAddress = msg.ValidatorAddress
 	commissionRate := msg.CommissionRate
 	if commissionRate == nil {
 		doctx.CommissionRate = ""
@@ -167,7 +167,7 @@ func (m *DocMsgEditValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.ValidatorAddress.String())
+	addrs = append(addrs, msg.ValidatorAddress)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -196,9 +196,9 @@ func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 	//if err != nil {
 	//	pubKey = ""
 	//}
-	doctx.ValidatorAddress = msg.ValidatorAddress.String()
+	doctx.ValidatorAddress = msg.ValidatorAddress
 	doctx.Pubkey = msg.Pubkey
-	doctx.DelegatorAddress = msg.DelegatorAddress.String()
+	doctx.DelegatorAddress = msg.DelegatorAddress
 	doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
 	doctx.Commission = models.CommissionRates{
 		Rate:          msg.Commission.Rate.String(),
@@ -215,7 +215,7 @@ func (m *DocTxMsgCreateValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
+	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

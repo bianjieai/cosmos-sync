@@ -13,6 +13,7 @@ import (
 	"gopkg.in/mgo.v2/txn"
 	"time"
 	"os"
+	"context"
 )
 
 func (s *SyncTaskService) StartExecuteTask() {
@@ -285,7 +286,7 @@ func getBlockChainLatestHeight() (int64, error) {
 	defer func() {
 		client.Release()
 	}()
-	status, err := client.Status()
+	status, err := client.Status(context.Background())
 	if err != nil {
 		return 0, err
 	}
