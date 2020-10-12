@@ -104,6 +104,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 				docTx.Type = msgDocInfo.DocTxMsg.Type
 			}
 
+			docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
 			docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
 			docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
 			docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
