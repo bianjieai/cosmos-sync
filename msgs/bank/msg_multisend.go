@@ -3,7 +3,6 @@ package bank
 import (
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -25,12 +24,12 @@ func (m *DocMsgMultiSend) GetType() string {
 func (m *DocMsgMultiSend) BuildMsg(v interface{}) {
 	msg := v.(*MsgMultiSend)
 	for _, one := range msg.Inputs {
-		m.Inputs = append(m.Inputs, Item{Address: one.Address.String(), Coins: models.BuildDocCoins(one.Coins)})
-		m.TempData = append(m.TempData, one.Address.String())
+		m.Inputs = append(m.Inputs, Item{Address: one.Address, Coins: models.BuildDocCoins(one.Coins)})
+		m.TempData = append(m.TempData, one.Address)
 	}
 	for _, one := range msg.Outputs {
-		m.Outputs = append(m.Outputs, Item{Address: one.Address.String(), Coins: models.BuildDocCoins(one.Coins)})
-		m.TempData = append(m.TempData, one.Address.String())
+		m.Outputs = append(m.Outputs, Item{Address: one.Address, Coins: models.BuildDocCoins(one.Coins)})
+		m.TempData = append(m.TempData, one.Address)
 	}
 
 }
@@ -38,16 +37,15 @@ func (m *DocMsgMultiSend) BuildMsg(v interface{}) {
 func (m *DocMsgMultiSend) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
-		msg MsgMultiSend
+		msg   MsgMultiSend
 	)
-
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	ConvertMsg(v, &msg)
 
 	for _, one := range msg.Inputs {
-		addrs = append(addrs, one.Address.String())
+		addrs = append(addrs, one.Address)
 	}
 	for _, one := range msg.Outputs {
-		addrs = append(addrs, one.Address.String())
+		addrs = append(addrs, one.Address)
 	}
 
 	handler := func() (Msg, []string) {

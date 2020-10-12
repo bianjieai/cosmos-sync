@@ -9,9 +9,9 @@ import (
 	"github.com/irisnet/irismod/modules/nft"
 	"github.com/irisnet/irismod/modules/record"
 	"github.com/irisnet/irismod/modules/service"
-	"github.com/irisnet/irismod/modules/token"
 	"github.com/irisnet/irismod/modules/htlc"
 	"github.com/irisnet/irismod/modules/coinswap"
+	"github.com/irisnet/irismod/modules/token"
 	"github.com/irisnet/irismod/modules/random"
 	"github.com/irisnet/irismod/modules/oracle"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
@@ -20,10 +20,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
@@ -34,6 +35,8 @@ var (
 		bank.AppModuleBasic{},
 		service.AppModuleBasic{},
 		nft.AppModuleBasic{},
+		htlc.AppModuleBasic{},
+		coinswap.AppModuleBasic{},
 		record.AppModuleBasic{},
 		token.AppModuleBasic{},
 		gov.AppModuleBasic{},
@@ -42,7 +45,7 @@ var (
 		slashing.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
-		identity.AppModuleBasic{},
+		//identity.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
@@ -55,18 +58,20 @@ var (
 
 // 初始化账户地址前缀
 func init() {
-	amino := codec.NewLegacyAmino()
+	var cdc = codec.NewLegacyAmino()
+	cryptocodec.RegisterCrypto(cdc)
+
 	interfaceRegistry := ctypes.NewInterfaceRegistry()
 	moduleBasics.RegisterInterfaces(interfaceRegistry)
-	sdk.RegisterInterfaces(interfaceRegistry)
+	std.RegisterInterfaces(interfaceRegistry)
 	marshaler := codec.NewProtoCodec(interfaceRegistry)
-	txCfg := tx.NewTxConfig(marshaler, std.DefaultPublicKeyCodec{}, tx.DefaultSignModes)
+	txCfg := tx.NewTxConfig(marshaler, tx.DefaultSignModes)
 
 	encodecfg = params.EncodingConfig{
 		InterfaceRegistry: interfaceRegistry,
 		Marshaler:         marshaler,
 		TxConfig:          txCfg,
-		Amino:             amino,
+		Amino:             cdc,
 	}
 }
 
@@ -74,6 +79,6 @@ func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
 }
 
-func GetAmino() *codec.LegacyAmino {
-	return encodecfg.Amino
-}
+//func GetAmino() *codec.LegacyAmino {
+//	return encodecfg.Amino
+//}

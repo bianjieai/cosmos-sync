@@ -2,7 +2,6 @@ package nft
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/utils"
 	"strings"
 )
 
@@ -40,7 +39,7 @@ func (m *DocMsgNFTTransfer) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg   MsgNFTTransfer
 	)
 
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Sender.String(), msg.Recipient.String())
 	handler := func() (Msg, []string) {
 		return m, addrs

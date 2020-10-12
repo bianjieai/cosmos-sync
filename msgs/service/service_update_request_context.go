@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/utils"
 	"strings"
 )
 
@@ -33,14 +32,14 @@ func (m *DocMsgUpdateRequestContext) BuildMsg(v interface{}) {
 	}
 
 	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextId))
-	m.Providers = m.loadProviders(msg)
+	m.Providers = m.loadProviders(*msg)
 	m.Consumer = msg.Consumer.String()
 	m.ServiceFeeCap = coins
 	m.Timeout = msg.Timeout
 	m.RepeatedFrequency = msg.RepeatedFrequency
 	m.RepeatedTotal = msg.RepeatedTotal
 }
-func (m *DocMsgUpdateRequestContext)loadProviders(msg *MsgUpdateRequestContext) (ret []string) {
+func (m *DocMsgUpdateRequestContext)loadProviders(msg MsgUpdateRequestContext) (ret []string) {
 	for _, one := range msg.Providers {
 		ret = append(ret, one.String())
 	}
@@ -52,8 +51,8 @@ func (m *DocMsgUpdateRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg MsgUpdateRequestContext
 	)
 
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
-	addrs = append(addrs, m.loadProviders(&msg)...)
+	ConvertMsg(v, &msg)
+	addrs = append(addrs, m.loadProviders(msg)...)
 	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs

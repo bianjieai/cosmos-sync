@@ -36,6 +36,7 @@ func (m *DocMsgDefineService) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		addrs []string
 		msg   MsgDefineService
 	)
+	ConvertMsg(v, &msg)
 
 	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
 

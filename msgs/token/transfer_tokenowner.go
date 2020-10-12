@@ -2,7 +2,6 @@ package token
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/utils"
 )
 
 type DocMsgTransferTokenOwner struct {
@@ -26,10 +25,10 @@ func (m *DocMsgTransferTokenOwner) BuildMsg(v interface{}) {
 func (m *DocMsgTransferTokenOwner) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
-		msg MsgTransferTokenOwner
+		msg   MsgTransferTokenOwner
 	)
 
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.SrcOwner.String(), msg.DstOwner.String())
 	handler := func() (Msg, []string) {
 		return m, addrs

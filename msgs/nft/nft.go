@@ -5,34 +5,25 @@ import (
 	. "github.com/bianjieai/irita-sync/msgs"
 )
 
-func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
-	var (
-		msgDocInfo MsgDocInfo
-	)
-	ok := true
-	switch v.Type() {
+
+func HandleTxMsg(msg types.Msg) (MsgDocInfo, bool) {
+
+	switch  msg.Type() {
 	case new(MsgNFTMint).Type():
 		docMsg := DocMsgNFTMint{}
-		msgDocInfo = docMsg.HandleTxMsg(v)
-		break
+		return docMsg.HandleTxMsg(msg), true
 	case new(MsgNFTEdit).Type():
 		docMsg := DocMsgNFTEdit{}
-		msgDocInfo = docMsg.HandleTxMsg(v)
-		break
+		return docMsg.HandleTxMsg(msg), true
 	case new(MsgNFTTransfer).Type():
 		docMsg := DocMsgNFTTransfer{}
-		msgDocInfo = docMsg.HandleTxMsg(v)
-		break
+		return docMsg.HandleTxMsg(msg), true
 	case new(MsgNFTBurn).Type():
 		docMsg := DocMsgNFTBurn{}
-		msgDocInfo = docMsg.HandleTxMsg(v)
-		break
+		return docMsg.HandleTxMsg(msg), true
 	case new(MsgIssueDenom).Type():
 		docMsg := DocMsgIssueDenom{}
-		msgDocInfo = docMsg.HandleTxMsg(v)
-		break
-	default:
-		ok = false
+		return docMsg.HandleTxMsg(msg), true
 	}
-	return msgDocInfo, ok
+	return MsgDocInfo{}, false
 }

@@ -2,7 +2,6 @@ package record
 
 import (
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/utils"
 )
 
 type (
@@ -47,8 +46,7 @@ func (m *DocMsgRecordCreate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		addrs []string
 		msg   MsgRecordCreate
 	)
-
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	ConvertMsg(v, &msg)
 	addrs = append(addrs, msg.Creator.String())
 	handler := func() (Msg, []string) {
 		return m, addrs

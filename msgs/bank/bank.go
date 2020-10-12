@@ -10,7 +10,7 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 		msgDocInfo MsgDocInfo
 	)
 	ok := true
-	switch v.Type() {
+	switch  v.Type() {
 	case new(MsgSend).Type():
 		docMsg := DocMsgSend{}
 		msgDocInfo = docMsg.HandleTxMsg(v)
