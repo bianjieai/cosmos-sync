@@ -12,16 +12,14 @@ import (
 	random "github.com/irisnet/irismod/modules/random/types"
 	oracle "github.com/irisnet/irismod/modules/oracle/types"
 	service "github.com/irisnet/irismod/modules/service/types"
-	random "github.com/irisnet/irismod/modules/random/types"
 	nft "github.com/irisnet/irismod/modules/nft/types"
 	record "github.com/irisnet/irismod/modules/record/types"
 	token "github.com/irisnet/irismod/modules/token/types"
 	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
-	oracle "github.com/irisnet/irismod/modules/oracle/types"
 	htlc "github.com/irisnet/irismod/modules/htlc/types"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
+	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
+	//ibc "github.com/irisnet/irishub/modules/ibc/types"
 )
 
 const (
@@ -172,13 +170,13 @@ type (
 	MsgSubmitEvidence = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant
 
-	MsgCreateIdentity = identity.MsgCreateIdentity
-	MsgUpdateIdentity = identity.MsgUpdateIdentity
+	//MsgCreateIdentity = identity.MsgCreateIdentity
+	//MsgUpdateIdentity = identity.MsgUpdateIdentity
 
-	MsgRecvPacket = ibc.MsgRecvPacket
-
-	MsgCreateClient = ibc.MsgCreateClient
-	MsgUpdateClient = ibc.MsgUpdateClient
+	//MsgRecvPacket = ibc.MsgRecvPacket
+	//
+	//MsgCreateClient = ibc.MsgCreateClient
+	//MsgUpdateClient = ibc.MsgUpdateClient
 
 	//MsgAddRoles = admin.MsgAddRoles
 	//MsgRemoveRoles = admin.MsgRemoveRoles

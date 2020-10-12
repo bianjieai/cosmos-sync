@@ -24,7 +24,7 @@ import (
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
+	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
@@ -45,7 +45,7 @@ var (
 		slashing.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
-		identity.AppModuleBasic{},
+		//identity.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
@@ -79,6 +79,6 @@ func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
 }
 
-func GetAmino() *codec.LegacyAmino {
-	return encodecfg.Amino
-}
+//func GetAmino() *codec.LegacyAmino {
+//	return encodecfg.Amino
+//}

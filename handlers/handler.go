@@ -14,8 +14,7 @@ import (
 	"github.com/bianjieai/irita-sync/msgs/evidence"
 	"github.com/bianjieai/irita-sync/msgs/staking"
 	"github.com/bianjieai/irita-sync/msgs/gov"
-	"github.com/bianjieai/irita-sync/msgs/identity"
-	"github.com/bianjieai/irita-sync/msgs/ibc"
+
 	"github.com/bianjieai/irita-sync/msgs/htlc"
 	"github.com/bianjieai/irita-sync/msgs/coinswap"
 	"github.com/bianjieai/irita-sync/msgs/oracle"
@@ -63,19 +62,19 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
 	if GovDocInfo, ok := gov.HandleTxMsg(v); ok {
 		return GovDocInfo, nil
 	}
-	if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
-		return IdentityDocInfo, nil
-	}
+	//if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
+	//	return IdentityDocInfo, nil
+	//}
 	if RandomDocInfo, ok := random.HandleTxMsg(v); ok {
 		return RandomDocInfo, nil
 	}
 	if OracleDocInfo, ok := oracle.HandleTxMsg(v); ok {
 		return OracleDocInfo, nil
 	}
-	if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
-		//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
-		return IbcDocinfo, nil
-	}
+	//if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
+	//	//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
+	//	return IbcDocinfo, nil
+	//}
 	return MsgDocInfo{}, nil
 }
 
