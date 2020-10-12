@@ -17,7 +17,7 @@ type ServerConf struct {
 
 	MaxConnectionNum  int
 	InitConnectionNum int
-	Bech32AccPrefix   string
+	Bech32ChainPrefix string
 	ChainId           string
 }
 
@@ -28,7 +28,7 @@ var (
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
-	bech32AccPrefix         = "iaa"
+	bech32ChainPrefix       = "i"
 	chainId                 = ""
 )
 
@@ -63,8 +63,8 @@ func init() {
 		}
 	}
 
-	if v, ok := os.LookupEnv(constant.EnvNameBech32AccPrefix); ok {
-		bech32AccPrefix = v
+	if v, ok := os.LookupEnv(constant.EnvNameBech32ChainPrefix); ok {
+		bech32ChainPrefix = v
 	}
 
 	if v, ok := os.LookupEnv(constant.EnvNameChainId); ok {
@@ -81,8 +81,8 @@ func init() {
 		MaxConnectionNum:  100,
 		InitConnectionNum: 5,
 
-		Bech32AccPrefix: bech32AccPrefix,
-		ChainId:         chainId,
+		Bech32ChainPrefix: bech32ChainPrefix,
+		ChainId:           chainId,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))

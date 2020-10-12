@@ -25,7 +25,7 @@ A server that synchronize irita chain data into a database
 - WORKER_MAX_SLEEP_TIME: `required` `string` num of worker to create tasks(unit: seconds)（example: `90`）
 - BLOCK_NUM_PER_WORKER_HANDLE: `required` `string`  number of blocks per sync TX task（example: `50`）
 
-- BECH32_ACC_PREFIX: `option` `string` block chain address prefix（example: `iaa`）
+- BECH32_CHAIN_PREFIX: `option` `string` block chain address prefix（default: `i` example: `i`）
 - CHAIN_ID: `option` `string` block chain id for mongodb create collection name（example: `cschain-bond`）
 
 

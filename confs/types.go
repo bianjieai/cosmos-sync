@@ -10,6 +10,6 @@ const (
 	EnvNameWorkerNumExecuteTask    = "WORKER_NUM_EXECUTE_TASK"
 	EnvNameWorkerMaxSleepTime      = "WORKER_MAX_SLEEP_TIME"
 	EnvNameBlockNumPerWorkerHandle = "BLOCK_NUM_PER_WORKER_HANDLE"
-	EnvNameBech32AccPrefix         = "BECH32_ACC_PREFIX"
+	EnvNameBech32ChainPrefix       = "BECH32_CHAIN_PREFIX"
 	EnvNameChainId                 = "CHAIN_ID"
 )
