@@ -26,12 +26,12 @@ type (
 	//		CreateAt       int64         `bson:"create_at"`
 	//		UpdateAt       int64         `bson:"update_at"`
 	//	}
-	Any struct {
-		// nolint
-		TypeUrl string `bson:"type_url"`
-		// Must be a valid serialized protocol buffer of the above specified type.
-		Value string `bson:"value"`
-	}
+	//Any struct {
+	//	// nolint
+	//	TypeUrl string `bson:"type_url"`
+	//	// Must be a valid serialized protocol buffer of the above specified type.
+	//	Value string `bson:"value"`
+	//}
 )
 
 //

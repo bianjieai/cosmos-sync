@@ -25,6 +25,14 @@ import (
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/std"
+	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/core"
+	brochain "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/brochain/types"
+	fabric "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/fabric/types"
+	tendermint "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/tendermint/types"
+	wutong "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/wutong/types"
+	bcos "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/bcos/types"
+	recordtypes "gitlab.bianjie.ai/cschain/cschain/modules/ibc/applications/record/types"
+	ibcrecord "gitlab.bianjie.ai/cschain/cschain/modules/ibc/applications/record"
 )
 
 var (
@@ -47,6 +55,8 @@ var (
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		random.AppModuleBasic{},
+		ibc.AppModuleBasic{},
+		ibcrecord.AppModuleBasic{},
 		//admin.AppModuleBasic{},
 		//validator.AppModuleBasic{},
 		//iritaslash.AppModuleBasic{},
@@ -57,6 +67,12 @@ var (
 func init() {
 	amino := codec.NewLegacyAmino()
 	interfaceRegistry := ctypes.NewInterfaceRegistry()
+	brochain.RegisterInterfaces(interfaceRegistry)
+	fabric.RegisterInterfaces(interfaceRegistry)
+	tendermint.RegisterInterfaces(interfaceRegistry)
+	wutong.RegisterInterfaces(interfaceRegistry)
+	bcos.RegisterInterfaces(interfaceRegistry)
+	recordtypes.RegisterInterfaces(interfaceRegistry)
 	moduleBasics.RegisterInterfaces(interfaceRegistry)
 	sdk.RegisterInterfaces(interfaceRegistry)
 	marshaler := codec.NewProtoCodec(interfaceRegistry)
@@ -74,6 +90,6 @@ func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
 }
 
-func GetAmino() *codec.LegacyAmino {
-	return encodecfg.Amino
+func GetMarshaler() codec.Marshaler {
+	return encodecfg.Marshaler
 }
