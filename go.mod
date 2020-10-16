@@ -3,12 +3,12 @@ module github.com/bianjieai/irita-sync
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.38.2
-	github.com/irisnet/irismod v0.0.0-20200928025052-eb7d598532a1
+	github.com/cosmos/cosmos-sdk v0.38.1
+	github.com/irisnet/irismod v1.1.0
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/tendermint/tendermint v0.34.0-rc3.0.20200907055413-3359e0bf2f84
-	gitlab.bianjie.ai/cschain/cschain v1.0.1-0.20200928025347-d9dd1fa970a6
-	gitlab.bianjie.ai/irita-pro/iritamod v0.0.0-20200928060345-896b82236631
+	gitlab.bianjie.ai/cschain/cschain v1.1.1-0.20201015031913-928bf6f994b0
+	gitlab.bianjie.ai/irita-pro/iritamod v1.1.0
 	go.uber.org/zap v1.15.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -16,7 +16,7 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/bianjieai/cosmos-sdk v0.34.4-0.20200920153336-6dd96d838b0f
+	github.com/cosmos/cosmos-sdk => github.com/bianjieai/cosmos-sdk v0.40.0-irita-200930
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
-	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.33.4-irita-200703.0.20200925112439-d4196a88a285
+	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.34.0-irita-200930
 )

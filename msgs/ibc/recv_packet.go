@@ -4,7 +4,8 @@ import (
 	. "github.com/bianjieai/irita-sync/msgs"
 	"github.com/bianjieai/irita-sync/msgs/ibc/record"
 	"github.com/bianjieai/irita-sync/libs/cdc"
-	"gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
+	"gitlab.bianjie.ai/cschain/cschain/modules/ibc/core/types"
+	recordtype "gitlab.bianjie.ai/cschain/cschain/modules/ibc/applications/record/types"
 	"github.com/bianjieai/irita-sync/utils"
 )
 
@@ -22,7 +23,7 @@ type DocMsgRecvPacket struct {
 // Packet defines a type that carries data across different chains through IBC
 type Packet struct {
 	// actual opaque bytes transferred directly to the application module
-	Data record.IBCRecord `bson:"data"`
+	Data record.Packet `bson:"data"`
 	// extended data
 	Extra string `bson:"extra"`
 }
@@ -45,9 +46,29 @@ func (m *DocMsgRecvPacket) BuildMsg(v interface{}) {
 	m.Packet.Data = DecodeToIBCRecord(msg.Packet)
 	m.Packet.Extra = string(msg.Packet.Extra)
 }
-func DecodeToIBCRecord(packet types.Packet) (ibcRecord record.IBCRecord) {
-	cdc.GetAmino().UnmarshalJSON([]byte(packet.Data), &ibcRecord)
+func DecodeToIBCRecord(packet types.Packet) (ibcRecord record.Packet) {
+	var value recordtype.Packet
+	cdc.GetMarshaler().UnmarshalJSON([]byte(packet.Data), &value)
+	ibcRecord = record.Packet{
+		ID:       value.ID,
+		Height:   value.Height,
+		Creator:  value.Creator,
+		TxHash:   value.TxHash,
+		Contents: loadPacketContents(value.Contents),
+	}
 	return
+}
+func loadPacketContents(contents []*recordtype.Content) []*record.Content {
+	sliceContent := make([]*record.Content, 0, len(contents))
+	for _, val := range contents {
+		sliceContent = append(sliceContent, &record.Content{
+			Digest:     val.Digest,
+			DigestAlgo: val.DigestAlgo,
+			Meta:       val.Meta,
+			URI:        val.URI,
+		})
+	}
+	return sliceContent
 }
 
 func (m *DocMsgRecvPacket) HandleTxMsg(v SdkMsg) MsgDocInfo {

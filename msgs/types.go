@@ -19,7 +19,7 @@ import (
 	htlc "github.com/irisnet/irismod/modules/htlc/types"
 	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/types"
+	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/core/types"
 )
 
 const (
