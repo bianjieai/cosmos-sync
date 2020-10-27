@@ -1,9 +1,9 @@
 package staking
 
 import (
+	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/bianjieai/irita-sync/models"
 )
 
 // MsgDelegate - struct for bonding transactions
@@ -158,6 +158,7 @@ func (doctx *DocMsgEditValidator) BuildMsg(txMsg interface{}) {
 		doctx.CommissionRate = commissionRate.String()
 	}
 	doctx.Description = loadDescription(msg.Description)
+	doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
 }
 func (m *DocMsgEditValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -206,6 +207,7 @@ func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 		MaxRate:       msg.Commission.MaxRate.String(),
 	}
 	doctx.Description = loadDescription(msg.Description)
+	doctx.Value = Coin{Denom: msg.Value.Denom, Amount: msg.Value.Amount.String()}
 }
 func (m *DocTxMsgCreateValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
