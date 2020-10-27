@@ -158,7 +158,9 @@ func (doctx *DocMsgEditValidator) BuildMsg(txMsg interface{}) {
 		doctx.CommissionRate = commissionRate.String()
 	}
 	doctx.Description = loadDescription(msg.Description)
-	doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
+	if msg.MinSelfDelegation != nil {
+		doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
+	}
 }
 func (m *DocMsgEditValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
