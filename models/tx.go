@@ -71,7 +71,6 @@ func (d Tx) EnsureIndexes() {
 	})
 	indexes = append(indexes, mgo.Index{
 		Key:        []string{"-height"},
-		Unique:     true,
 		Background: true,
 	})
 
