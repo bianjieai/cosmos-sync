@@ -64,6 +64,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		docTx     models.Tx
 		docTxMsgs []models.DocTxMsg
 		txnOps    []txn.Op
+		log       string
 	)
 
 	Tx, err := cdc.GetTxDecoder()(txBytes)
@@ -92,7 +93,9 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		}
 	}
 	status := parseTxStatus(txResult.TxResult.Code)
-	log := txResult.TxResult.Log
+	if status == constant.TxStatusFail {
+		log = txResult.TxResult.Log
+	}
 	txIndex := txResult.Index
 
 	msgs := authTx.GetMsgs()
