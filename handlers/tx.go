@@ -79,7 +79,11 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 		docTx.Height = txResult.Height
 		docTx.TxHash = utils.BuildHex(txBytes.Hash())
 		docTx.Status = parseTxStatus(txResult.TxResult.Code)
-		docTx.Log = txResult.TxResult.Log
+		const FailStatus = 0
+		if docTx.Status == FailStatus {
+			docTx.Log = txResult.TxResult.Log
+		}
+
 		docTx.Events = parseEvents(txResult.TxResult.Events)
 		docTx.TxIndex = txResult.Index
 
