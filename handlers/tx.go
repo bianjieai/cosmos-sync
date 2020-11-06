@@ -7,13 +7,13 @@ import (
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gopkg.in/mgo.v2/txn"
 	"golang.org/x/net/context"
+	"gopkg.in/mgo.v2/txn"
 	"time"
 )
 
@@ -81,6 +81,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 		docTx.Status = parseTxStatus(txResult.TxResult.Code)
 		docTx.Log = txResult.TxResult.Log
 		docTx.Events = parseEvents(txResult.TxResult.Events)
+		docTx.TxIndex = txResult.Index
 
 		Tx, err := cdc.GetTxDecoder()(txBytes)
 		if err != nil {
