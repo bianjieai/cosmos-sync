@@ -1,10 +1,10 @@
 package models
 
 import (
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"fmt"
 	"github.com/bianjieai/irita-sync/confs/server"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -26,6 +26,7 @@ type (
 		Signers   []string    `bson:"signers"`
 		DocTxMsgs []DocTxMsg  `bson:"msgs"`
 		Addrs     []string    `bson:"addrs"`
+		TxIndex   uint32      `bson:"tx_index"` // sequence tx of this block
 		Ext       interface{} `bson:"ext"`
 	}
 
@@ -66,6 +67,12 @@ func (d Tx) EnsureIndexes() {
 	var indexes []mgo.Index
 	indexes = append(indexes, mgo.Index{
 		Key:        []string{"-tx_hash"},
+		Unique:     true,
+		Background: true,
+	})
+
+	indexes = append(indexes, mgo.Index{
+		Key:        []string{"height", "tx_index"},
 		Unique:     true,
 		Background: true,
 	})
