@@ -7,10 +7,10 @@ import (
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
+	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"gopkg.in/mgo.v2/txn"
 	"time"
 )
@@ -93,20 +93,22 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	}
 	status := parseTxStatus(txResult.TxResult.Code)
 	log := txResult.TxResult.Log
+	txIndex := txResult.Index
 
 	msgs := authTx.GetMsgs()
 	if len(msgs) == 0 {
 		return docTx, txnOps
 	}
 	docTx = models.Tx{
-		Height: height,
-		Time:   block.Time.Unix(),
-		TxHash: txHash,
-		Fee:    &fee,
-		Memo:   memo,
-		Status: status,
-		Log:    log,
-		Events: parseEvents(txResult.TxResult.Events),
+		Height:  height,
+		Time:    block.Time.Unix(),
+		TxHash:  txHash,
+		Fee:     &fee,
+		Memo:    memo,
+		Status:  status,
+		Log:     log,
+		Events:  parseEvents(txResult.TxResult.Events),
+		TxIndex: txIndex,
 	}
 	for i, v := range msgs {
 		msgDocInfo, ops := HandleTxMsg(v)
