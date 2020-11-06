@@ -92,7 +92,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		}
 	}
 	status := parseTxStatus(txResult.TxResult.Code)
-	log := txResult.TxResult.Log
+	var log string
+	if status == constant.TxStatusFail {
+		log = txResult.TxResult.Log
+	}
 	txIndex := txResult.Index
 
 	msgs := authTx.GetMsgs()
