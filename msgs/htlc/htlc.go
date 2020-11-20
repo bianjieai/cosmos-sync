@@ -40,7 +40,7 @@ func (m *DocTxMsgCreateHTLC) HandleTxMsg(v sdk.Msg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, m.Sender, m.To)
+	addrs = append(addrs, msg.Sender.String(), msg.To.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

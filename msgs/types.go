@@ -19,6 +19,7 @@ import (
 	token "github.com/irisnet/irismod/modules/token/types"
 	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
 	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client/types"
 	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
 )
@@ -81,7 +82,8 @@ const (
 	MsgTypeCreateClient = "create_client"
 	MsgTypeUpdateClient = "update_client"
 
-	MsgTypeRecvPacket = "recv_packet"
+	MsgTypeRecvPacket  = "recv_packet"
+	MsgTypeIbcTransfer = "transfer"
 
 	MsgTypeUpdateIdentity = "update_identity"
 	MsgTypeCreateIdentity = "create_identity"
@@ -101,80 +103,82 @@ type (
 		Signers  []string
 	}
 	SdkMsg sdk.Msg
-	Msg models.Msg
+	Msg    models.Msg
 
 	Coin models.Coin
 
 	Coins []*Coin
 
-	MsgSend = bank.MsgSend
+	MsgSend      = bank.MsgSend
 	MsgMultiSend = bank.MsgMultiSend
 
-	MsgNFTMint = nft.MsgMintNFT
-	MsgNFTEdit = nft.MsgEditNFT
+	MsgNFTMint     = nft.MsgMintNFT
+	MsgNFTEdit     = nft.MsgEditNFT
 	MsgNFTTransfer = nft.MsgTransferNFT
-	MsgNFTBurn = nft.MsgBurnNFT
-	MsgIssueDenom = nft.MsgIssueDenom
+	MsgNFTBurn     = nft.MsgBurnNFT
+	MsgIssueDenom  = nft.MsgIssueDenom
 
-	MsgDefineService = service.MsgDefineService
-	MsgBindService = service.MsgBindService
-	MsgCallService = service.MsgCallService
+	MsgDefineService  = service.MsgDefineService
+	MsgBindService    = service.MsgBindService
+	MsgCallService    = service.MsgCallService
 	MsgRespondService = service.MsgRespondService
 
-	MsgUpdateServiceBinding = service.MsgUpdateServiceBinding
-	MsgSetWithdrawAddress = service.MsgSetWithdrawAddress
+	MsgUpdateServiceBinding  = service.MsgUpdateServiceBinding
+	MsgSetWithdrawAddress    = service.MsgSetWithdrawAddress
 	MsgDisableServiceBinding = service.MsgDisableServiceBinding
-	MsgEnableServiceBinding = service.MsgEnableServiceBinding
-	MsgRefundServiceDeposit = service.MsgRefundServiceDeposit
-	MsgPauseRequestContext = service.MsgPauseRequestContext
-	MsgStartRequestContext = service.MsgStartRequestContext
-	MsgKillRequestContext = service.MsgKillRequestContext
-	MsgUpdateRequestContext = service.MsgUpdateRequestContext
-	MsgWithdrawEarnedFees = service.MsgWithdrawEarnedFees
+	MsgEnableServiceBinding  = service.MsgEnableServiceBinding
+	MsgRefundServiceDeposit  = service.MsgRefundServiceDeposit
+	MsgPauseRequestContext   = service.MsgPauseRequestContext
+	MsgStartRequestContext   = service.MsgStartRequestContext
+	MsgKillRequestContext    = service.MsgKillRequestContext
+	MsgUpdateRequestContext  = service.MsgUpdateRequestContext
+	MsgWithdrawEarnedFees    = service.MsgWithdrawEarnedFees
 
 	MsgRecordCreate = record.MsgCreateRecord
 
-	MsgIssueToken = token.MsgIssueToken
-	MsgEditToken = token.MsgEditToken
-	MsgMintToken = token.MsgMintToken
+	MsgIssueToken         = token.MsgIssueToken
+	MsgEditToken          = token.MsgEditToken
+	MsgMintToken          = token.MsgMintToken
 	MsgTransferTokenOwner = token.MsgTransferTokenOwner
 
-	MsgStakeCreate = stake.MsgCreateValidator
-	MsgStakeEdit = stake.MsgEditValidator
-	MsgStakeDelegate = stake.MsgDelegate
-	MsgStakeBeginUnbonding = stake.MsgUndelegate
-	MsgBeginRedelegate = stake.MsgBeginRedelegate
-	MsgUnjail = slashing.MsgUnjail
-	MsgStakeSetWithdrawAddress = distribution.MsgSetWithdrawAddress
-	MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
-	MsgFundCommunityPool = distribution.MsgFundCommunityPool
+	MsgStakeCreate                 = stake.MsgCreateValidator
+	MsgStakeEdit                   = stake.MsgEditValidator
+	MsgStakeDelegate               = stake.MsgDelegate
+	MsgStakeBeginUnbonding         = stake.MsgUndelegate
+	MsgBeginRedelegate             = stake.MsgBeginRedelegate
+	MsgUnjail                      = slashing.MsgUnjail
+	MsgStakeSetWithdrawAddress     = distribution.MsgSetWithdrawAddress
+	MsgWithdrawDelegatorReward     = distribution.MsgWithdrawDelegatorReward
+	MsgFundCommunityPool           = distribution.MsgFundCommunityPool
 	MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
-	StakeValidator = stake.Validator
-	Delegation = stake.Delegation
-	UnbondingDelegation = stake.UnbondingDelegation
+	StakeValidator                 = stake.Validator
+	Delegation                     = stake.Delegation
+	UnbondingDelegation            = stake.UnbondingDelegation
 
-	MsgDeposit = gov.MsgDeposit
+	MsgDeposit        = gov.MsgDeposit
 	MsgSubmitProposal = gov.MsgSubmitProposal
-	TextProposal = gov.TextProposal
-	MsgVote = gov.MsgVote
-	Proposal = gov.Proposal
-	SdkVote = gov.Vote
+	TextProposal      = gov.TextProposal
+	MsgVote           = gov.MsgVote
+	Proposal          = gov.Proposal
+	SdkVote           = gov.Vote
 
-	MsgSwapOrder = coinswap.MsgSwapOrder
-	MsgAddLiquidity = coinswap.MsgAddLiquidity
+	MsgSwapOrder       = coinswap.MsgSwapOrder
+	MsgAddLiquidity    = coinswap.MsgAddLiquidity
 	MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
 
-	MsgClaimHTLC = htlc.MsgClaimHTLC
+	MsgClaimHTLC  = htlc.MsgClaimHTLC
 	MsgCreateHTLC = htlc.MsgCreateHTLC
 	MsgRefundHTLC = htlc.MsgRefundHTLC
 
-	MsgSubmitEvidence = evidence.MsgSubmitEvidence
+	MsgSubmitEvidence  = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant
 
 	//MsgCreateIdentity = identity.MsgCreateIdentity
 	//MsgUpdateIdentity = identity.MsgUpdateIdentity
 
 	MsgRecvPacket = ibc.MsgRecvPacket
+	MsgTransfer   = ibctransfer.MsgTransfer
+	//MsgTransferResponse = ibctransfer.MsgTransferResponse
 
 	MsgCreateClient = ibcclient.MsgCreateClient
 	MsgUpdateClient = ibcclient.MsgUpdateClient
@@ -191,9 +195,9 @@ type (
 	//MsgUnjailValidator = iritaslash.MsgUnjailValidator
 
 	MsgCreateFeed = oracle.MsgCreateFeed
-	MsgEditFeed = oracle.MsgEditFeed
-	MsgPauseFeed = oracle.MsgPauseFeed
-	MsgStartFeed = oracle.MsgStartFeed
+	MsgEditFeed   = oracle.MsgEditFeed
+	MsgPauseFeed  = oracle.MsgPauseFeed
+	MsgStartFeed  = oracle.MsgStartFeed
 
 	MsgRequestRandom = random.MsgRequestRandom
 )

@@ -11,6 +11,9 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
 	)
 	ok := true
 	switch v.Type() {
+	case new(MsgTransfer).Type():
+		docMsg := DocMsgTransfer{}
+		msgDocInfo = docMsg.HandleTxMsg(v)
 	case new(MsgRecvPacket).Type():
 		docMsg := DocMsgRecvPacket{}
 		msgDocInfo = docMsg.HandleTxMsg(v)
