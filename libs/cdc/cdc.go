@@ -2,30 +2,22 @@ package cdc
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/irisnet/irismod/modules/nft"
-	"github.com/irisnet/irismod/modules/record"
-	"github.com/irisnet/irismod/modules/service"
-	"github.com/irisnet/irismod/modules/htlc"
-	"github.com/irisnet/irismod/modules/coinswap"
-	"github.com/irisnet/irismod/modules/token"
-	"github.com/irisnet/irismod/modules/random"
-	"github.com/irisnet/irismod/modules/oracle"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
+	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/evidence"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
-	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
-	"github.com/cosmos/cosmos-sdk/std"
 )
 
 var (
@@ -33,12 +25,12 @@ var (
 	moduleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
-		service.AppModuleBasic{},
-		nft.AppModuleBasic{},
-		htlc.AppModuleBasic{},
-		coinswap.AppModuleBasic{},
-		record.AppModuleBasic{},
-		token.AppModuleBasic{},
+		//service.AppModuleBasic{},
+		//nft.AppModuleBasic{},
+		//htlc.AppModuleBasic{},
+		//coinswap.AppModuleBasic{},
+		//record.AppModuleBasic{},
+		//token.AppModuleBasic{},
 		gov.AppModuleBasic{},
 		staking.AppModuleBasic{},
 		distribution.AppModuleBasic{},
@@ -46,24 +38,25 @@ var (
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		//identity.AppModuleBasic{},
-		htlc.AppModuleBasic{},
-		coinswap.AppModuleBasic{},
-		oracle.AppModuleBasic{},
-		random.AppModuleBasic{},
+		//htlc.AppModuleBasic{},
+		//coinswap.AppModuleBasic{},
+		//oracle.AppModuleBasic{},
+		//random.AppModuleBasic{},
+		//ibc.AppModuleBasic{},
+		//ibctransfer.AppModuleBasic{},
 		//admin.AppModuleBasic{},
 		//validator.AppModuleBasic{},
 		//iritaslash.AppModuleBasic{},
+		ibc.AppModuleBasic{},
+		transfer.AppModuleBasic{},
 	)
 )
 
 // 初始化账户地址前缀
 func init() {
 	var cdc = codec.NewLegacyAmino()
-	cryptocodec.RegisterCrypto(cdc)
 
 	interfaceRegistry := ctypes.NewInterfaceRegistry()
-	moduleBasics.RegisterInterfaces(interfaceRegistry)
-	std.RegisterInterfaces(interfaceRegistry)
 	marshaler := codec.NewProtoCodec(interfaceRegistry)
 	txCfg := tx.NewTxConfig(marshaler, tx.DefaultSignModes)
 
@@ -73,12 +66,16 @@ func init() {
 		TxConfig:          txCfg,
 		Amino:             cdc,
 	}
+	std.RegisterLegacyAminoCodec(encodecfg.Amino)
+	std.RegisterInterfaces(encodecfg.InterfaceRegistry)
+	moduleBasics.RegisterLegacyAminoCodec(encodecfg.Amino)
+	moduleBasics.RegisterInterfaces(encodecfg.InterfaceRegistry)
 }
 
 func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
 }
 
-//func GetAmino() *codec.LegacyAmino {
-//	return encodecfg.Amino
-//}
+func GetMarshaler() codec.Marshaler {
+	return encodecfg.Marshaler
+}

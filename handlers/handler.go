@@ -1,22 +1,23 @@
 package handlers
 
 import (
-	"github.com/cosmos/cosmos-sdk/types"
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/msgs/service"
+	"github.com/bianjieai/irita-sync/msgs/bank"
+	"github.com/bianjieai/irita-sync/msgs/crisis"
+	"github.com/bianjieai/irita-sync/msgs/distribution"
+	"github.com/bianjieai/irita-sync/msgs/evidence"
+	"github.com/bianjieai/irita-sync/msgs/gov"
+	"github.com/bianjieai/irita-sync/msgs/ibc"
 	"github.com/bianjieai/irita-sync/msgs/nft"
 	"github.com/bianjieai/irita-sync/msgs/record"
-	"github.com/bianjieai/irita-sync/msgs/token"
-	"github.com/bianjieai/irita-sync/msgs/bank"
-	"github.com/bianjieai/irita-sync/msgs/distribution"
+	"github.com/bianjieai/irita-sync/msgs/service"
 	"github.com/bianjieai/irita-sync/msgs/slashing"
-	"github.com/bianjieai/irita-sync/msgs/crisis"
-	"github.com/bianjieai/irita-sync/msgs/evidence"
 	"github.com/bianjieai/irita-sync/msgs/staking"
-	"github.com/bianjieai/irita-sync/msgs/gov"
+	"github.com/bianjieai/irita-sync/msgs/token"
+	"github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/bianjieai/irita-sync/msgs/htlc"
 	"github.com/bianjieai/irita-sync/msgs/coinswap"
+	"github.com/bianjieai/irita-sync/msgs/htlc"
 	"github.com/bianjieai/irita-sync/msgs/oracle"
 	"github.com/bianjieai/irita-sync/msgs/random"
 	"gopkg.in/mgo.v2/txn"
@@ -71,10 +72,10 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
 	if OracleDocInfo, ok := oracle.HandleTxMsg(v); ok {
 		return OracleDocInfo, nil
 	}
-	//if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
-	//	//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
-	//	return IbcDocinfo, nil
-	//}
+	if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
+		//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
+		return IbcDocinfo, nil
+	}
 	return MsgDocInfo{}, nil
 }
 

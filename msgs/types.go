@@ -3,23 +3,24 @@ package msgs
 import (
 	"github.com/bianjieai/irita-sync/models"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
-	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	random "github.com/irisnet/irismod/modules/random/types"
-	oracle "github.com/irisnet/irismod/modules/oracle/types"
-	service "github.com/irisnet/irismod/modules/service/types"
-	nft "github.com/irisnet/irismod/modules/nft/types"
-	record "github.com/irisnet/irismod/modules/record/types"
-	token "github.com/irisnet/irismod/modules/token/types"
 	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
 	htlc "github.com/irisnet/irismod/modules/htlc/types"
+	nft "github.com/irisnet/irismod/modules/nft/types"
+	oracle "github.com/irisnet/irismod/modules/oracle/types"
+	random "github.com/irisnet/irismod/modules/random/types"
+	record "github.com/irisnet/irismod/modules/record/types"
+	service "github.com/irisnet/irismod/modules/service/types"
+	token "github.com/irisnet/irismod/modules/token/types"
 	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	//ibc "github.com/irisnet/irishub/modules/ibc/types"
+	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client/types"
+	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
 )
 
 const (
@@ -173,10 +174,10 @@ type (
 	//MsgCreateIdentity = identity.MsgCreateIdentity
 	//MsgUpdateIdentity = identity.MsgUpdateIdentity
 
-	//MsgRecvPacket = ibc.MsgRecvPacket
-	//
-	//MsgCreateClient = ibc.MsgCreateClient
-	//MsgUpdateClient = ibc.MsgUpdateClient
+	MsgRecvPacket = ibc.MsgRecvPacket
+
+	MsgCreateClient = ibcclient.MsgCreateClient
+	MsgUpdateClient = ibcclient.MsgUpdateClient
 
 	//MsgAddRoles = admin.MsgAddRoles
 	//MsgRemoveRoles = admin.MsgRemoveRoles

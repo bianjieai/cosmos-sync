@@ -1,6 +1,7 @@
 package staking
 
 import (
+	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -169,7 +170,8 @@ func (m *DocMsgEditValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg   MsgStakeEdit
 	)
 
-	ConvertMsg(v, &msg)
+	data,_ := cdc.GetMarshaler().MarshalJSON(v)
+	cdc.GetMarshaler().UnmarshalJSON(data,&msg)
 	addrs = append(addrs, msg.ValidatorAddress)
 	handler := func() (Msg, []string) {
 		return m, addrs
@@ -200,7 +202,9 @@ func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 	//	pubKey = ""
 	//}
 	doctx.ValidatorAddress = msg.ValidatorAddress
-	doctx.Pubkey = msg.Pubkey
+	if msg.Pubkey != nil {
+		doctx.Pubkey = msg.Pubkey.String()
+	}
 	doctx.DelegatorAddress = msg.DelegatorAddress
 	doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
 	doctx.Commission = models.CommissionRates{
@@ -217,8 +221,8 @@ func (m *DocTxMsgCreateValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		addrs []string
 		msg   MsgStakeCreate
 	)
-
-	ConvertMsg(v, &msg)
+	data,_ := cdc.GetMarshaler().MarshalJSON(v)
+	cdc.GetMarshaler().UnmarshalJSON(data,&msg)
 	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
 	handler := func() (Msg, []string) {
 		return m, addrs
