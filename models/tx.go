@@ -1,10 +1,10 @@
 package models
 
 import (
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"fmt"
 	"github.com/bianjieai/irita-sync/confs/server"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -27,6 +27,7 @@ type (
 		DocTxMsgs []DocTxMsg  `bson:"msgs"`
 		Addrs     []string    `bson:"addrs"`
 		Ext       interface{} `bson:"ext"`
+		TxIndex   uint32      `bson:"tx_index"`
 	}
 
 	Event struct {
@@ -70,7 +71,7 @@ func (d Tx) EnsureIndexes() {
 		Background: true,
 	})
 	indexes = append(indexes, mgo.Index{
-		Key:        []string{"-height"},
+		Key:        []string{"-height", "tx_index"},
 		Unique:     true,
 		Background: true,
 	})
