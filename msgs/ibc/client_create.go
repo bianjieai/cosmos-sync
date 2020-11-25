@@ -1,16 +1,15 @@
 package ibc
 
 import (
-	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 // MsgCreateClient defines a message to create an IBC client
 type DocMsgCreateClient struct {
-	ClientID       string     `bson:"client_id" yaml:"client_id"`
-	ClientState    models.Any `bson:"client_state"`
-	ConsensusState models.Any `bson:"consensus_state"`
-	Signer         string     `bson:"signer" yaml:"signer"`
+	ClientID       string `bson:"client_id" yaml:"client_id"`
+	ClientState    string `bson:"client_state"`
+	ConsensusState string `bson:"consensus_state"`
+	Signer         string `bson:"signer" yaml:"signer"`
 }
 
 func (m *DocMsgCreateClient) GetType() string {
@@ -22,9 +21,12 @@ func (m *DocMsgCreateClient) BuildMsg(v interface{}) {
 
 	m.ClientID = msg.ClientId
 	m.Signer = msg.Signer
-	m.ClientState = models.Any{TypeUrl: msg.ClientState.GetTypeUrl(), Value: string(msg.ClientState.GetValue())}
-	m.ConsensusState = models.Any{TypeUrl: msg.ConsensusState.GetTypeUrl(), Value: string(msg.ConsensusState.GetValue())}
-
+	if msg.ClientState != nil {
+		m.ClientState = msg.ClientState.String()
+	}
+	if msg.ConsensusState != nil {
+		m.ConsensusState = msg.ConsensusState.String()
+	}
 }
 
 func (m *DocMsgCreateClient) HandleTxMsg(v SdkMsg) MsgDocInfo {

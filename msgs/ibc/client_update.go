@@ -1,15 +1,14 @@
 package ibc
 
 import (
-	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
 )
 
 // MsgUpdateClient defines a message to update an IBC client
 type DocMsgUpdateClient struct {
-	ClientID string     `bson:"client_id" yaml:"client_id"`
-	Header   models.Any `bson:"header" yaml:"header"`
-	Signer   string     `bson:"signer" yaml:"signer"`
+	ClientID string `bson:"client_id" yaml:"client_id"`
+	Header   string `bson:"header" yaml:"header"`
+	Signer   string `bson:"signer" yaml:"signer"`
 }
 
 func (m *DocMsgUpdateClient) GetType() string {
@@ -21,7 +20,9 @@ func (m *DocMsgUpdateClient) BuildMsg(v interface{}) {
 
 	m.ClientID = msg.ClientId
 	m.Signer = msg.Signer
-	m.Header = models.Any{TypeUrl: msg.Header.GetTypeUrl(), Value: string(msg.Header.GetValue())}
+	if msg.Header != nil {
+		m.Header = msg.Header.String()
+	}
 }
 
 func (m *DocMsgUpdateClient) HandleTxMsg(v SdkMsg) MsgDocInfo {
