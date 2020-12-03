@@ -29,8 +29,6 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		logger.Warn("parse block fail, now try again", logger.Int64("height", b),
 			logger.String("err", err.Error()))
 		if v2, err := client.Block(ctx, &b); err != nil {
-			logger.Error("parse block fail", logger.Int64("height", b),
-				logger.String("err", err.Error()))
 			return &blockDoc, nil, txnOps, err
 		} else {
 			block = v2
@@ -70,52 +68,62 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 		txnOps    []txn.Op
 	)
 	ctx := context.Background()
-	if txResult, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-		logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
+	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
+	if err != nil {
+		logger.Error("get tx result fail, now try again", logger.String("txHash", txBytes.String()),
 			logger.String("err", err.Error()))
+		time.Sleep(time.Duration(1) * time.Second)
+		var err1 error
+		client := pool.GetClient()
+		txResult, err1 = client.Tx(ctx, txBytes.Hash(), false)
+		client.Release()
+		if err1 != nil {
+			logger.Error("get txResult err", logger.String("err", err1.Error()))
+			return docTx, txnOps
+		}
+
+	}
+	docTx.TxIndex = txResult.Index
+	docTx.Time = blockTime.Unix()
+	docTx.Height = txResult.Height
+	docTx.TxHash = utils.BuildHex(txBytes.Hash())
+	docTx.Status = parseTxStatus(txResult.TxResult.Code)
+	if docTx.Status == constant.TxStatusFail {
+		docTx.Log = txResult.TxResult.Log
+	}
+	docTx.Events = parseEvents(txResult.TxResult.Events)
+
+	Tx, err := cdc.GetTxDecoder()(txBytes)
+	if err != nil {
+		logger.Error(err.Error())
 		return docTx, txnOps
-	} else {
-		docTx.TxIndex = txResult.Index
-		docTx.Time = blockTime.Unix()
-		docTx.Height = txResult.Height
-		docTx.TxHash = utils.BuildHex(txBytes.Hash())
-		docTx.Status = parseTxStatus(txResult.TxResult.Code)
-		if docTx.Status == constant.TxStatusFail {
-			docTx.Log = txResult.TxResult.Log
-		}
-		docTx.Events = parseEvents(txResult.TxResult.Events)
+	}
+	authTx := Tx.(signing.Tx)
+	docTx.Fee = BuildFee(authTx.GetFee(), authTx.GetGas())
+	docTx.Memo = authTx.GetMemo()
 
-		Tx, err := cdc.GetTxDecoder()(txBytes)
-		if err != nil {
-			logger.Error(err.Error())
-			return docTx, txnOps
+	msgs := authTx.GetMsgs()
+	if len(msgs) == 0 {
+		return docTx, txnOps
+	}
+	for i, v := range msgs {
+		msgDocInfo, ops := HandleTxMsg(v)
+		if len(msgDocInfo.Addrs) == 0 {
+			continue
 		}
-		authTx := Tx.(signing.Tx)
-		docTx.Fee = BuildFee(authTx.GetFee(), authTx.GetGas())
-		docTx.Memo = authTx.GetMemo()
-
-		msgs := authTx.GetMsgs()
-		if len(msgs) == 0 {
-			return docTx, txnOps
+		if i == 0 {
+			docTx.Type = msgDocInfo.DocTxMsg.Type
 		}
-		for i, v := range msgs {
-			msgDocInfo, ops := HandleTxMsg(v)
-			if len(msgDocInfo.Addrs) == 0 {
-				continue
-			}
-			if i == 0 {
-				docTx.Type = msgDocInfo.DocTxMsg.Type
-			}
 
-			docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
-			docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
-			docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
-			docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
-			if len(ops) > 0 {
-				txnOps = append(txnOps, ops...)
-			}
+		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
+		docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
+		docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
+		docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
+		if len(ops) > 0 {
+			txnOps = append(txnOps, ops...)
 		}
 	}
+
 	docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
 	docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
