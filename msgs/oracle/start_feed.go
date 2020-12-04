@@ -17,7 +17,7 @@ func (m *DocMsgStartFeed) BuildMsg(v interface{}) {
 	msg := v.(*MsgStartFeed)
 
 	m.FeedName = msg.FeedName
-	m.Creator = msg.Creator.String()
+	m.Creator = msg.Creator
 }
 
 func (m *DocMsgStartFeed) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -27,7 +27,7 @@ func (m *DocMsgStartFeed) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Creator.String())
+	addrs = append(addrs, msg.Creator)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

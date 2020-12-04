@@ -32,10 +32,10 @@ func (m *DocMsgCreateFeed) BuildMsg(v interface{}) {
 	m.FeedName = msg.FeedName
 	m.LatestHistory = msg.LatestHistory
 	m.Description = msg.Description
-	m.Creator = msg.Creator.String()
+	m.Creator = msg.Creator
 	m.ServiceName = msg.ServiceName
 	for _, val := range msg.GetProviders() {
-		m.Providers = append(m.Providers, val.String())
+		m.Providers = append(m.Providers, val)
 	}
 	m.Input = msg.Input
 	m.Timeout = msg.Timeout
@@ -54,9 +54,9 @@ func (m *DocMsgCreateFeed) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v,&msg)
-	addrs = append(addrs, msg.Creator.String())
+	addrs = append(addrs, msg.Creator)
 	for _, val := range msg.GetProviders() {
-		addrs = append(addrs, val.String())
+		addrs = append(addrs, val)
 	}
 	handler := func() (Msg, []string) {
 		return m, addrs

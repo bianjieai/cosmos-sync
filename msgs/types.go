@@ -17,7 +17,7 @@ import (
 	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
 	oracle "github.com/irisnet/irismod/modules/oracle/types"
 	htlc "github.com/irisnet/irismod/modules/htlc/types"
-	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
+	"github.com/bianjieai/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/core/types"
 )
