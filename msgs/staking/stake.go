@@ -164,7 +164,9 @@ func (doctx *DocTxMsgCreateValidator) GetType() string {
 func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeCreate)
 	doctx.ValidatorAddress = msg.ValidatorAddress
-	doctx.Pubkey = msg.Pubkey.String()
+	if msg.Pubkey != nil {
+		doctx.Pubkey = msg.Pubkey.String()
+	}
 	doctx.DelegatorAddress = msg.DelegatorAddress
 	doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
 	doctx.Commission = models.CommissionRates{
