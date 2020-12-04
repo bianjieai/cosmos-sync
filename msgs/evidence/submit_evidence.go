@@ -18,7 +18,7 @@ func (m *DocMsgSubmitEvidence) GetType() string {
 
 func (m *DocMsgSubmitEvidence) BuildMsg(v interface{}) {
 	msg := v.(*MsgSubmitEvidence)
-	m.Submitter = msg.Submitter.String()
+	m.Submitter = msg.Submitter
 	evidence, _ := json.Marshal(msg.Evidence)
 	m.Evidence = string(evidence)
 
@@ -32,7 +32,7 @@ func (m *DocMsgSubmitEvidence) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Submitter.String())
+	addrs = append(addrs, msg.Submitter)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

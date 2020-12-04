@@ -17,7 +17,7 @@ func (m *DocMsgVerifyInvariant) GetType() string {
 
 func (m *DocMsgVerifyInvariant) BuildMsg(v interface{}) {
 	msg := v.(*MsgVerifyInvariant)
-	m.Sender = msg.Sender.String()
+	m.Sender = msg.Sender
 	m.InvariantModuleName= msg.InvariantModuleName
 	m.InvariantRoute = msg.InvariantRoute
 
@@ -31,7 +31,7 @@ func (m *DocMsgVerifyInvariant) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v,&msg)
-	addrs = append(addrs, msg.Sender.String())
+	addrs = append(addrs, msg.Sender)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
