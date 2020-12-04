@@ -1,9 +1,10 @@
 package htlc
 
 import (
-	"github.com/bianjieai/irita-sync/models"
+	"encoding/hex"
 	. "github.com/bianjieai/irita-sync/msgs"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/bianjieai/irita-sync/models"
 )
 
 type DocTxMsgCreateHTLC struct {
@@ -22,11 +23,11 @@ func (doctx *DocTxMsgCreateHTLC) GetType() string {
 
 func (doctx *DocTxMsgCreateHTLC) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgCreateHTLC)
-	doctx.Sender = msg.Sender
-	doctx.To = msg.To
+	doctx.Sender = msg.Sender.String()
+	doctx.To = msg.To.String()
 	doctx.Amount = models.BuildDocCoins(msg.Amount)
 	doctx.Timestamp = msg.Timestamp
-	doctx.HashLock = msg.HashLock
+	doctx.HashLock = hex.EncodeToString(msg.HashLock)
 	doctx.TimeLock = msg.TimeLock
 	doctx.ReceiverOnOtherChain = msg.ReceiverOnOtherChain
 }
@@ -59,9 +60,9 @@ func (doctx *DocTxMsgClaimHTLC) GetType() string {
 
 func (doctx *DocTxMsgClaimHTLC) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgClaimHTLC)
-	doctx.Sender = msg.Sender
-	doctx.Secret = msg.Secret
-	doctx.HashLock = msg.HashLock
+	doctx.Sender = msg.Sender.String()
+	doctx.Secret = hex.EncodeToString(msg.Secret)
+	doctx.HashLock = hex.EncodeToString(msg.HashLock)
 }
 
 func (m *DocTxMsgClaimHTLC) HandleTxMsg(v sdk.Msg) MsgDocInfo {
@@ -72,7 +73,7 @@ func (m *DocTxMsgClaimHTLC) HandleTxMsg(v sdk.Msg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Sender)
+	addrs = append(addrs, msg.Sender.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -91,8 +92,8 @@ func (doctx *DocTxMsgRefundHTLC) GetType() string {
 
 func (doctx *DocTxMsgRefundHTLC) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgRefundHTLC)
-	doctx.Sender = msg.Sender
-	doctx.HashLock = msg.HashLock
+	doctx.Sender = msg.Sender.String()
+	doctx.HashLock = hex.EncodeToString(msg.HashLock)
 }
 
 func (m *DocTxMsgRefundHTLC) HandleTxMsg(v sdk.Msg) MsgDocInfo {
@@ -103,7 +104,7 @@ func (m *DocTxMsgRefundHTLC) HandleTxMsg(v sdk.Msg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Sender)
+	addrs = append(addrs, msg.Sender.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
@@ -23,11 +22,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		txnOps   []txn.Op
 	)
 
-	ctx := context.Background()
-	if v, err := client.Block(ctx, &b); err != nil {
+	if v, err := client.Block(&b); err != nil {
 		logger.Warn("parse block fail, now try again", logger.Int64("height", b),
 			logger.String("err", err.Error()))
-		if v2, err := client.Block(ctx, &b); err != nil {
+		if v2, err := client.Block(&b); err != nil {
 			logger.Error("parse block fail", logger.Int64("height", b),
 				logger.String("err", err.Error()))
 			return &blockDoc, nil, txnOps, err
@@ -80,13 +78,13 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	authTx := Tx.(signing.Tx)
 	fee := models.BuildFee(authTx.GetFee(), authTx.GetGas())
 	memo := authTx.GetMemo()
-	ctx := context.Background()
-	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
+
+	txResult, err := c.Tx(txBytes.Hash(), false)
 	if err != nil {
 		logger.Warn("get tx result fail, now try again", logger.String("txHash", txBytes.String()),
 			logger.String("err", err.Error()))
 		time.Sleep(500 * time.Millisecond)
-		if ret, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
+		if ret, err := c.Tx(txBytes.Hash(), false); err != nil {
 			logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
 				logger.String("err", err.Error()))
 			return docTx, txnOps

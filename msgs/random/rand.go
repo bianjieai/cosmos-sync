@@ -18,7 +18,7 @@ func (doctx *DocTxMsgRequestRand) GetType() string {
 
 func (doctx *DocTxMsgRequestRand) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgRequestRandom)
-	doctx.Consumer = msg.Consumer
+	doctx.Consumer = msg.Consumer.String()
 	doctx.BlockInterval = msg.BlockInterval
 	doctx.Oracle = msg.Oracle
 	doctx.ServiceFeeCap = models.BuildDocCoins(msg.ServiceFeeCap)
@@ -31,7 +31,7 @@ func (doctx *DocTxMsgRequestRand) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Consumer)
+	addrs = append(addrs, msg.Consumer.String())
 	handler := func() (Msg, []string) {
 		return doctx, addrs
 	}

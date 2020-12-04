@@ -16,8 +16,8 @@ func (doctx *DocTxMsgSetWithdrawAddress) GetType() string {
 
 func (doctx *DocTxMsgSetWithdrawAddress) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeSetWithdrawAddress)
-	doctx.DelegatorAddress = msg.DelegatorAddress
-	doctx.WithdrawAddress = msg.WithdrawAddress
+	doctx.DelegatorAddress = msg.DelegatorAddress.String()
+	doctx.WithdrawAddress = msg.WithdrawAddress.String()
 }
 
 func (m *DocTxMsgSetWithdrawAddress) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -28,7 +28,7 @@ func (m *DocTxMsgSetWithdrawAddress) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress, msg.WithdrawAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.WithdrawAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -48,8 +48,8 @@ func (doctx *DocTxMsgWithdrawDelegatorReward) GetType() string {
 
 func (doctx *DocTxMsgWithdrawDelegatorReward) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgWithdrawDelegatorReward)
-	doctx.DelegatorAddress = msg.DelegatorAddress
-	doctx.ValidatorAddress = msg.ValidatorAddress
+	doctx.DelegatorAddress = msg.DelegatorAddress.String()
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 }
 func (m *DocTxMsgWithdrawDelegatorReward) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -59,7 +59,7 @@ func (m *DocTxMsgWithdrawDelegatorReward) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -79,7 +79,7 @@ func (doctx *DocTxMsgFundCommunityPool) GetType() string {
 
 func (doctx *DocTxMsgFundCommunityPool) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgFundCommunityPool)
-	doctx.Depositor = msg.Depositor
+	doctx.Depositor = msg.Depositor.String()
 	doctx.Amount = models.BuildDocCoins(msg.Amount)
 }
 func (m *DocTxMsgFundCommunityPool) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -90,7 +90,7 @@ func (m *DocTxMsgFundCommunityPool) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Depositor)
+	addrs = append(addrs, msg.Depositor.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -109,7 +109,7 @@ func (doctx *DocTxMsgWithdrawValidatorCommission) GetType() string {
 
 func (doctx *DocTxMsgWithdrawValidatorCommission) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgWithdrawValidatorCommission)
-	doctx.ValidatorAddress = msg.ValidatorAddress
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 }
 
 func (m *DocTxMsgWithdrawValidatorCommission) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -120,7 +120,7 @@ func (m *DocTxMsgWithdrawValidatorCommission) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.ValidatorAddress)
+	addrs = append(addrs, msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

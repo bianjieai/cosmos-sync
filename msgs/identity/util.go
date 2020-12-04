@@ -1,7 +1,7 @@
 package identity
 
 import (
-	"github.com/bianjieai/iritamod/modules/identity/types"
+	"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity/types"
 )
 
 // temporary method getPubKeyFromCertificate
@@ -11,7 +11,7 @@ func getPubKeyFromCertificate(certificate string) PubKeyInfo {
 	cert := []byte(certificate)
 	pubKey := types.GetPubKeyFromCertificate(cert)
 	return PubKeyInfo{
-		PubKey:    pubKey.PubKey,
+		PubKey:    pubKey.PubKey.String(),
 		Algorithm: int32(pubKey.Algorithm),
 	}
 }

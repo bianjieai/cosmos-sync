@@ -21,11 +21,11 @@ func (m *DocMsgUpdateIdentity) GetType() string {
 
 func (m *DocMsgUpdateIdentity) BuildMsg(v interface{}) {
 	msg := v.(*MsgUpdateIdentity)
-	m.Id = msg.Id
-	m.Owner = msg.Owner
+	m.Id = msg.Id.String()
+	m.Owner = msg.Owner.String()
 	if msg.PubKey != nil {
 		m.PubKey = &PubKeyInfo{
-			PubKey:    msg.PubKey.PubKey,
+			PubKey:    msg.PubKey.PubKey.String(),
 			Algorithm: int32(msg.PubKey.Algorithm),
 		}
 	}
@@ -46,7 +46,7 @@ func (m *DocMsgUpdateIdentity) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
-	addrs = append(addrs, msg.Owner)
+	addrs = append(addrs, msg.Owner.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
