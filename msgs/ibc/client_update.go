@@ -26,7 +26,7 @@ func (m *DocMsgUpdateClient) BuildMsg(v interface{}) {
 	}
 
 	m.ClientID = msg.ClientID
-	m.Signer = msg.Signer.String()
+	m.Signer = msg.Signer
 }
 
 func (m *DocMsgUpdateClient) HandleTxMsg(v SdkMsg) MsgDocInfo {

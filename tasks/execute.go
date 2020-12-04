@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"context"
 	"fmt"
 	svrConf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/handlers"
@@ -285,7 +286,7 @@ func getBlockChainLatestHeight() (int64, error) {
 	defer func() {
 		client.Release()
 	}()
-	status, err := client.Status()
+	status, err := client.Status(context.Background())
 	if err != nil {
 		return 0, err
 	}
