@@ -17,9 +17,9 @@ type DBConf struct {
 var (
 	DbConf   *DBConf
 	addrs    = "localhost:27018"
-	user     = "bsnhub"
-	passwd   = "bsnhubpassword"
-	database = "bsnhub-sync"
+	user     = "iris"
+	passwd   = "irispassword"
+	database = "otcibr-sync"
 )
 
 // get value of env var
