@@ -15,7 +15,7 @@ func (doctx *DocTxMsgUnjail) GetType() string {
 
 func (doctx *DocTxMsgUnjail) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgUnjail)
-	doctx.ValidatorAddr = msg.ValidatorAddr
+	doctx.ValidatorAddr = msg.ValidatorAddr.String()
 }
 func (m *DocTxMsgUnjail) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -25,7 +25,7 @@ func (m *DocTxMsgUnjail) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.ValidatorAddr)
+	addrs = append(addrs, msg.ValidatorAddr.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

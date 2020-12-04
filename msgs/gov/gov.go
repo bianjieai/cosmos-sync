@@ -1,14 +1,15 @@
 package gov
 
 import (
-	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/models"
+	"encoding/json"
 )
 
 type DocTxMsgSubmitProposal struct {
 	Proposer       string        `bson:"proposer"`        //  Address of the proposer
 	InitialDeposit []models.Coin `bson:"initial_deposit"` //  Initial deposit paid by sender. Must be strictly positive.
-	Content        interface{}   `bson:"content"`
+	Content        string        `bson:"content"`
 }
 
 func (doctx *DocTxMsgSubmitProposal) GetType() string {
@@ -17,8 +18,9 @@ func (doctx *DocTxMsgSubmitProposal) GetType() string {
 
 func (doctx *DocTxMsgSubmitProposal) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgSubmitProposal)
-	doctx.Content = msg.GetContent()
-	doctx.Proposer = msg.Proposer
+	content, _ := json.Marshal(msg.Content)
+	doctx.Content = string(content)
+	doctx.Proposer = msg.Proposer.String()
 	doctx.InitialDeposit = models.BuildDocCoins(msg.InitialDeposit)
 }
 
@@ -30,7 +32,7 @@ func (m *DocTxMsgSubmitProposal) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Proposer)
+	addrs = append(addrs, msg.Proposer.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -42,7 +44,7 @@ func (m *DocTxMsgSubmitProposal) HandleTxMsg(v SdkMsg) MsgDocInfo {
 type DocTxMsgVote struct {
 	ProposalID uint64 `bson:"proposal_id"` // ID of the proposal
 	Voter      string `bson:"voter"`       //  address of the voter
-	Option     int32  `bson:"option"`      //  option from OptionSet chosen by the voter
+	Option     string `bson:"option"`      //  option from OptionSet chosen by the voter
 }
 
 func (doctx *DocTxMsgVote) GetType() string {
@@ -51,8 +53,8 @@ func (doctx *DocTxMsgVote) GetType() string {
 
 func (doctx *DocTxMsgVote) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgVote)
-	doctx.Voter = msg.Voter
-	doctx.Option = int32(msg.Option)
+	doctx.Voter = msg.Voter.String()
+	doctx.Option = msg.Option.String()
 	doctx.ProposalID = msg.ProposalId
 }
 
@@ -64,7 +66,7 @@ func (m *DocTxMsgVote) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Voter)
+	addrs = append(addrs, msg.Voter.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -85,7 +87,7 @@ func (doctx *DocTxMsgDeposit) GetType() string {
 
 func (doctx *DocTxMsgDeposit) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgDeposit)
-	doctx.Depositor = msg.Depositor
+	doctx.Depositor = msg.Depositor.String()
 	doctx.Amount = models.BuildDocCoins(msg.Amount)
 	doctx.ProposalID = msg.ProposalId
 }
@@ -98,7 +100,7 @@ func (m *DocTxMsgDeposit) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Depositor)
+	addrs = append(addrs, msg.Depositor.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

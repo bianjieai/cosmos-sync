@@ -39,7 +39,7 @@ func (d *DocMsgRecordCreate) BuildMsg(msg interface{}) {
 	}
 
 	d.Contents = docContents
-	d.Creator = m.Creator
+	d.Creator = m.Creator.String()
 }
 
 func (m *DocMsgRecordCreate) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -49,7 +49,7 @@ func (m *DocMsgRecordCreate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
-	addrs = append(addrs, msg.Creator)
+	addrs = append(addrs, msg.Creator.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

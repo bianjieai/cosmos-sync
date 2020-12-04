@@ -32,7 +32,7 @@ func (m *DocMsgCreateClient) BuildMsg(v interface{}) {
 	}
 
 	m.ClientID = msg.ClientID
-	m.Signer = msg.Signer
+	m.Signer = msg.Signer.String()
 
 }
 

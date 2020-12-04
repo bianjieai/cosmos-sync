@@ -1,9 +1,9 @@
 package staking
 
 import (
-	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/bianjieai/irita-sync/models"
 )
 
 // MsgDelegate - struct for bonding transactions
@@ -20,9 +20,9 @@ func (doctx *DocTxMsgBeginRedelegate) GetType() string {
 
 func (doctx *DocTxMsgBeginRedelegate) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgBeginRedelegate)
-	doctx.DelegatorAddress = msg.DelegatorAddress
-	doctx.ValidatorSrcAddress = msg.ValidatorSrcAddress
-	doctx.ValidatorDstAddress = msg.ValidatorDstAddress
+	doctx.DelegatorAddress = msg.DelegatorAddress.String()
+	doctx.ValidatorSrcAddress = msg.ValidatorSrcAddress.String()
+	doctx.ValidatorDstAddress = msg.ValidatorDstAddress.String()
 	doctx.Amount = msg.Amount.String()
 }
 func (m *DocTxMsgBeginRedelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -33,13 +33,15 @@ func (m *DocTxMsgBeginRedelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorDstAddress, msg.ValidatorSrcAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorDstAddress.String(), msg.ValidatorSrcAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
 
 	return CreateMsgDocInfo(v, handler)
 }
+
+
 
 // MsgBeginUnbonding - struct for unbonding transactions
 type DocTxMsgBeginUnbonding struct {
@@ -54,8 +56,8 @@ func (doctx *DocTxMsgBeginUnbonding) GetType() string {
 
 func (doctx *DocTxMsgBeginUnbonding) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeBeginUnbonding)
-	doctx.ValidatorAddress = msg.ValidatorAddress
-	doctx.DelegatorAddress = msg.DelegatorAddress
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
+	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.Amount = msg.Amount.String()
 }
 func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -66,7 +68,7 @@ func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -78,7 +80,7 @@ func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 type DocTxMsgDelegate struct {
 	DelegatorAddress string `bson:"delegator_address"`
 	ValidatorAddress string `bson:"validator_address"`
-	Amount           models.Coin   `bson:"amount"`
+	Delegation       Coin   `bson:"delegation"`
 }
 
 func (doctx *DocTxMsgDelegate) GetType() string {
@@ -87,9 +89,9 @@ func (doctx *DocTxMsgDelegate) GetType() string {
 
 func (doctx *DocTxMsgDelegate) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeDelegate)
-	doctx.ValidatorAddress = msg.ValidatorAddress
-	doctx.DelegatorAddress = msg.DelegatorAddress
-	doctx.Amount = models.BuildDocCoin(msg.Amount)
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
+	doctx.DelegatorAddress = msg.DelegatorAddress.String()
+	doctx.Delegation = Coin(models.BuildDocCoin(msg.Amount))
 }
 func (m *DocTxMsgDelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -99,7 +101,7 @@ func (m *DocTxMsgDelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -121,7 +123,7 @@ func (doctx *DocMsgEditValidator) GetType() string {
 
 func (doctx *DocMsgEditValidator) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeEdit)
-	doctx.ValidatorAddress = msg.ValidatorAddress
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
 	commissionRate := msg.CommissionRate
 	if commissionRate == nil {
 		doctx.CommissionRate = ""
@@ -138,7 +140,7 @@ func (m *DocMsgEditValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.ValidatorAddress)
+	addrs = append(addrs, msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
@@ -154,7 +156,7 @@ type DocTxMsgCreateValidator struct {
 	DelegatorAddress  string                 `bson:"delegator_address"`
 	ValidatorAddress  string                 `bson:"validator_address"`
 	Pubkey            string                 `bson:"pubkey"`
-	Value             models.Coin            `bson:"value"`
+	Value             Coin                   `bson:"value"`
 }
 
 func (doctx *DocTxMsgCreateValidator) GetType() string {
@@ -163,11 +165,13 @@ func (doctx *DocTxMsgCreateValidator) GetType() string {
 
 func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeCreate)
-	doctx.ValidatorAddress = msg.ValidatorAddress
-	if msg.Pubkey != nil {
-		doctx.Pubkey = msg.Pubkey.String()
-	}
-	doctx.DelegatorAddress = msg.DelegatorAddress
+	//pubKey, err := itypes.Bech32ifyValPub(msg.Pubkey)
+	//if err != nil {
+	//	pubKey = ""
+	//}
+	doctx.ValidatorAddress = msg.ValidatorAddress.String()
+	doctx.Pubkey = msg.Pubkey
+	doctx.DelegatorAddress = msg.DelegatorAddress.String()
 	doctx.MinSelfDelegation = msg.MinSelfDelegation.String()
 	doctx.Commission = models.CommissionRates{
 		Rate:          msg.Commission.Rate.String(),
@@ -175,7 +179,6 @@ func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 		MaxRate:       msg.Commission.MaxRate.String(),
 	}
 	doctx.Description = loadDescription(msg.Description)
-	doctx.Value = models.BuildDocCoin(msg.Value)
 }
 func (m *DocTxMsgCreateValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -185,7 +188,7 @@ func (m *DocTxMsgCreateValidator) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.DelegatorAddress, msg.ValidatorAddress)
+	addrs = append(addrs, msg.DelegatorAddress.String(), msg.ValidatorAddress.String())
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
