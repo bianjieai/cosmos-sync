@@ -1,7 +1,6 @@
 package gov
 
 import (
-	"encoding/json"
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
 )
@@ -9,7 +8,7 @@ import (
 type DocTxMsgSubmitProposal struct {
 	Proposer       string        `bson:"proposer"`        //  Address of the proposer
 	InitialDeposit []models.Coin `bson:"initial_deposit"` //  Initial deposit paid by sender. Must be strictly positive.
-	Content        string        `bson:"content"`
+	Content        interface{}   `bson:"content"`
 }
 
 func (doctx *DocTxMsgSubmitProposal) GetType() string {
@@ -18,8 +17,7 @@ func (doctx *DocTxMsgSubmitProposal) GetType() string {
 
 func (doctx *DocTxMsgSubmitProposal) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgSubmitProposal)
-	content, _ := json.Marshal(msg.Content)
-	doctx.Content = string(content)
+	doctx.Content = msg.GetContent()
 	doctx.Proposer = msg.Proposer
 	doctx.InitialDeposit = models.BuildDocCoins(msg.InitialDeposit)
 }
