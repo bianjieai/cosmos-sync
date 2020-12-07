@@ -1,4 +1,4 @@
-FROM golang:1.13.1-alpine3.10 as builder
+FROM golang:1.14-alpine as builder
 
 # Set up dependencies
 ENV PACKAGES make gcc git libc-dev linux-headers bash
