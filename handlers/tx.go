@@ -74,6 +74,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	if err != nil {
 		logger.Warn("get tx result fail, now try again", logger.String("txHash", txBytes.String()),
 			logger.String("err", err.Error()))
+		time.Sleep(500 * time.Millisecond)
 		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
 			logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
 				logger.String("err", err.Error()))
