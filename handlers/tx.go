@@ -26,8 +26,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	ctx := context.Background()
 
 	if v, err := client.Block(ctx, &b); err != nil {
-		logger.Warn("parse block fail, now try again", logger.Int64("height", b),
-			logger.String("err", err.Error()))
+		time.Sleep(500 * time.Millisecond)
 		if v2, err := client.Block(ctx, &b); err != nil {
 			logger.Error("parse block fail", logger.Int64("height", b),
 				logger.String("err", err.Error()))
@@ -69,14 +68,13 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 		docTxMsgs []models.DocTxMsg
 		txnOps    []txn.Op
 	)
+	txHash := utils.BuildHex(txBytes.Hash())
 	ctx := context.Background()
 	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
 	if err != nil {
-		logger.Warn("get tx result fail, now try again", logger.String("txHash", txBytes.String()),
-			logger.String("err", err.Error()))
 		time.Sleep(500 * time.Millisecond)
 		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			logger.Error("get tx result fail", logger.String("txHash", txBytes.String()),
+			logger.Error("get tx result fail", logger.String("txHash", txHash),
 				logger.String("err", err.Error()))
 			return docTx, txnOps
 		} else {
@@ -85,7 +83,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	}
 	docTx.Time = blockTime.Unix()
 	docTx.Height = txResult.Height
-	docTx.TxHash = utils.BuildHex(txBytes.Hash())
+	docTx.TxHash = txHash
 	docTx.Status = parseTxStatus(txResult.TxResult.Code)
 	if docTx.Status == constant.TxStatusFail {
 		docTx.Log = txResult.TxResult.Log
