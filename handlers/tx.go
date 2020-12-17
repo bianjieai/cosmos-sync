@@ -94,7 +94,11 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 
 	Tx, err := cdc.GetTxDecoder()(txBytes)
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Error(
+			"TxDecoder have error",
+			logger.Int64("height", docTx.Height),
+			logger.String("tx_hash", docTx.TxHash),
+			logger.String("err", err.Error()))
 		return docTx, txnOps
 	}
 	authTx := Tx.(signing.Tx)
