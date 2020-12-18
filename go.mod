@@ -3,10 +3,10 @@ module github.com/bianjieai/irita-sync
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.40.0-rc3
+	github.com/cosmos/cosmos-sdk v0.40.0-rc5
 	github.com/irisnet/irismod v1.1.1-0.20200930082942-4882cf4fd17a
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/tendermint/tendermint v0.34.0-rc6
+	github.com/tendermint/tendermint v0.34.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22

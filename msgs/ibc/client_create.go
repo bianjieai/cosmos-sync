@@ -6,7 +6,6 @@ import (
 
 // MsgCreateClient defines a message to create an IBC client
 type DocMsgCreateClient struct {
-	ClientID       string `bson:"client_id" yaml:"client_id"`
 	ClientState    string `bson:"client_state"`
 	ConsensusState string `bson:"consensus_state"`
 	Signer         string `bson:"signer" yaml:"signer"`
@@ -19,7 +18,6 @@ func (m *DocMsgCreateClient) GetType() string {
 func (m *DocMsgCreateClient) BuildMsg(v interface{}) {
 	msg := v.(*MsgCreateClient)
 
-	m.ClientID = msg.ClientId
 	m.Signer = msg.Signer
 	if msg.ClientState != nil {
 		m.ClientState = msg.ClientState.String()
