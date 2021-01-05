@@ -79,3 +79,7 @@ func init() {
 func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
 }
+
+func GetMarshaler() codec.Marshaler {
+	return encodecfg.Marshaler
+}
