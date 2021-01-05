@@ -27,11 +27,11 @@ func (m *DocMsgBindService) BuildMsg(v interface{}) {
 		coins = append(coins, &Coin{Denom: one.Denom, Amount: one.Amount.String()})
 	}
 	m.ServiceName = msg.ServiceName
-	m.Provider = msg.Provider.String()
+	m.Provider = msg.Provider
 	m.Deposit = coins
 	m.Pricing = msg.Pricing
 	m.QoS = msg.QoS
-	m.Owner = msg.Owner.String()
+	m.Owner = msg.Owner
 }
 
 func (m *DocMsgBindService) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -41,7 +41,7 @@ func (m *DocMsgBindService) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
+	addrs = append(addrs, msg.Owner, msg.Provider)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

@@ -1,31 +1,31 @@
 package cdc
 
 import (
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/codec"
+	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/irisnet/irismod/modules/nft"
-	"github.com/irisnet/irismod/modules/record"
-	"github.com/irisnet/irismod/modules/service"
-	"github.com/irisnet/irismod/modules/htlc"
-	"github.com/irisnet/irismod/modules/coinswap"
-	"github.com/irisnet/irismod/modules/token"
-	"github.com/irisnet/irismod/modules/random"
-	"github.com/irisnet/irismod/modules/oracle"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/evidence"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
-	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
-	"github.com/cosmos/cosmos-sdk/std"
+	"github.com/irisnet/irismod/modules/coinswap"
+	"github.com/irisnet/irismod/modules/htlc"
+	"github.com/irisnet/irismod/modules/nft"
+	"github.com/irisnet/irismod/modules/oracle"
+	"github.com/irisnet/irismod/modules/random"
+	"github.com/irisnet/irismod/modules/record"
+	"github.com/irisnet/irismod/modules/service"
+	"github.com/irisnet/irismod/modules/token"
 )
 
 var (
@@ -50,6 +50,7 @@ var (
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		random.AppModuleBasic{},
+		wasm.AppModuleBasic{},
 		//admin.AppModuleBasic{},
 		//validator.AppModuleBasic{},
 		//iritaslash.AppModuleBasic{},
@@ -78,7 +79,3 @@ func init() {
 func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
 }
-
-//func GetAmino() *codec.LegacyAmino {
-//	return encodecfg.Amino
-//}

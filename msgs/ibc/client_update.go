@@ -21,7 +21,7 @@ package ibc
 //	msg := v.(MsgUpdateClient)
 //
 //	m.ClientID = msg.ClientID
-//	m.Signer = msg.Signer.String()
+//	m.Signer = msg.Signer
 //	m.Header = models.Any{TypeUrl: msg.Header.GetTypeUrl(), Value: string(msg.Header.GetValue())}
 //}
 //
@@ -32,7 +32,7 @@ package ibc
 //	)
 //
 //	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
-//	addrs = append(addrs, msg.Signer.String())
+//	addrs = append(addrs, msg.Signer)
 //	handler := func() (Msg, []string) {
 //		return m, addrs
 //	}

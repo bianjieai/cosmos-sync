@@ -11,7 +11,7 @@ package identity
 //	cert := []byte(certificate)
 //	pubKey := types.GetPubKeyFromCertificate(cert)
 //	return PubKeyInfo{
-//		PubKey:    pubKey.PubKey.String(),
+//		PubKey:    pubKey.PubKey,
 //		Algorithm: int32(pubKey.Algorithm),
 //	}
 //}

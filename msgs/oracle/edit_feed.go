@@ -27,10 +27,8 @@ func (m *DocMsgEditFeed) BuildMsg(v interface{}) {
 	m.FeedName = msg.FeedName
 	m.LatestHistory = msg.LatestHistory
 	m.Description = msg.Description
-	m.Creator = msg.Creator.String()
-	for _, val := range msg.GetProviders() {
-		m.Providers = append(m.Providers, val.String())
-	}
+	m.Creator = msg.Creator
+	m.Providers = msg.GetProviders()
 	m.Timeout = msg.Timeout
 	m.ServiceFeeCap = models.BuildDocCoins(msg.ServiceFeeCap)
 	m.RepeatedFrequency = msg.RepeatedFrequency
@@ -44,10 +42,8 @@ func (m *DocMsgEditFeed) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Creator.String())
-	for _, val := range msg.GetProviders() {
-		addrs = append(addrs, val.String())
-	}
+	addrs = append(addrs, msg.Creator)
+	addrs = append(addrs, msg.GetProviders()...)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

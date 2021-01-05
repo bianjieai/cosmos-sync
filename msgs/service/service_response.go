@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/hex"
 	. "github.com/bianjieai/irita-sync/msgs"
 )
 
@@ -21,8 +20,8 @@ func (m *DocMsgServiceResponse) GetType() string {
 func (m *DocMsgServiceResponse) BuildMsg(msg interface{}) {
 	v := msg.(*MsgRespondService)
 
-	m.RequestID = hex.EncodeToString(v.RequestId)
-	m.Provider = v.Provider.String()
+	m.RequestID = v.RequestId
+	m.Provider = v.Provider
 	//m.Output = hex.EncodeToString(v.Output)
 	m.Output = v.Output
 	m.Result = v.Result
@@ -35,7 +34,7 @@ func (m *DocMsgServiceResponse) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 	ConvertMsg(v, &msg)
 
-	addrs = append(addrs, msg.Provider.String(), msg.Provider.String())
+	addrs = append(addrs, msg.Provider)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

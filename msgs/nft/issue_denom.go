@@ -19,7 +19,7 @@ func (m *DocMsgIssueDenom) GetType() string {
 func (m *DocMsgIssueDenom) BuildMsg(v interface{}) {
 	msg := v.(*MsgIssueDenom)
 
-	m.Sender = msg.Sender.String()
+	m.Sender = msg.Sender
 	m.Schema = msg.Schema
 	m.Id = strings.ToLower(msg.Id)
 	m.Name = msg.Name
@@ -32,7 +32,7 @@ func (m *DocMsgIssueDenom) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Sender.String())
+	addrs = append(addrs, msg.Sender)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

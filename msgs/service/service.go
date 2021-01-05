@@ -30,7 +30,7 @@ func HandleTxMsg(msg types.Msg) (MsgDocInfo, bool) {
 		docMsg := DocMsgSetWithdrawAddress{}
 		msgData := MsgSetWithdrawAddress{}
 		ConvertMsg(msg, &msgData)
-		if msgData.Owner.String() == "" {
+		if msgData.Owner == "" {
 			return MsgDocInfo{}, false
 		}
 		return docMsg.HandleTxMsg(msg), ok
