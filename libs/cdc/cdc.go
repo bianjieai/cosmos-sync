@@ -1,7 +1,6 @@
 package cdc
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/codec"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -50,7 +49,6 @@ var (
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		random.AppModuleBasic{},
-		wasm.AppModuleBasic{},
 		//admin.AppModuleBasic{},
 		//validator.AppModuleBasic{},
 		//iritaslash.AppModuleBasic{},
