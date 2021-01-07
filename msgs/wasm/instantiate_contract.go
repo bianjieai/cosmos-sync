@@ -15,7 +15,7 @@ type DocMsgInstantiateContract struct {
 	// Label is optional metadata to be stored with a contract instance.
 	Label string `bson:"label"`
 	// InitMsg json encoded message to be passed to the contract on instantiation
-	InitMsg []byte `bson:"init_msg"`
+	InitMsg string `bson:"init_msg"`
 	// InitFunds coins that are transferred to the contract on instantiation
 	InitFunds []models.Coin `bson:"init_funds"`
 }
@@ -30,7 +30,7 @@ func (m *DocMsgInstantiateContract) BuildMsg(v interface{}) {
 	m.Admin = msg.Admin
 	m.CodeID = msg.CodeID
 	m.Label = msg.Label
-	m.InitMsg = msg.InitMsg
+	m.InitMsg = string(msg.InitMsg)
 	m.InitFunds = models.BuildDocCoins(msg.InitFunds)
 
 }

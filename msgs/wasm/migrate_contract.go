@@ -12,7 +12,7 @@ type DocMsgMigrateContract struct {
 	// CodeID references the new WASM code
 	CodeID uint64 `bson:"code_id"`
 	// MigrateMsg json encoded message to be passed to the contract on migration
-	MigrateMsg []byte `bson:"migrate_msg"`
+	MigrateMsg string `bson:"migrate_msg"`
 }
 
 func (m *DocMsgMigrateContract) GetType() string {
@@ -24,7 +24,7 @@ func (m *DocMsgMigrateContract) BuildMsg(v interface{}) {
 	m.Sender = msg.Sender
 	m.Contract = msg.Contract
 	m.CodeID = msg.CodeID
-	m.MigrateMsg = msg.MigrateMsg
+	m.MigrateMsg = string(msg.MigrateMsg)
 
 }
 
@@ -35,7 +35,7 @@ func (m *DocMsgMigrateContract) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Sender)
+	addrs = append(addrs, msg.Sender, msg.Contract)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

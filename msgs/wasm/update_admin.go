@@ -32,7 +32,7 @@ func (m *DocMsgUpdateAdmin) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Sender, msg.NewAdmin)
+	addrs = append(addrs, msg.Sender, msg.NewAdmin, msg.Contract)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
