@@ -29,7 +29,7 @@ func (m *DocMsgStoreCode) GetType() string {
 func (m *DocMsgStoreCode) BuildMsg(v interface{}) {
 	msg := v.(*MsgStoreCode)
 	m.Sender = msg.Sender
-	m.WASMByteCode = msg.WASMByteCode
+	//m.WASMByteCode = msg.WASMByteCode
 	m.Source = msg.Source
 	m.Builder = msg.Builder
 	if msg.InstantiatePermission != nil {
