@@ -1,22 +1,23 @@
 package msgs
 
 import (
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/bianjieai/irita-sync/models"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distribution "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
-	evidence "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	random "github.com/irisnet/irismod/modules/random/types"
-	oracle "github.com/irisnet/irismod/modules/oracle/types"
-	service "github.com/irisnet/irismod/modules/service/types"
-	nft "github.com/irisnet/irismod/modules/nft/types"
-	record "github.com/irisnet/irismod/modules/record/types"
-	token "github.com/irisnet/irismod/modules/token/types"
 	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
 	htlc "github.com/irisnet/irismod/modules/htlc/types"
+	nft "github.com/irisnet/irismod/modules/nft/types"
+	oracle "github.com/irisnet/irismod/modules/oracle/types"
+	random "github.com/irisnet/irismod/modules/random/types"
+	record "github.com/irisnet/irismod/modules/record/types"
+	service "github.com/irisnet/irismod/modules/service/types"
+	token "github.com/irisnet/irismod/modules/token/types"
 	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	//ibc "github.com/irisnet/irishub/modules/ibc/types"
@@ -91,6 +92,13 @@ const (
 	TxTypeEditFeed   = "edit_feed"
 	TxTypePauseFeed  = "pause_feed"
 	TxTypeStartFeed  = "start_feed"
+
+	MsgTypeUpdateAdmin         = "update_contract_admin"
+	MsgTypeClearAdmin          = "clear_contract_admin"
+	MsgTypeExecuteContract     = "execute"
+	MsgTypeInstantiateContract = "instantiate"
+	MsgTypeMigrateContract     = "migrate"
+	MsgTypeStoreCode           = "store_code"
 )
 
 type (
@@ -100,74 +108,74 @@ type (
 		Signers  []string
 	}
 	SdkMsg sdk.Msg
-	Msg models.Msg
+	Msg    models.Msg
 
 	Coin models.Coin
 
 	Coins []*Coin
 
-	MsgSend = bank.MsgSend
+	MsgSend      = bank.MsgSend
 	MsgMultiSend = bank.MsgMultiSend
 
-	MsgNFTMint = nft.MsgMintNFT
-	MsgNFTEdit = nft.MsgEditNFT
+	MsgNFTMint     = nft.MsgMintNFT
+	MsgNFTEdit     = nft.MsgEditNFT
 	MsgNFTTransfer = nft.MsgTransferNFT
-	MsgNFTBurn = nft.MsgBurnNFT
-	MsgIssueDenom = nft.MsgIssueDenom
+	MsgNFTBurn     = nft.MsgBurnNFT
+	MsgIssueDenom  = nft.MsgIssueDenom
 
-	MsgDefineService = service.MsgDefineService
-	MsgBindService = service.MsgBindService
-	MsgCallService = service.MsgCallService
+	MsgDefineService  = service.MsgDefineService
+	MsgBindService    = service.MsgBindService
+	MsgCallService    = service.MsgCallService
 	MsgRespondService = service.MsgRespondService
 
-	MsgUpdateServiceBinding = service.MsgUpdateServiceBinding
-	MsgSetWithdrawAddress = service.MsgSetWithdrawAddress
+	MsgUpdateServiceBinding  = service.MsgUpdateServiceBinding
+	MsgSetWithdrawAddress    = service.MsgSetWithdrawAddress
 	MsgDisableServiceBinding = service.MsgDisableServiceBinding
-	MsgEnableServiceBinding = service.MsgEnableServiceBinding
-	MsgRefundServiceDeposit = service.MsgRefundServiceDeposit
-	MsgPauseRequestContext = service.MsgPauseRequestContext
-	MsgStartRequestContext = service.MsgStartRequestContext
-	MsgKillRequestContext = service.MsgKillRequestContext
-	MsgUpdateRequestContext = service.MsgUpdateRequestContext
-	MsgWithdrawEarnedFees = service.MsgWithdrawEarnedFees
+	MsgEnableServiceBinding  = service.MsgEnableServiceBinding
+	MsgRefundServiceDeposit  = service.MsgRefundServiceDeposit
+	MsgPauseRequestContext   = service.MsgPauseRequestContext
+	MsgStartRequestContext   = service.MsgStartRequestContext
+	MsgKillRequestContext    = service.MsgKillRequestContext
+	MsgUpdateRequestContext  = service.MsgUpdateRequestContext
+	MsgWithdrawEarnedFees    = service.MsgWithdrawEarnedFees
 
 	MsgRecordCreate = record.MsgCreateRecord
 
-	MsgIssueToken = token.MsgIssueToken
-	MsgEditToken = token.MsgEditToken
-	MsgMintToken = token.MsgMintToken
+	MsgIssueToken         = token.MsgIssueToken
+	MsgEditToken          = token.MsgEditToken
+	MsgMintToken          = token.MsgMintToken
 	MsgTransferTokenOwner = token.MsgTransferTokenOwner
 
-	MsgStakeCreate = stake.MsgCreateValidator
-	MsgStakeEdit = stake.MsgEditValidator
-	MsgStakeDelegate = stake.MsgDelegate
-	MsgStakeBeginUnbonding = stake.MsgUndelegate
-	MsgBeginRedelegate = stake.MsgBeginRedelegate
-	MsgUnjail = slashing.MsgUnjail
-	MsgStakeSetWithdrawAddress = distribution.MsgSetWithdrawAddress
-	MsgWithdrawDelegatorReward = distribution.MsgWithdrawDelegatorReward
-	MsgFundCommunityPool = distribution.MsgFundCommunityPool
+	MsgStakeCreate                 = stake.MsgCreateValidator
+	MsgStakeEdit                   = stake.MsgEditValidator
+	MsgStakeDelegate               = stake.MsgDelegate
+	MsgStakeBeginUnbonding         = stake.MsgUndelegate
+	MsgBeginRedelegate             = stake.MsgBeginRedelegate
+	MsgUnjail                      = slashing.MsgUnjail
+	MsgStakeSetWithdrawAddress     = distribution.MsgSetWithdrawAddress
+	MsgWithdrawDelegatorReward     = distribution.MsgWithdrawDelegatorReward
+	MsgFundCommunityPool           = distribution.MsgFundCommunityPool
 	MsgWithdrawValidatorCommission = distribution.MsgWithdrawValidatorCommission
-	StakeValidator = stake.Validator
-	Delegation = stake.Delegation
-	UnbondingDelegation = stake.UnbondingDelegation
+	StakeValidator                 = stake.Validator
+	Delegation                     = stake.Delegation
+	UnbondingDelegation            = stake.UnbondingDelegation
 
-	MsgDeposit = gov.MsgDeposit
+	MsgDeposit        = gov.MsgDeposit
 	MsgSubmitProposal = gov.MsgSubmitProposal
-	TextProposal = gov.TextProposal
-	MsgVote = gov.MsgVote
-	Proposal = gov.Proposal
-	SdkVote = gov.Vote
+	TextProposal      = gov.TextProposal
+	MsgVote           = gov.MsgVote
+	Proposal          = gov.Proposal
+	SdkVote           = gov.Vote
 
-	MsgSwapOrder = coinswap.MsgSwapOrder
-	MsgAddLiquidity = coinswap.MsgAddLiquidity
+	MsgSwapOrder       = coinswap.MsgSwapOrder
+	MsgAddLiquidity    = coinswap.MsgAddLiquidity
 	MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
 
-	MsgClaimHTLC = htlc.MsgClaimHTLC
+	MsgClaimHTLC  = htlc.MsgClaimHTLC
 	MsgCreateHTLC = htlc.MsgCreateHTLC
 	MsgRefundHTLC = htlc.MsgRefundHTLC
 
-	MsgSubmitEvidence = evidence.MsgSubmitEvidence
+	MsgSubmitEvidence  = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant
 
 	//MsgCreateIdentity = identity.MsgCreateIdentity
@@ -190,9 +198,16 @@ type (
 	//MsgUnjailValidator = iritaslash.MsgUnjailValidator
 
 	MsgCreateFeed = oracle.MsgCreateFeed
-	MsgEditFeed = oracle.MsgEditFeed
-	MsgPauseFeed = oracle.MsgPauseFeed
-	MsgStartFeed = oracle.MsgStartFeed
+	MsgEditFeed   = oracle.MsgEditFeed
+	MsgPauseFeed  = oracle.MsgPauseFeed
+	MsgStartFeed  = oracle.MsgStartFeed
 
 	MsgRequestRandom = random.MsgRequestRandom
+
+	MsgStoreCode           = wasm.MsgStoreCode
+	MsgInstantiateContract = wasm.MsgInstantiateContract
+	MsgExecuteContract     = wasm.MsgExecuteContract
+	MsgMigrateContract     = wasm.MsgMigrateContract
+	MsgUpdateAdmin         = wasm.MsgUpdateAdmin
+	MsgClearAdmin          = wasm.MsgClearAdmin
 )
