@@ -23,9 +23,9 @@ func (m *DocMsgNFTEdit) GetType() string {
 func (m *DocMsgNFTEdit) BuildMsg(v interface{}) {
 	msg := v.(*MsgNFTEdit)
 
-	m.Sender = msg.Sender.String()
+	m.Sender = msg.Sender
 	m.Id = strings.ToLower(msg.Id)
-	m.Denom = strings.ToLower(msg.Denom)
+	m.Denom = strings.ToLower(msg.DenomId)
 	m.URI = msg.URI
 	m.Data = msg.Data
 	m.Name = msg.Name
@@ -38,7 +38,7 @@ func (m *DocMsgNFTEdit) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Sender.String())
+	addrs = append(addrs, msg.Sender)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

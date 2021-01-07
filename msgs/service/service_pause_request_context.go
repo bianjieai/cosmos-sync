@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/hex"
 	. "github.com/bianjieai/irita-sync/msgs"
 	"strings"
 )
@@ -20,8 +19,8 @@ func (m *DocMsgPauseRequestContext) GetType() string {
 func (m *DocMsgPauseRequestContext) BuildMsg(v interface{}) {
 	msg := v.(*MsgPauseRequestContext)
 
-	m.RequestContextID = strings.ToUpper(hex.EncodeToString(msg.RequestContextId))
-	m.Consumer = msg.Consumer.String()
+	m.RequestContextID = strings.ToUpper(msg.RequestContextId)
+	m.Consumer = msg.Consumer
 }
 
 func (m *DocMsgPauseRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -30,7 +29,7 @@ func (m *DocMsgPauseRequestContext) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg MsgPauseRequestContext
 	)
 
-	addrs = append(addrs, msg.Consumer.String())
+	addrs = append(addrs, msg.Consumer)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

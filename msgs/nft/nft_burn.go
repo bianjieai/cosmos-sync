@@ -20,9 +20,9 @@ func (m *DocMsgNFTBurn) GetType() string {
 func (m *DocMsgNFTBurn) BuildMsg(v interface{}) {
 	msg := v.(*MsgNFTBurn)
 
-	m.Sender = msg.Sender.String()
+	m.Sender = msg.Sender
 	m.Id = strings.ToLower(msg.Id)
-	m.Denom = strings.ToLower(msg.Denom)
+	m.Denom = strings.ToLower(msg.DenomId)
 }
 
 func (m *DocMsgNFTBurn) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -32,7 +32,7 @@ func (m *DocMsgNFTBurn) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Sender.String())
+	addrs = append(addrs, msg.Sender)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

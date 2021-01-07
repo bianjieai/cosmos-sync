@@ -27,7 +27,7 @@ func (m *DocMsgIssueToken) BuildMsg(v interface{}) {
 	m.Scale = msg.Scale
 	m.MinUnit = msg.MinUnit
 	m.InitialSupply = msg.InitialSupply
-	m.Owner = msg.Owner.String()
+	m.Owner = msg.Owner
 	m.MaxSupply = msg.MaxSupply
 	m.Mintable = msg.Mintable
 }
@@ -39,7 +39,7 @@ func (m *DocMsgIssueToken) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v,&msg)
-	addrs = append(addrs, msg.Owner.String())
+	addrs = append(addrs, msg.Owner)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

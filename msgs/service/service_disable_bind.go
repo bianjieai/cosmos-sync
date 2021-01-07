@@ -20,8 +20,8 @@ func (m *DocMsgDisableServiceBinding) BuildMsg(v interface{}) {
 	msg := v.(*MsgDisableServiceBinding)
 
 	m.ServiceName = msg.ServiceName
-	m.Provider = msg.Provider.String()
-	m.Owner = msg.Owner.String()
+	m.Provider = msg.Provider
+	m.Owner = msg.Owner
 }
 
 func (m *DocMsgDisableServiceBinding) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -31,7 +31,7 @@ func (m *DocMsgDisableServiceBinding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	ConvertMsg(v, &msg)
-	addrs = append(addrs, msg.Owner.String(), msg.Provider.String())
+	addrs = append(addrs, msg.Owner, msg.Provider)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}
