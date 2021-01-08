@@ -13,7 +13,6 @@ import (
 	"github.com/bianjieai/irita-sync/msgs/slashing"
 	"github.com/bianjieai/irita-sync/msgs/staking"
 	"github.com/bianjieai/irita-sync/msgs/token"
-	"github.com/bianjieai/irita-sync/msgs/wasm"
 	"github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/bianjieai/irita-sync/msgs/coinswap"
@@ -72,9 +71,9 @@ func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
 	if OracleDocInfo, ok := oracle.HandleTxMsg(v); ok {
 		return OracleDocInfo, nil
 	}
-	if WasmDocInfo, ok := wasm.HandleTxMsg(v); ok {
-		return WasmDocInfo, nil
-	}
+	//if WasmDocInfo, ok := wasm.HandleTxMsg(v); ok {
+	//	return WasmDocInfo, nil
+	//}
 	//if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
 	//	//ops := handlerIbcClient(IbcDocinfo.DocTxMsg.Type, ibcClient)
 	//	return IbcDocinfo, nil

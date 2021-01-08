@@ -3,7 +3,7 @@ module github.com/bianjieai/irita-sync
 go 1.15
 
 require (
-    github.com/CosmWasm/wasmd v0.13.1-0.20201217131318-53bbf96e9e87
+    //github.com/CosmWasm/wasmd v0.13.1-0.20201217131318-53bbf96e9e87
 	github.com/cosmos/cosmos-sdk v0.40.0-rc5
 	github.com/irisnet/irismod v1.1.1-0.20201229063925-7d7dad20f951
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible

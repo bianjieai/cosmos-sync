@@ -1,7 +1,7 @@
 package cdc
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
+	//"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/codec"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -16,8 +16,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	sdkparams "github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/irisnet/irismod/modules/coinswap"
 	"github.com/irisnet/irismod/modules/htlc"
 	"github.com/irisnet/irismod/modules/nft"
@@ -45,12 +47,14 @@ var (
 		slashing.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
+		sdkparams.AppModuleBasic{},
+		upgrade.AppModuleBasic{},
 		//identity.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		random.AppModuleBasic{},
-		wasm.AppModuleBasic{},
+		//wasm.AppModuleBasic{},
 		//admin.AppModuleBasic{},
 		//validator.AppModuleBasic{},
 		//iritaslash.AppModuleBasic{},

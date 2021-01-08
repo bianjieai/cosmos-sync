@@ -1,7 +1,7 @@
 package msgs
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
+	//"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/bianjieai/irita-sync/models"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisis "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -204,10 +204,10 @@ type (
 
 	MsgRequestRandom = random.MsgRequestRandom
 
-	MsgStoreCode           = wasm.MsgStoreCode
-	MsgInstantiateContract = wasm.MsgInstantiateContract
-	MsgExecuteContract     = wasm.MsgExecuteContract
-	MsgMigrateContract     = wasm.MsgMigrateContract
-	MsgUpdateAdmin         = wasm.MsgUpdateAdmin
-	MsgClearAdmin          = wasm.MsgClearAdmin
+	//MsgStoreCode           = wasm.MsgStoreCode
+	//MsgInstantiateContract = wasm.MsgInstantiateContract
+	//MsgExecuteContract     = wasm.MsgExecuteContract
+	//MsgMigrateContract     = wasm.MsgMigrateContract
+	//MsgUpdateAdmin         = wasm.MsgUpdateAdmin
+	//MsgClearAdmin          = wasm.MsgClearAdmin
 )
