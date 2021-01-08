@@ -28,8 +28,6 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(500 * time.Millisecond)
 		if v2, err := client.Block(ctx, &b); err != nil {
-			logger.Error("parse block fail", logger.Int64("height", b),
-				logger.String("err", err.Error()))
 			return &blockDoc, nil, txnOps, err
 		} else {
 			block = v2
