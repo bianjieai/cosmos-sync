@@ -16,8 +16,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	sdkparams "github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/irisnet/irismod/modules/coinswap"
 	"github.com/irisnet/irismod/modules/htlc"
 	"github.com/irisnet/irismod/modules/nft"
@@ -45,6 +47,8 @@ var (
 		slashing.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
+		sdkparams.AppModuleBasic{},
+		upgrade.AppModuleBasic{},
 		//identity.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
