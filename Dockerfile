@@ -7,7 +7,7 @@ COPY  . $GOPATH/src
 WORKDIR $GOPATH/src
 
 # Install minimum necessary dependencies, build binary
-RUN set -eux; apk add --no-cache $PACKAGES
+RUN apk add --no-cache $PACKAGES
 
 # See https://github.com/CosmWasm/wasmvm/releases
 ADD https://github.com/CosmWasm/wasmvm/releases/download/v0.13.0/libwasmvm_muslc.a /lib/libwasmvm_muslc.a
