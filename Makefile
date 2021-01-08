@@ -8,7 +8,10 @@ GO_ENV=$(GOCMD) env
 BINARY_NAME=irita-sync
 BINARY_UNIX=$(BINARY_NAME)-unix
 export GO111MODULE = on
-
+build_tags = netgo
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+BUILD_FLAGS := -tags "$(build_tags)"
 all: get_deps build
 
 get_deps:
@@ -18,7 +21,7 @@ get_deps:
 	$(GO_MOD) vendor
 
 build:
-	$(GOBUILD) -o $(BINARY_NAME) .
+	$(GOBUILD) $(BUILD_FLAGS) -o $(BINARY_NAME) .
 
 clean:
 	$(GOCLEAN)
