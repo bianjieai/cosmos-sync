@@ -166,6 +166,7 @@ type (
 	MsgVote           = gov.MsgVote
 	Proposal          = gov.Proposal
 	SdkVote           = gov.Vote
+	GovContent        = gov.Content
 
 	MsgSwapOrder       = coinswap.MsgSwapOrder
 	MsgAddLiquidity    = coinswap.MsgAddLiquidity
