@@ -34,6 +34,7 @@ const (
 	MsgTypeRecordCreate = "create_record"
 
 	MsgTypeMintToken          = "mint_token"
+	MsgTypeBurnToken          = "burn_token"
 	MsgTypeEditToken          = "edit_token"
 	MsgTypeIssueToken         = "issue_token"
 	MsgTypeTransferTokenOwner = "transfer_token_owner"
@@ -143,6 +144,7 @@ type (
 
 	MsgIssueToken         = token.MsgIssueToken
 	MsgEditToken          = token.MsgEditToken
+	MsgBurnToken          = token.MsgBurnToken
 	MsgMintToken          = token.MsgMintToken
 	MsgTransferTokenOwner = token.MsgTransferTokenOwner
 
