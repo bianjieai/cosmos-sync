@@ -9,18 +9,19 @@ import (
 )
 
 type ServerConf struct {
-	NodeUrls                []string
-	WorkerNumCreateTask     int
-	WorkerNumExecuteTask    int
-	WorkerMaxSleepTime      int
-	BlockNumPerWorkerHandle int
+	NodeUrls                  []string
+	WorkerNumCreateTask       int
+	WorkerNumExecuteTask      int
+	WorkerMaxSleepTime        int
+	BlockNumPerWorkerHandle   int
 	SleepTimeCreateTaskWorker int
 
-	MaxConnectionNum  int
-	InitConnectionNum int
-	Bech32ChainPrefix string
-	ChainId           string
-	ChainBlockInterval int
+	MaxConnectionNum     int
+	InitConnectionNum    int
+	Bech32ChainPrefix    string
+	ChainId              string
+	ChainBlockInterval   int
+	RetryRequsetInterval int
 }
 
 var (
@@ -33,6 +34,7 @@ var (
 	bech32ChainPrefix       = "i"
 	chainId                 = ""
 	chainBlockInterval      = 5
+	retryRequsetInterval    = 1
 )
 
 // get value of env var
@@ -80,6 +82,13 @@ func init() {
 			chainBlockInterval = n
 		}
 	}
+	if v, ok := os.LookupEnv(constant.EnvNameRetryRequestInterval); ok {
+		if n, err := utils.ConvStrToInt(v); err != nil {
+			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameRetryRequestInterval, v))
+		} else {
+			retryRequsetInterval = n
+		}
+	}
 
 	// calculate sleep time of create task goroutine, time unit is second
 	// 1. sleepTime must less than blockNumPerWorkerHandle*chainTimeInterval,
@@ -101,9 +110,10 @@ func init() {
 		MaxConnectionNum:  100,
 		InitConnectionNum: 5,
 
-		Bech32ChainPrefix: bech32ChainPrefix,
-		ChainId:            chainId,
-		ChainBlockInterval: chainBlockInterval,
+		Bech32ChainPrefix:    bech32ChainPrefix,
+		ChainId:              chainId,
+		ChainBlockInterval:   chainBlockInterval,
+		RetryRequsetInterval: retryRequsetInterval,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))
