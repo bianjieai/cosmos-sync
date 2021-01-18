@@ -179,7 +179,9 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 			continue
 		}
 
-		inProcessBlock = inProcessBlock - int64(svrConf.SvrConf.BehindBlockNum)
+		if blockChainLatestHeight-inProcessBlock < int64(svrConf.SvrConf.BehindBlockNum) {
+			continue
+		}
 		// parse data from block
 		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
