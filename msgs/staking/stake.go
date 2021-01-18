@@ -108,7 +108,7 @@ func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 type DocTxMsgDelegate struct {
 	DelegatorAddress string `bson:"delegator_address"`
 	ValidatorAddress string `bson:"validator_address"`
-	Delegation       Coin   `bson:"delegation"`
+	Amount           Coin   `bson:"amount"`
 }
 
 func (doctx *DocTxMsgDelegate) GetType() string {
@@ -119,7 +119,7 @@ func (doctx *DocTxMsgDelegate) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeDelegate)
 	doctx.ValidatorAddress = msg.ValidatorAddress
 	doctx.DelegatorAddress = msg.DelegatorAddress
-	doctx.Delegation = Coin(models.BuildDocCoin(msg.Amount))
+	doctx.Amount = Coin(models.BuildDocCoin(msg.Amount))
 }
 func (m *DocTxMsgDelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
