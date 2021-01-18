@@ -26,7 +26,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	ctx := context.Background()
 
 	if v, err := client.Block(ctx, &b); err != nil {
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
 			logger.Error("parse block fail", logger.Int64("height", b),
 				logger.String("err", err.Error()))
@@ -72,7 +72,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	ctx := context.Background()
 	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
 	if err != nil {
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
 			logger.Error("get tx result fail", logger.String("txHash", txHash),
 				logger.String("err", err.Error()))
