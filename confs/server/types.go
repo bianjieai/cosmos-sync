@@ -86,7 +86,9 @@ func init() {
 		if n, err := utils.ConvStrToInt(v); err != nil {
 			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameWaitBlockNumHandle, v))
 		} else {
-			waitBlockNumHandle = n
+			if n > 1 {
+				waitBlockNumHandle = n
+			}
 		}
 	}
 
