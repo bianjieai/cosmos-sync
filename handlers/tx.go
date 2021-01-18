@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
@@ -29,13 +28,9 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
-			//if retry get block fail, wait block num before parse block
-			time.Sleep(time.Duration(server.SvrConf.ChainBlockInterval*server.SvrConf.WaitBlockNumHandle) * time.Second)
-			if v, err := client.Block(ctx, &b); err != nil {
-				return &blockDoc, nil, txnOps, err
-			} else {
-				block = v
-			}
+			logger.Error("parse block fail", logger.Int64("height", b),
+				logger.String("err", err.Error()))
+			return &blockDoc, nil, txnOps, err
 		} else {
 			block = v2
 		}
@@ -79,16 +74,9 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	if err != nil {
 		time.Sleep(1 * time.Second)
 		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			//if retry tx result fail, wait block num before parse block
-			time.Sleep(time.Duration(server.SvrConf.ChainBlockInterval*server.SvrConf.WaitBlockNumHandle) * time.Second)
-			if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-				logger.Error("get tx result fail", logger.String("txHash", txHash),
-					logger.String("err", err.Error()))
-				return docTx, txnOps
-			} else {
-				txResult = v
-			}
-
+			logger.Error("get tx result fail", logger.String("txHash", txHash),
+				logger.String("err", err.Error()))
+			return docTx, txnOps
 		} else {
 			txResult = v
 		}

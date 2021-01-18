@@ -34,7 +34,7 @@ var (
 	bech32ChainPrefix       = "i"
 	chainId                 = ""
 	chainBlockInterval      = 5
-	waitBlockNumHandle      = 1
+	waitBlockNumHandle      = 0
 )
 
 // get value of env var
@@ -86,9 +86,7 @@ func init() {
 		if n, err := utils.ConvStrToInt(v); err != nil {
 			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameWaitBlockNumHandle, v))
 		} else {
-			if n > 1 {
-				waitBlockNumHandle = n
-			}
+			waitBlockNumHandle = n
 		}
 	}
 

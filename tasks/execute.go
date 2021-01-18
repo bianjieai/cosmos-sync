@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"context"
 	"fmt"
 	svrConf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/handlers"
@@ -11,9 +12,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2/txn"
-	"time"
 	"os"
-	"context"
+	"time"
 )
 
 func (s *SyncTaskService) StartExecuteTask() {
@@ -291,7 +291,7 @@ func getBlockChainLatestHeight() (int64, error) {
 		return 0, err
 	}
 
-	return status.SyncInfo.LatestBlockHeight, nil
+	return status.SyncInfo.LatestBlockHeight - int64(svrConf.SvrConf.WaitBlockNumHandle), nil
 }
 
 func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask, opsDoc []txn.Op) error {

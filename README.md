@@ -28,7 +28,7 @@ A server that synchronize irita chain data into a database
 - BECH32_CHAIN_PREFIX: `option` `string` block chain address prefix（default: `i` example: `i`）
 - CHAIN_ID: `option` `string` block chain id for mongodb create collection name（example: `cschain-bond`）
 - CHAIN_BLOCK_INTERVAL: `option` `string` block interval; default `5` (example: `5`)
-- WAIT_BLOCK_NUM_HANDLE: `option` `string` wait block num to handle when retry failed; default `1` (example: `1`)
+- WAIT_BLOCK_NUM_HANDLE: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 
 Note: 
 > synchronizes irita data from specify block height(such as:17908 current time:1576208532)
