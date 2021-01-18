@@ -21,7 +21,7 @@ type ServerConf struct {
 	Bech32ChainPrefix  string
 	ChainId            string
 	ChainBlockInterval int
-	WaitBlockNumHandle int
+	BehindBlockNum     int
 }
 
 var (
@@ -34,7 +34,7 @@ var (
 	bech32ChainPrefix       = "i"
 	chainId                 = ""
 	chainBlockInterval      = 5
-	waitBlockNumHandle      = 0
+	behindBlockNum          = 0
 )
 
 // get value of env var
@@ -82,11 +82,11 @@ func init() {
 			chainBlockInterval = n
 		}
 	}
-	if v, ok := os.LookupEnv(constant.EnvNameWaitBlockNumHandle); ok {
+	if v, ok := os.LookupEnv(constant.EnvNameBehindBlockNum); ok {
 		if n, err := utils.ConvStrToInt(v); err != nil {
-			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameWaitBlockNumHandle, v))
+			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameBehindBlockNum, v))
 		} else {
-			waitBlockNumHandle = n
+			behindBlockNum = n
 		}
 	}
 
@@ -113,7 +113,7 @@ func init() {
 		Bech32ChainPrefix:  bech32ChainPrefix,
 		ChainId:            chainId,
 		ChainBlockInterval: chainBlockInterval,
-		WaitBlockNumHandle: waitBlockNumHandle,
+		BehindBlockNum:     behindBlockNum,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))

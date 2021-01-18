@@ -179,6 +179,7 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 			continue
 		}
 
+		inProcessBlock = inProcessBlock - int64(svrConf.SvrConf.BehindBlockNum)
 		// parse data from block
 		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
@@ -291,7 +292,7 @@ func getBlockChainLatestHeight() (int64, error) {
 		return 0, err
 	}
 
-	return status.SyncInfo.LatestBlockHeight - int64(svrConf.SvrConf.WaitBlockNumHandle), nil
+	return status.SyncInfo.LatestBlockHeight, nil
 }
 
 func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask, opsDoc []txn.Op) error {
