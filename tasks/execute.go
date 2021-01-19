@@ -169,8 +169,10 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 
 		// if inProcessBlock > blockChainLatestHeight, should wait blockChainLatestHeight update
-		if taskType == models.SyncTaskTypeFollow && inProcessBlock > blockChainLatestHeight {
-			logger.Info("wait blockChain latest height update",
+		if taskType == models.SyncTaskTypeFollow &&
+			inProcessBlock+int64(svrConf.SvrConf.BehindBlockNum) > blockChainLatestHeight {
+			logger.Info(fmt.Sprintf("wait blockChain latest height update, must interval %v block",
+				svrConf.SvrConf.BehindBlockNum),
 				logger.Int64("curSyncedHeight", inProcessBlock-1),
 				logger.Int64("blockChainLatestHeight", blockChainLatestHeight))
 			time.Sleep(2 * time.Second)
@@ -179,9 +181,6 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 			continue
 		}
 
-		if blockChainLatestHeight-inProcessBlock < int64(svrConf.SvrConf.BehindBlockNum) {
-			continue
-		}
 		// parse data from block
 		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
