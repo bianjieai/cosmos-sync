@@ -1,11 +1,10 @@
 package staking
 
 import (
-	"encoding/hex"
 	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/models"
 	. "github.com/bianjieai/irita-sync/msgs"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/bianjieai/irita-sync/utils"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -199,9 +198,7 @@ func (doctx *DocTxMsgCreateValidator) GetType() string {
 func (doctx *DocTxMsgCreateValidator) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeCreate)
 	if msg.Pubkey != nil {
-		if pk, ok := msg.Pubkey.GetCachedValue().(cryptotypes.PubKey); ok {
-			doctx.Pubkey = hex.EncodeToString(pk.Bytes())
-		}
+		doctx.Pubkey = utils.MarshalJsonIgnoreErr(msg.Pubkey)
 	}
 
 	doctx.ValidatorAddress = msg.ValidatorAddress
