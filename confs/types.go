@@ -13,4 +13,5 @@ const (
 	EnvNameBech32ChainPrefix       = "BECH32_CHAIN_PREFIX"
 	EnvNameChainId                 = "CHAIN_ID"
 	EnvNameChainBlockInterval      = "CHAIN_BLOCK_INTERVAL"
+	EnvNameBehindBlockNum          = "BEHIND_BLOCK_NUM"
 )
