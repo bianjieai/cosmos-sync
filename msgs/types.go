@@ -20,7 +20,8 @@ import (
 	token "github.com/irisnet/irismod/modules/token/types"
 	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	//ibc "github.com/irisnet/irishub/modules/ibc/types"
+	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
+	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core/04-channel/types"
 )
 
 const (
@@ -82,7 +83,8 @@ const (
 	MsgTypeCreateClient = "create_client"
 	MsgTypeUpdateClient = "update_client"
 
-	MsgTypeRecvPacket = "recv_packet"
+	MsgTypeRecvPacket  = "recv_packet"
+	MsgTypeIBCTransfer = "transfer"
 
 	MsgTypeUpdateIdentity = "update_identity"
 	MsgTypeCreateIdentity = "create_identity"
@@ -184,8 +186,8 @@ type (
 	//MsgCreateIdentity = identity.MsgCreateIdentity
 	//MsgUpdateIdentity = identity.MsgUpdateIdentity
 
-	//MsgRecvPacket = ibc.MsgRecvPacket
-	//
+	MsgRecvPacket = ibc.MsgRecvPacket
+	MsgTransfer   = ibctransfer.MsgTransfer
 	//MsgCreateClient = ibc.MsgCreateClient
 	//MsgUpdateClient = ibc.MsgUpdateClient
 

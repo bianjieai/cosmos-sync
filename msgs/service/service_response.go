@@ -22,7 +22,6 @@ func (m *DocMsgServiceResponse) BuildMsg(msg interface{}) {
 
 	m.RequestID = v.RequestId
 	m.Provider = v.Provider
-	//m.Output = hex.EncodeToString(v.Output)
 	m.Output = v.Output
 	m.Result = v.Result
 }
