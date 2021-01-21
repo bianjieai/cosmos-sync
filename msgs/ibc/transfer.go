@@ -27,9 +27,7 @@ func (m *DocMsgTransfer) BuildMsg(v interface{}) {
 	m.Sender = msg.Sender
 	m.Receiver = msg.Receiver
 	m.TimeoutTimestamp = msg.TimeoutTimestamp
-	m.TimeoutHeight = Height{
-		RevisionNumber: msg.TimeoutHeight.RevisionNumber,
-		RevisionHeight: msg.TimeoutHeight.RevisionHeight}
+	m.TimeoutHeight = loadHeight(msg.TimeoutHeight)
 	m.Token = models.BuildDocCoin(msg.Token)
 }
 

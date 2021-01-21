@@ -16,6 +16,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
+	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core"
 	sdkparams "github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -49,15 +51,14 @@ var (
 		crisis.AppModuleBasic{},
 		sdkparams.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
+		ibc.AppModuleBasic{},
+		ibctransfer.AppModuleBasic{},
 		//identity.AppModuleBasic{},
 		htlc.AppModuleBasic{},
 		coinswap.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		random.AppModuleBasic{},
 		//wasm.AppModuleBasic{},
-		//admin.AppModuleBasic{},
-		//validator.AppModuleBasic{},
-		//iritaslash.AppModuleBasic{},
 	)
 )
 
