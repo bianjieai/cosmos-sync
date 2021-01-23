@@ -12,9 +12,6 @@ type DocMsgRecvPacket struct {
 	Signer          string `bson:"signer"`
 }
 
-
-
-
 func (m *DocMsgRecvPacket) GetType() string {
 	return MsgTypeRecvPacket
 }
@@ -35,7 +32,8 @@ func (m *DocMsgRecvPacket) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	)
 
 	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
-	addrs = append(addrs, msg.Signer)
+	packetData := UnmarshalPacketData(msg.Packet.GetData())
+	addrs = append(addrs, msg.Signer, packetData.Receiver, packetData.Sender)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

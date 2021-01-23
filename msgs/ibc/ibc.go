@@ -1,6 +1,8 @@
 package ibc
 
 import (
+	"fmt"
+	"github.com/bianjieai/irita-sync/libs/cdc"
 	. "github.com/bianjieai/irita-sync/msgs"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/cosmos/cosmos-sdk/types"
@@ -86,9 +88,22 @@ func loadPacket(packet icorechannel.Packet) Packet {
 		SourceChannel:      packet.SourceChannel,
 		DestinationPort:    packet.DestinationPort,
 		DestinationChannel: packet.DestinationChannel,
-		Data:               utils.MarshalJsonIgnoreErr(packet.Data),
+		Data:               UnmarshalPacketData(packet.GetData()),
 		TimeoutTimestamp:   packet.TimeoutTimestamp,
 		TimeoutHeight:      loadHeight(packet.TimeoutHeight)}
+}
+
+func UnmarshalPacketData(bytesdata []byte) PacketData {
+	var (
+		packetData FungibleTokenPacketData
+		data       PacketData
+	)
+	err := cdc.GetMarshaler().UnmarshalJSON(bytesdata, &packetData)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(packetData), &data)
+	return data
 }
 
 func loadHeight(height icoreclient.Height) Height {
@@ -129,12 +144,20 @@ type Height struct {
 
 // Packet defines a type that carries data across different chains through IBC
 type Packet struct {
-	Sequence           uint64 `bson:"sequence"`
-	SourcePort         string `bson:"source_port"`
-	SourceChannel      string `bson:"source_channel"`
-	DestinationPort    string `bson:"destination_port"`
-	DestinationChannel string `bson:"destination_channel"`
-	Data               string `bson:"data"`
-	TimeoutHeight      Height `bson:"timeout_height"`
-	TimeoutTimestamp   uint64 `bson:"timeout_timestamp"`
+	Sequence           uint64     `bson:"sequence"`
+	SourcePort         string     `bson:"source_port"`
+	SourceChannel      string     `bson:"source_channel"`
+	DestinationPort    string     `bson:"destination_port"`
+	DestinationChannel string     `bson:"destination_channel"`
+	Data               PacketData `bson:"data"`
+	TimeoutHeight      Height     `bson:"timeout_height"`
+	TimeoutTimestamp   uint64     `bson:"timeout_timestamp"`
+}
+
+//FungibleTokenPacketData
+type PacketData struct {
+	Denom    string `bson:"denom" json:"denom"`
+	Amount   uint64 `bson:"amount" json:"amount"`
+	Sender   string `bson:"sender" json:"sender"`
+	Receiver string `bson:"receiver" json:"receiver"`
 }
