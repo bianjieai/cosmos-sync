@@ -1,8 +1,8 @@
 package ibc
 
 import (
+	"github.com/bianjieai/irita-sync/libs/cdc"
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/utils"
 )
 
 type DocMsgSubmitMisbehaviour struct {
@@ -29,7 +29,8 @@ func (m *DocMsgSubmitMisbehaviour) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg   MsgSubmitMisbehaviour
 	)
 
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	data, _ := cdc.GetMarshaler().MarshalJSON(v)
+	cdc.GetMarshaler().UnmarshalJSON(data, &msg)
 	addrs = append(addrs, msg.Signer)
 	handler := func() (Msg, []string) {
 		return m, addrs
