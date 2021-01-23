@@ -209,8 +209,9 @@ type (
 	//MsgCreateIdentity = identity.MsgCreateIdentity
 	//MsgUpdateIdentity = identity.MsgUpdateIdentity
 
-	MsgRecvPacket = ibc.MsgRecvPacket
-	MsgTransfer   = ibctransfer.MsgTransfer
+	FungibleTokenPacketData = ibctransfer.FungibleTokenPacketData
+	MsgRecvPacket           = ibc.MsgRecvPacket
+	MsgTransfer             = ibctransfer.MsgTransfer
 
 	MsgCreateClient       = ibcclient.MsgCreateClient
 	MsgUpdateClient       = ibcclient.MsgUpdateClient

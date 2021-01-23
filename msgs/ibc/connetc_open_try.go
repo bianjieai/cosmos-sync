@@ -1,6 +1,7 @@
 package ibc
 
 import (
+	"github.com/bianjieai/irita-sync/libs/cdc"
 	. "github.com/bianjieai/irita-sync/msgs"
 	"github.com/bianjieai/irita-sync/utils"
 )
@@ -69,7 +70,8 @@ func (m *DocMsgConnectionOpenTry) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg   MsgConnectionOpenTry
 	)
 
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	data, _ := cdc.GetMarshaler().MarshalJSON(v)
+	cdc.GetMarshaler().UnmarshalJSON(data, &msg)
 	addrs = append(addrs, msg.Signer)
 	handler := func() (Msg, []string) {
 		return m, addrs

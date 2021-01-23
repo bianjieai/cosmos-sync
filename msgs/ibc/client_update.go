@@ -1,8 +1,8 @@
 package ibc
 
 import (
+	"github.com/bianjieai/irita-sync/libs/cdc"
 	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/utils"
 )
 
 // MsgUpdateClient defines a message to update an IBC client
@@ -29,8 +29,8 @@ func (m *DocMsgUpdateClient) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		addrs []string
 		msg   MsgUpdateClient
 	)
-
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	data, _ := cdc.GetMarshaler().MarshalJSON(v)
+	cdc.GetMarshaler().UnmarshalJSON(data, &msg)
 	addrs = append(addrs, msg.Signer)
 	handler := func() (Msg, []string) {
 		return m, addrs
