@@ -65,6 +65,14 @@ func (s *SyncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 		<-chanLimit
 		client.Release()
 	}()
+	catchingup, err := isCatchingUp()
+	if err != nil {
+		logger.Error("Get node status failed", logger.String("err", err.Error()))
+		return
+	}
+	if catchingup {
+		return
+	}
 
 	// check whether exist executable task
 	// status = unhandled or
@@ -351,4 +359,17 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models
 	}
 
 	return nil
+}
+
+func isCatchingUp() (bool, error) {
+	client := pool.GetClient()
+	defer func() {
+		client.Release()
+	}()
+	status, err := client.Status(context.Background())
+	if err != nil {
+		return true, err
+	}
+
+	return status.SyncInfo.CatchingUp, nil
 }
