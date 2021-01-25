@@ -26,17 +26,6 @@ func (s *SyncTaskService) StartCreateTask() {
 	chanLimit := make(chan bool, conf.SvrConf.WorkerNumCreateTask)
 
 	for {
-		catchingup, err := isCatchingUp()
-		if err != nil {
-			logger.Error("Get node status failed", logger.String("err", err.Error()))
-			time.Sleep(1 * time.Second)
-			continue
-		}
-		if catchingup {
-			logger.Info("the rpc node is catching,waiting one minute.")
-			time.Sleep(1 * time.Minute)
-			continue
-		}
 		chanLimit <- true
 		go s.createTask(blockNumPerWorkerHandle, chanLimit)
 		time.Sleep(time.Duration(conf.SvrConf.SleepTimeCreateTaskWorker) * time.Second)
