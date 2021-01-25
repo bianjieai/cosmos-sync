@@ -18,7 +18,7 @@ type ServerConf struct {
 
 	MaxConnectionNum   int
 	InitConnectionNum  int
-	Bech32ChainPrefix  string
+	//Bech32ChainPrefix  string
 	ChainId            string
 	ChainBlockInterval int
 	BehindBlockNum     int
@@ -27,11 +27,11 @@ type ServerConf struct {
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://192.168.150.31:16657"}
+	nodeUrls                = []string{"tcp://192.168.150.34:56657"}
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
-	bech32ChainPrefix       = "i"
+	//bech32ChainPrefix       = "i"
 	chainId                 = ""
 	chainBlockInterval      = 5
 	behindBlockNum          = 0
@@ -67,9 +67,9 @@ func init() {
 		}
 	}
 
-	if v, ok := os.LookupEnv(constant.EnvNameBech32ChainPrefix); ok {
-		bech32ChainPrefix = v
-	}
+	//if v, ok := os.LookupEnv(constant.EnvNameBech32ChainPrefix); ok {
+	//	bech32ChainPrefix = v
+	//}
 
 	if v, ok := os.LookupEnv(constant.EnvNameChainId); ok {
 		chainId = v
@@ -110,7 +110,7 @@ func init() {
 		MaxConnectionNum:  100,
 		InitConnectionNum: 5,
 
-		Bech32ChainPrefix:  bech32ChainPrefix,
+		//Bech32ChainPrefix:  bech32ChainPrefix,
 		ChainId:            chainId,
 		ChainBlockInterval: chainBlockInterval,
 		BehindBlockNum:     behindBlockNum,
