@@ -36,6 +36,17 @@ func (s *SyncTaskService) StartExecuteTask() {
 	chanLimit := make(chan bool, svrConf.SvrConf.WorkerNumExecuteTask)
 
 	for {
+		catchingup, err := isCatchingUp()
+		if err != nil {
+			logger.Error("Get node status failed", logger.String("err", err.Error()))
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		if catchingup {
+			logger.Info("the rpc node is catching,waiting one minute.")
+			time.Sleep(1 * time.Minute)
+			continue
+		}
 		chanLimit <- true
 		go s.executeTask(blockNumPerWorkerHandle, workerMaxSleepTime, chanLimit)
 		time.Sleep(time.Duration(1) * time.Second)
@@ -65,14 +76,6 @@ func (s *SyncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 		<-chanLimit
 		client.Release()
 	}()
-	catchingup, err := isCatchingUp()
-	if err != nil {
-		logger.Error("Get node status failed", logger.String("err", err.Error()))
-		return
-	}
-	if catchingup {
-		return
-	}
 
 	// check whether exist executable task
 	// status = unhandled or
