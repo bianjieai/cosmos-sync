@@ -10,15 +10,6 @@ import (
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stake "github.com/cosmos/cosmos-sdk/x/staking/types"
-	coinswap "github.com/irisnet/irismod/modules/coinswap/types"
-	htlc "github.com/irisnet/irismod/modules/htlc/types"
-	nft "github.com/irisnet/irismod/modules/nft/types"
-	oracle "github.com/irisnet/irismod/modules/oracle/types"
-	random "github.com/irisnet/irismod/modules/random/types"
-	record "github.com/irisnet/irismod/modules/record/types"
-	service "github.com/irisnet/irismod/modules/service/types"
-	token "github.com/irisnet/irismod/modules/token/types"
-	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
 	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client/types"
@@ -35,28 +26,7 @@ const (
 	MsgTypeNFTTransfer  = "transfer_nft"
 	MsgTypeNFTBurn      = "burn_nft"
 	MsgTypeIssueDenom   = "issue_denom"
-	MsgTypeRecordCreate = "create_record"
 
-	MsgTypeMintToken          = "mint_token"
-	MsgTypeBurnToken          = "burn_token"
-	MsgTypeEditToken          = "edit_token"
-	MsgTypeIssueToken         = "issue_token"
-	MsgTypeTransferTokenOwner = "transfer_token_owner"
-
-	MsgTypeDefineService             = "define_service"               // type for MsgDefineService
-	MsgTypeBindService               = "bind_service"                 // type for MsgBindService
-	MsgTypeUpdateServiceBinding      = "update_service_binding"       // type for MsgUpdateServiceBinding
-	MsgTypeServiceSetWithdrawAddress = "service/set_withdraw_address" // type for MsgSetWithdrawAddress
-	MsgTypeDisableServiceBinding     = "disable_service_binding"      // type for MsgDisableServiceBinding
-	MsgTypeEnableServiceBinding      = "enable_service_binding"       // type for MsgEnableServiceBinding
-	MsgTypeRefundServiceDeposit      = "refund_service_deposit"       // type for MsgRefundServiceDeposit
-	MsgTypeCallService               = "call_service"                 // type for MsgCallService
-	MsgTypeRespondService            = "respond_service"              // type for MsgRespondService
-	MsgTypePauseRequestContext       = "pause_request_context"        // type for MsgPauseRequestContext
-	MsgTypeStartRequestContext       = "start_request_context"        // type for MsgStartRequestContext
-	MsgTypeKillRequestContext        = "kill_request_context"         // type for MsgKillRequestContext
-	MsgTypeUpdateRequestContext      = "update_request_context"       // type for MsgUpdateRequestContext
-	MsgTypeWithdrawEarnedFees        = "withdraw_earned_fees"         // type for MsgWithdrawEarnedFees
 
 	MsgTypeStakeCreateValidator           = "create_validator"
 	MsgTypeStakeEditValidator             = "edit_validator"
@@ -72,13 +42,6 @@ const (
 	MsgTypeDeposit                        = "deposit"
 	MsgTypeVote                           = "vote"
 
-	MsgTypeCreateHTLC = "create_htlc"
-	MsgTypeClaimHTLC  = "claim_htlc"
-	MsgTypeRefundHTLC = "refund_htlc"
-
-	MsgTypeAddLiquidity    = "add_liquidity"
-	MsgTypeRemoveLiquidity = "remove_liquidity"
-	MsgTypeSwapOrder       = "swap_order"
 
 	MsgTypeSubmitEvidence  = "submit_evidence"
 	MsgTypeVerifyInvariant = "verify_invariant"
@@ -109,15 +72,6 @@ const (
 	MsgTypeRecvPacket  = "recv_packet"
 	MsgTypeIBCTransfer = "transfer"
 
-	MsgTypeUpdateIdentity = "update_identity"
-	MsgTypeCreateIdentity = "create_identity"
-
-	TxTypeRequestRand = "request_rand"
-
-	TxTypeCreateFeed = "create_feed"
-	TxTypeEditFeed   = "edit_feed"
-	TxTypePauseFeed  = "pause_feed"
-	TxTypeStartFeed  = "start_feed"
 
 	MsgTypeUpdateAdmin         = "update_contract_admin"
 	MsgTypeClearAdmin          = "clear_contract_admin"
@@ -143,35 +97,7 @@ type (
 	MsgSend      = bank.MsgSend
 	MsgMultiSend = bank.MsgMultiSend
 
-	MsgNFTMint     = nft.MsgMintNFT
-	MsgNFTEdit     = nft.MsgEditNFT
-	MsgNFTTransfer = nft.MsgTransferNFT
-	MsgNFTBurn     = nft.MsgBurnNFT
-	MsgIssueDenom  = nft.MsgIssueDenom
 
-	MsgDefineService  = service.MsgDefineService
-	MsgBindService    = service.MsgBindService
-	MsgCallService    = service.MsgCallService
-	MsgRespondService = service.MsgRespondService
-
-	MsgUpdateServiceBinding  = service.MsgUpdateServiceBinding
-	MsgSetWithdrawAddress    = service.MsgSetWithdrawAddress
-	MsgDisableServiceBinding = service.MsgDisableServiceBinding
-	MsgEnableServiceBinding  = service.MsgEnableServiceBinding
-	MsgRefundServiceDeposit  = service.MsgRefundServiceDeposit
-	MsgPauseRequestContext   = service.MsgPauseRequestContext
-	MsgStartRequestContext   = service.MsgStartRequestContext
-	MsgKillRequestContext    = service.MsgKillRequestContext
-	MsgUpdateRequestContext  = service.MsgUpdateRequestContext
-	MsgWithdrawEarnedFees    = service.MsgWithdrawEarnedFees
-
-	MsgRecordCreate = record.MsgCreateRecord
-
-	MsgIssueToken         = token.MsgIssueToken
-	MsgEditToken          = token.MsgEditToken
-	MsgBurnToken          = token.MsgBurnToken
-	MsgMintToken          = token.MsgMintToken
-	MsgTransferTokenOwner = token.MsgTransferTokenOwner
 
 	MsgStakeCreate                 = stake.MsgCreateValidator
 	MsgStakeEdit                   = stake.MsgEditValidator
@@ -195,19 +121,11 @@ type (
 	SdkVote           = gov.Vote
 	GovContent        = gov.Content
 
-	MsgSwapOrder       = coinswap.MsgSwapOrder
-	MsgAddLiquidity    = coinswap.MsgAddLiquidity
-	MsgRemoveLiquidity = coinswap.MsgRemoveLiquidity
 
-	MsgClaimHTLC  = htlc.MsgClaimHTLC
-	MsgCreateHTLC = htlc.MsgCreateHTLC
-	MsgRefundHTLC = htlc.MsgRefundHTLC
 
 	MsgSubmitEvidence  = evidence.MsgSubmitEvidence
 	MsgVerifyInvariant = crisis.MsgVerifyInvariant
 
-	//MsgCreateIdentity = identity.MsgCreateIdentity
-	//MsgUpdateIdentity = identity.MsgUpdateIdentity
 
 	FungibleTokenPacketData = ibctransfer.FungibleTokenPacketData
 	MsgRecvPacket           = ibc.MsgRecvPacket
@@ -233,23 +151,6 @@ type (
 	MsgTimeout             = ibcchannel.MsgTimeout
 	MsgTimeoutOnClose      = ibcchannel.MsgTimeoutOnClose
 
-	//MsgAddRoles = admin.MsgAddRoles
-	//MsgRemoveRoles = admin.MsgRemoveRoles
-	//MsgUnblockAccount = admin.MsgUnblockAccount
-	//MsgBlockAccount = admin.MsgBlockAccount
-	//
-	//MsgCreateValidator = validator.MsgCreateValidator
-	//MsgUpdateValidator = validator.MsgUpdateValidator
-	//MsgRemoveValidator = validator.MsgRemoveValidator
-	//
-	//MsgUnjailValidator = iritaslash.MsgUnjailValidator
-
-	MsgCreateFeed = oracle.MsgCreateFeed
-	MsgEditFeed   = oracle.MsgEditFeed
-	MsgPauseFeed  = oracle.MsgPauseFeed
-	MsgStartFeed  = oracle.MsgStartFeed
-
-	MsgRequestRandom = random.MsgRequestRandom
 
 	//MsgStoreCode           = wasm.MsgStoreCode
 	//MsgInstantiateContract = wasm.MsgInstantiateContract

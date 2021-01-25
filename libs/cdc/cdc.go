@@ -22,14 +22,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
-	"github.com/irisnet/irismod/modules/coinswap"
-	"github.com/irisnet/irismod/modules/htlc"
-	"github.com/irisnet/irismod/modules/nft"
-	"github.com/irisnet/irismod/modules/oracle"
-	"github.com/irisnet/irismod/modules/random"
-	"github.com/irisnet/irismod/modules/record"
-	"github.com/irisnet/irismod/modules/service"
-	"github.com/irisnet/irismod/modules/token"
 )
 
 var (
@@ -37,12 +29,6 @@ var (
 	moduleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
-		service.AppModuleBasic{},
-		nft.AppModuleBasic{},
-		htlc.AppModuleBasic{},
-		coinswap.AppModuleBasic{},
-		record.AppModuleBasic{},
-		token.AppModuleBasic{},
 		gov.AppModuleBasic{},
 		staking.AppModuleBasic{},
 		distribution.AppModuleBasic{},
@@ -53,11 +39,6 @@ var (
 		upgrade.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
-		//identity.AppModuleBasic{},
-		htlc.AppModuleBasic{},
-		coinswap.AppModuleBasic{},
-		oracle.AppModuleBasic{},
-		random.AppModuleBasic{},
 		//wasm.AppModuleBasic{},
 	)
 )
