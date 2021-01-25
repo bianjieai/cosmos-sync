@@ -54,6 +54,13 @@ func (f *PoolFactory) ValidateObject(ctx context.Context, object *commonPool.Poo
 		}
 		return false
 	}
+	stat, err := c.Status(ctx)
+	if err != nil {
+		return false
+	}
+	if stat.SyncInfo.CatchingUp {
+		return false
+	}
 	return true
 }
 
@@ -98,7 +105,7 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 func newClient(nodeUrl string) (*Client, error) {
 	client, err := rpcclient.New(nodeUrl, "/websocket")
 	return &Client{
-		Id:     generateId(nodeUrl),
+		Id:   generateId(nodeUrl),
 		HTTP: client,
 	}, err
 }

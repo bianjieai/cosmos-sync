@@ -36,17 +36,6 @@ func (s *SyncTaskService) StartExecuteTask() {
 	chanLimit := make(chan bool, svrConf.SvrConf.WorkerNumExecuteTask)
 
 	for {
-		catchingup, err := isCatchingUp()
-		if err != nil {
-			logger.Error("Get node status failed", logger.String("err", err.Error()))
-			time.Sleep(1 * time.Second)
-			continue
-		}
-		if catchingup {
-			logger.Info("the rpc node is catching,waiting one minute.")
-			time.Sleep(1 * time.Minute)
-			continue
-		}
 		chanLimit <- true
 		go s.executeTask(blockNumPerWorkerHandle, workerMaxSleepTime, chanLimit)
 		time.Sleep(time.Duration(1) * time.Second)
@@ -362,17 +351,4 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models
 	}
 
 	return nil
-}
-
-func isCatchingUp() (bool, error) {
-	client := pool.GetClient()
-	defer func() {
-		client.Release()
-	}()
-	status, err := client.Status(context.Background())
-	if err != nil {
-		return true, err
-	}
-
-	return status.SyncInfo.CatchingUp, nil
 }
