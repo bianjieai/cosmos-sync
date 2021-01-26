@@ -63,9 +63,10 @@ func (m *DocTxMsgSubmitProposal) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 	data, _ := cdc.GetMarshaler().MarshalJSON(v)
 	cdc.GetMarshaler().UnmarshalJSON(data, &msg)
-	if ProposalTypeCommunityPoolSpend == msg.GetContent().ProposalType() {
-		content := CovertContent(msg.GetContent()).(ContentCommunityPoolSpendProposal)
-		addrs = append(addrs,content.Recipient)
+	content := msg.GetContent()
+	if content != nil && ProposalTypeCommunityPoolSpend == content.ProposalType() {
+		communityPoolSpend := CovertContent(content).(ContentCommunityPoolSpendProposal)
+		addrs = append(addrs,communityPoolSpend.Recipient)
 	}
 	addrs = append(addrs, msg.Proposer)
 	handler := func() (Msg, []string) {
