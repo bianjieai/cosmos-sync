@@ -8,10 +8,10 @@ import (
 
 // MsgDelegate - struct for bonding transactions
 type DocTxMsgBeginRedelegate struct {
-	DelegatorAddress    string `bson:"delegator_address"`
-	ValidatorSrcAddress string `bson:"validator_src_address"`
-	ValidatorDstAddress string `bson:"validator_dst_address"`
-	Amount              string `bson:"amount"`
+	DelegatorAddress    string      `bson:"delegator_address"`
+	ValidatorSrcAddress string      `bson:"validator_src_address"`
+	ValidatorDstAddress string      `bson:"validator_dst_address"`
+	Amount              models.Coin `bson:"amount"`
 }
 
 func (doctx *DocTxMsgBeginRedelegate) GetType() string {
@@ -23,7 +23,7 @@ func (doctx *DocTxMsgBeginRedelegate) BuildMsg(txMsg interface{}) {
 	doctx.DelegatorAddress = msg.DelegatorAddress
 	doctx.ValidatorSrcAddress = msg.ValidatorSrcAddress
 	doctx.ValidatorDstAddress = msg.ValidatorDstAddress
-	doctx.Amount = msg.Amount.String()
+	doctx.Amount = models.BuildDocCoin(msg.Amount)
 }
 func (m *DocTxMsgBeginRedelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -43,9 +43,9 @@ func (m *DocTxMsgBeginRedelegate) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 // MsgBeginUnbonding - struct for unbonding transactions
 type DocTxMsgBeginUnbonding struct {
-	DelegatorAddress string `bson:"delegator_address"`
-	ValidatorAddress string `bson:"validator_address"`
-	Amount           string `bson:"amount"`
+	DelegatorAddress string      `bson:"delegator_address"`
+	ValidatorAddress string      `bson:"validator_address"`
+	Amount           models.Coin `bson:"amount"`
 }
 
 func (doctx *DocTxMsgBeginUnbonding) GetType() string {
@@ -56,7 +56,7 @@ func (doctx *DocTxMsgBeginUnbonding) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgStakeBeginUnbonding)
 	doctx.ValidatorAddress = msg.ValidatorAddress
 	doctx.DelegatorAddress = msg.DelegatorAddress
-	doctx.Amount = msg.Amount.String()
+	doctx.Amount = models.BuildDocCoin(msg.Amount)
 }
 func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
@@ -76,9 +76,9 @@ func (m *DocTxMsgBeginUnbonding) HandleTxMsg(v SdkMsg) MsgDocInfo {
 
 // MsgDelegate - struct for bonding transactions
 type DocTxMsgDelegate struct {
-	DelegatorAddress string `bson:"delegator_address"`
-	ValidatorAddress string `bson:"validator_address"`
-	Amount           models.Coin   `bson:"amount"`
+	DelegatorAddress string      `bson:"delegator_address"`
+	ValidatorAddress string      `bson:"validator_address"`
+	Amount           models.Coin `bson:"amount"`
 }
 
 func (doctx *DocTxMsgDelegate) GetType() string {
