@@ -1,31 +1,27 @@
 package cdc
 
 import (
+	//"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/codec"
+	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/irisnet/irismod/modules/nft"
-	"github.com/irisnet/irismod/modules/record"
-	"github.com/irisnet/irismod/modules/service"
-	"github.com/irisnet/irismod/modules/htlc"
-	"github.com/irisnet/irismod/modules/coinswap"
-	"github.com/irisnet/irismod/modules/token"
-	"github.com/irisnet/irismod/modules/random"
-	"github.com/irisnet/irismod/modules/oracle"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
+	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core"
+	sdkparams "github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/evidence"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
-	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	//"gitlab.bianjie.ai/irita-pro/iritamod/modules/identity"
-	"github.com/cosmos/cosmos-sdk/std"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
 )
 
 var (
@@ -33,26 +29,17 @@ var (
 	moduleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
-		service.AppModuleBasic{},
-		nft.AppModuleBasic{},
-		htlc.AppModuleBasic{},
-		coinswap.AppModuleBasic{},
-		record.AppModuleBasic{},
-		token.AppModuleBasic{},
 		gov.AppModuleBasic{},
 		staking.AppModuleBasic{},
 		distribution.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		crisis.AppModuleBasic{},
-		//identity.AppModuleBasic{},
-		htlc.AppModuleBasic{},
-		coinswap.AppModuleBasic{},
-		oracle.AppModuleBasic{},
-		random.AppModuleBasic{},
-		//admin.AppModuleBasic{},
-		//validator.AppModuleBasic{},
-		//iritaslash.AppModuleBasic{},
+		sdkparams.AppModuleBasic{},
+		upgrade.AppModuleBasic{},
+		ibc.AppModuleBasic{},
+		ibctransfer.AppModuleBasic{},
+		//wasm.AppModuleBasic{},
 	)
 )
 
@@ -79,6 +66,6 @@ func GetTxDecoder() sdk.TxDecoder {
 	return encodecfg.TxConfig.TxDecoder()
 }
 
-//func GetAmino() *codec.LegacyAmino {
-//	return encodecfg.Amino
-//}
+func GetMarshaler() codec.Marshaler {
+	return encodecfg.Marshaler
+}

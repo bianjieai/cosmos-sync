@@ -9,30 +9,32 @@ import (
 )
 
 type ServerConf struct {
-	NodeUrls                []string
-	WorkerNumCreateTask     int
-	WorkerNumExecuteTask    int
-	WorkerMaxSleepTime      int
-	BlockNumPerWorkerHandle int
+	NodeUrls                  []string
+	WorkerNumCreateTask       int
+	WorkerNumExecuteTask      int
+	WorkerMaxSleepTime        int
+	BlockNumPerWorkerHandle   int
 	SleepTimeCreateTaskWorker int
 
-	MaxConnectionNum  int
-	InitConnectionNum int
-	Bech32ChainPrefix string
-	ChainId           string
+	MaxConnectionNum   int
+	InitConnectionNum  int
+	//Bech32ChainPrefix  string
+	ChainId            string
 	ChainBlockInterval int
+	BehindBlockNum     int
 }
 
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://192.168.150.31:16657"}
+	nodeUrls                = []string{"tcp://192.168.150.34:56657"}
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
-	bech32ChainPrefix       = "i"
-	chainId                 = ""
+	//bech32ChainPrefix       = "i"
+	chainId                 = "cosmos"
 	chainBlockInterval      = 5
+	behindBlockNum          = 0
 )
 
 // get value of env var
@@ -65,9 +67,9 @@ func init() {
 		}
 	}
 
-	if v, ok := os.LookupEnv(constant.EnvNameBech32ChainPrefix); ok {
-		bech32ChainPrefix = v
-	}
+	//if v, ok := os.LookupEnv(constant.EnvNameBech32ChainPrefix); ok {
+	//	bech32ChainPrefix = v
+	//}
 
 	if v, ok := os.LookupEnv(constant.EnvNameChainId); ok {
 		chainId = v
@@ -78,6 +80,13 @@ func init() {
 			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameChainBlockInterval, v))
 		} else {
 			chainBlockInterval = n
+		}
+	}
+	if v, ok := os.LookupEnv(constant.EnvNameBehindBlockNum); ok {
+		if n, err := utils.ConvStrToInt(v); err != nil {
+			logger.Fatal("convert str to int fail", logger.String(constant.EnvNameBehindBlockNum, v))
+		} else {
+			behindBlockNum = n
 		}
 	}
 
@@ -101,9 +110,10 @@ func init() {
 		MaxConnectionNum:  100,
 		InitConnectionNum: 5,
 
-		Bech32ChainPrefix: bech32ChainPrefix,
+		//Bech32ChainPrefix:  bech32ChainPrefix,
 		ChainId:            chainId,
 		ChainBlockInterval: chainBlockInterval,
+		BehindBlockNum:     behindBlockNum,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))

@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"context"
 	"fmt"
 	svrConf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/handlers"
@@ -11,9 +12,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2/txn"
-	"time"
 	"os"
-	"context"
+	"time"
 )
 
 func (s *SyncTaskService) StartExecuteTask() {
@@ -169,8 +169,10 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 
 		// if inProcessBlock > blockChainLatestHeight, should wait blockChainLatestHeight update
-		if taskType == models.SyncTaskTypeFollow && inProcessBlock > blockChainLatestHeight {
-			logger.Info("wait blockChain latest height update",
+		if taskType == models.SyncTaskTypeFollow &&
+			inProcessBlock+int64(svrConf.SvrConf.BehindBlockNum) > blockChainLatestHeight {
+			logger.Info(fmt.Sprintf("wait blockChain latest height update, must interval %v block",
+				svrConf.SvrConf.BehindBlockNum),
 				logger.Int64("curSyncedHeight", inProcessBlock-1),
 				logger.Int64("blockChainLatestHeight", blockChainLatestHeight))
 			time.Sleep(2 * time.Second)

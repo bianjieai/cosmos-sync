@@ -1,15 +1,16 @@
 package gov
 
 import (
-	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/models"
-	"encoding/json"
+	. "github.com/bianjieai/irita-sync/msgs"
+	"github.com/bianjieai/irita-sync/utils"
 )
 
 type DocTxMsgSubmitProposal struct {
 	Proposer       string        `bson:"proposer"`        //  Address of the proposer
 	InitialDeposit []models.Coin `bson:"initial_deposit"` //  Initial deposit paid by sender. Must be strictly positive.
-	Content        string        `bson:"content"`
+	Content        interface{}   `bson:"content"`
 }
 
 func (doctx *DocTxMsgSubmitProposal) GetType() string {
@@ -18,10 +19,39 @@ func (doctx *DocTxMsgSubmitProposal) GetType() string {
 
 func (doctx *DocTxMsgSubmitProposal) BuildMsg(txMsg interface{}) {
 	msg := txMsg.(*MsgSubmitProposal)
-	content, _ := json.Marshal(msg.Content)
-	doctx.Content = string(content)
+	doctx.Content = CovertContent(msg.GetContent())
 	doctx.Proposer = msg.Proposer
 	doctx.InitialDeposit = models.BuildDocCoins(msg.InitialDeposit)
+}
+
+func CovertContent(content GovContent) interface{} {
+	switch content.ProposalType() {
+	case ProposalTypeCancelSoftwareUpgrade:
+		var data ContentCancelSoftwareUpgradeProposal
+		utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(content), &data)
+		return data
+	case ProposalTypeSoftwareUpgrade:
+		var data ContentSoftwareUpgradeProposal
+		utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(content), &data)
+		return data
+	case ProposalTypeCommunityPoolSpend:
+		var data ContentCommunityPoolSpendProposal
+		utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(content), &data)
+		return data
+	case ProposalTypeClientUpdate:
+		var data ContentClientUpdateProposal
+		utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(content), &data)
+		return data
+	case ProposalTypeText:
+		var data ContentTextProposal
+		utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(content), &data)
+		return data
+	case ProposalTypeParameterChange:
+		var data ContentParameterChangeProposal
+		utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(content), &data)
+		return data
+	}
+	return content
 }
 
 func (m *DocTxMsgSubmitProposal) HandleTxMsg(v SdkMsg) MsgDocInfo {
@@ -31,7 +61,8 @@ func (m *DocTxMsgSubmitProposal) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		msg   MsgSubmitProposal
 	)
 
-	ConvertMsg(v, &msg)
+	data, _ := cdc.GetMarshaler().MarshalJSON(v)
+	cdc.GetMarshaler().UnmarshalJSON(data, &msg)
 	addrs = append(addrs, msg.Proposer)
 	handler := func() (Msg, []string) {
 		return m, addrs
