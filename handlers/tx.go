@@ -174,7 +174,7 @@ func parseEvents(events []aTypes.Event) []models.Event {
 
 func BuildFee(fee sdk.Coins, gas uint64) *models.Fee {
 	return &models.Fee{
-		Amount: models.BuildDocCoins(fee),
+		Amount: msgsdktypes.BuildDocCoins(fee),
 		Gas:    int64(gas),
 	}
 }
