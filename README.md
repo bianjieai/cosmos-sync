@@ -25,7 +25,6 @@ A server that synchronize irita chain data into a database
 - WORKER_MAX_SLEEP_TIME: `required` `string` num of worker to create tasks(unit: seconds)（example: `90`）
 - BLOCK_NUM_PER_WORKER_HANDLE: `required` `string`  number of blocks per sync TX task（example: `50`）
 
-- CHAIN_ID: `option` `string` block chain id for mongodb create collection name（example: `cschain-bond`）
 - CHAIN_BLOCK_INTERVAL: `option` `string` block interval; default `5` (example: `5`)
 - BEHIND_BLOCK_NUM: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 
