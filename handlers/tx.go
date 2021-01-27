@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
@@ -12,6 +11,8 @@ import (
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
+	"github.com/weichang-bianjie/msg-sdk/codec"
+	msgsdktypes "github.com/weichang-bianjie/msg-sdk/types"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/txn"
 	"time"
@@ -65,7 +66,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	var (
 		docTx models.Tx
 
-		docTxMsgs []models.DocTxMsg
+		docTxMsgs []msgsdktypes.DocTxMsg
 		txnOps    []txn.Op
 	)
 	txHash := utils.BuildHex(txBytes.Hash())
@@ -92,7 +93,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	docTx.Events = parseEvents(txResult.TxResult.Events)
 	docTx.TxIndex = txResult.Index
 
-	Tx, err := cdc.GetTxDecoder()(txBytes)
+	Tx, err := codec.GetTxDecoder()(txBytes)
 	if err != nil {
 		logger.Error(
 			"TxDecoder have error",

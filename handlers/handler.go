@@ -1,46 +1,39 @@
 package handlers
 
 import (
-	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/msgs/bank"
-	"github.com/bianjieai/irita-sync/msgs/crisis"
-	"github.com/bianjieai/irita-sync/msgs/distribution"
-	"github.com/bianjieai/irita-sync/msgs/evidence"
-	"github.com/bianjieai/irita-sync/msgs/gov"
-	"github.com/bianjieai/irita-sync/msgs/ibc"
-	"github.com/bianjieai/irita-sync/msgs/slashing"
-	"github.com/bianjieai/irita-sync/msgs/staking"
+	"github.com/bianjieai/irita-sync/libs/msgsdk"
 	"github.com/cosmos/cosmos-sdk/types"
+	. "github.com/weichang-bianjie/msg-sdk/modules"
 	"gopkg.in/mgo.v2/txn"
 )
 
 func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
-	if BankDocInfo, ok := bank.HandleTxMsg(v); ok {
+	if BankDocInfo, ok := msgsdk.MsgClient.Bank.HandleTxMsg(v); ok {
 		return BankDocInfo, nil
 	}
-	if CrisisDocInfo, ok := crisis.HandleTxMsg(v); ok {
+	if CrisisDocInfo, ok := msgsdk.MsgClient.Crisis.HandleTxMsg(v); ok {
 		return CrisisDocInfo, nil
 	}
-	if DistrubutionDocInfo, ok := distribution.HandleTxMsg(v); ok {
+	if DistrubutionDocInfo, ok := msgsdk.MsgClient.Distribution.HandleTxMsg(v); ok {
 		return DistrubutionDocInfo, nil
 	}
-	if SlashingDocInfo, ok := slashing.HandleTxMsg(v); ok {
+	if SlashingDocInfo, ok := msgsdk.MsgClient.Slashing.HandleTxMsg(v); ok {
 		return SlashingDocInfo, nil
 	}
-	if EvidenceDocInfo, ok := evidence.HandleTxMsg(v); ok {
+	if EvidenceDocInfo, ok := msgsdk.MsgClient.Evidence.HandleTxMsg(v); ok {
 		return EvidenceDocInfo, nil
 	}
-	if StakingDocInfo, ok := staking.HandleTxMsg(v); ok {
+	if StakingDocInfo, ok := msgsdk.MsgClient.Staking.HandleTxMsg(v); ok {
 		return StakingDocInfo, nil
 	}
-	if GovDocInfo, ok := gov.HandleTxMsg(v); ok {
+	if GovDocInfo, ok := msgsdk.MsgClient.Gov.HandleTxMsg(v); ok {
 		return GovDocInfo, nil
 	}
 
 	//if WasmDocInfo, ok := wasm.HandleTxMsg(v); ok {
 	//	return WasmDocInfo, nil
 	//}
-	if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
+	if IbcDocinfo, ok := msgsdk.MsgClient.Ibc.HandleTxMsg(v); ok {
 		return IbcDocinfo, nil
 	}
 	return MsgDocInfo{}, nil
@@ -59,4 +52,3 @@ func removeDuplicatesFromSlice(data []string) (result []string) {
 	}
 	return
 }
-

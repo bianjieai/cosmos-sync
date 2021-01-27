@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/bianjieai/irita-sync/confs/server"
+	"github.com/weichang-bianjie/msg-sdk/types"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -13,21 +14,21 @@ const (
 
 type (
 	Tx struct {
-		Time      int64       `bson:"time"`
-		Height    int64       `bson:"height"`
-		TxHash    string      `bson:"tx_hash"`
-		Type      string      `bson:"type"` // parse from first msg
-		Memo      string      `bson:"memo"`
-		Status    uint32      `bson:"status"`
-		Log       string      `bson:"log"`
-		Fee       *Fee        `bson:"fee"`
-		Types     []string    `bson:"types"`
-		Events    []Event     `bson:"events"`
-		Signers   []string    `bson:"signers"`
-		DocTxMsgs []DocTxMsg  `bson:"msgs"`
-		Addrs     []string    `bson:"addrs"`
-		TxIndex   uint32      `bson:"tx_index"`
-		Ext       interface{} `bson:"ext"`
+		Time      int64            `bson:"time"`
+		Height    int64            `bson:"height"`
+		TxHash    string           `bson:"tx_hash"`
+		Type      string           `bson:"type"` // parse from first msg
+		Memo      string           `bson:"memo"`
+		Status    uint32           `bson:"status"`
+		Log       string           `bson:"log"`
+		Fee       *Fee             `bson:"fee"`
+		Types     []string         `bson:"types"`
+		Events    []Event          `bson:"events"`
+		Signers   []string         `bson:"signers"`
+		DocTxMsgs []types.DocTxMsg `bson:"msgs"`
+		Addrs     []string         `bson:"addrs"`
+		TxIndex   uint32           `bson:"tx_index"`
+		Ext       interface{}      `bson:"ext"`
 	}
 
 	Event struct {
