@@ -41,19 +41,9 @@ type (
 		Value string `bson:"value"`
 	}
 
-	DocTxMsg struct {
-		Type string `bson:"type"`
-		Msg  Msg    `bson:"msg"`
-	}
-
 	Fee struct {
 		Amount []Coin `bson:"amount" json:"amount"`
 		Gas    int64  `bson:"gas" json:"gas"`
-	}
-
-	Msg interface {
-		GetType() string
-		BuildMsg(msg interface{})
 	}
 )
 
