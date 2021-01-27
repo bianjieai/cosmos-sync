@@ -32,7 +32,7 @@ var (
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
 	//bech32ChainPrefix       = "i"
-	chainId                 = "cosmos"
+	chainId                 = ""
 	chainBlockInterval      = 5
 	behindBlockNum          = 0
 )
