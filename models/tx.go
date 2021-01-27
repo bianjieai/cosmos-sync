@@ -42,7 +42,7 @@ type (
 	}
 
 	Fee struct {
-		Amount []Coin `bson:"amount" json:"amount"`
+		Amount []types.Coin `bson:"amount" json:"amount"`
 		Gas    int64  `bson:"gas" json:"gas"`
 	}
 )
