@@ -1,81 +1,65 @@
 package handlers
 
 import (
-	. "github.com/bianjieai/irita-sync/msgs"
-	"github.com/bianjieai/irita-sync/msgs/bank"
-	"github.com/bianjieai/irita-sync/msgs/crisis"
-	"github.com/bianjieai/irita-sync/msgs/distribution"
-	"github.com/bianjieai/irita-sync/msgs/evidence"
-	"github.com/bianjieai/irita-sync/msgs/gov"
-	"github.com/bianjieai/irita-sync/msgs/ibc"
-	"github.com/bianjieai/irita-sync/msgs/nft"
-	"github.com/bianjieai/irita-sync/msgs/record"
-	"github.com/bianjieai/irita-sync/msgs/service"
-	"github.com/bianjieai/irita-sync/msgs/slashing"
-	"github.com/bianjieai/irita-sync/msgs/staking"
-	"github.com/bianjieai/irita-sync/msgs/token"
+	"github.com/bianjieai/irita-sync/libs/msgsdk"
 	"github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/bianjieai/irita-sync/msgs/coinswap"
-	"github.com/bianjieai/irita-sync/msgs/htlc"
-	"github.com/bianjieai/irita-sync/msgs/oracle"
-	"github.com/bianjieai/irita-sync/msgs/random"
+	. "github.com/weichang-bianjie/msg-sdk/modules"
 	"gopkg.in/mgo.v2/txn"
 )
 
 func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
-	if BankDocInfo, ok := bank.HandleTxMsg(v); ok {
+	if BankDocInfo, ok := msgsdk.MsgClient.Bank.HandleTxMsg(v); ok {
 		return BankDocInfo, nil
 	}
-	if IServiceDocInfo, ok := service.HandleTxMsg(v); ok {
+	if IServiceDocInfo, ok := msgsdk.MsgClient.Service.HandleTxMsg(v); ok {
 		return IServiceDocInfo, nil
 	}
-	if NftDocInfo, ok := nft.HandleTxMsg(v); ok {
+	if NftDocInfo, ok := msgsdk.MsgClient.Nft.HandleTxMsg(v); ok {
 		return NftDocInfo, nil
 	}
-	if RecordDocInfo, ok := record.HandleTxMsg(v); ok {
+	if RecordDocInfo, ok := msgsdk.MsgClient.Record.HandleTxMsg(v); ok {
 		return RecordDocInfo, nil
 	}
-	if TokenDocInfo, ok := token.HandleTxMsg(v); ok {
+	if TokenDocInfo, ok := msgsdk.MsgClient.Token.HandleTxMsg(v); ok {
 		return TokenDocInfo, nil
 	}
-	if CoinswapDocInfo, ok := coinswap.HandleTxMsg(v); ok {
+	if CoinswapDocInfo, ok := msgsdk.MsgClient.Coinswap.HandleTxMsg(v); ok {
 		return CoinswapDocInfo, nil
 	}
-	if CrisisDocInfo, ok := crisis.HandleTxMsg(v); ok {
+	if CrisisDocInfo, ok := msgsdk.MsgClient.Crisis.HandleTxMsg(v); ok {
 		return CrisisDocInfo, nil
 	}
-	if DistrubutionDocInfo, ok := distribution.HandleTxMsg(v); ok {
+	if DistrubutionDocInfo, ok := msgsdk.MsgClient.Distribution.HandleTxMsg(v); ok {
 		return DistrubutionDocInfo, nil
 	}
-	if SlashingDocInfo, ok := slashing.HandleTxMsg(v); ok {
+	if SlashingDocInfo, ok := msgsdk.MsgClient.Slashing.HandleTxMsg(v); ok {
 		return SlashingDocInfo, nil
 	}
-	if EvidenceDocInfo, ok := evidence.HandleTxMsg(v); ok {
+	if EvidenceDocInfo, ok := msgsdk.MsgClient.Evidence.HandleTxMsg(v); ok {
 		return EvidenceDocInfo, nil
 	}
-	if HtlcDocInfo, ok := htlc.HandleTxMsg(v); ok {
+	if HtlcDocInfo, ok := msgsdk.MsgClient.Htlc.HandleTxMsg(v); ok {
 		return HtlcDocInfo, nil
 	}
-	if StakingDocInfo, ok := staking.HandleTxMsg(v); ok {
+	if StakingDocInfo, ok := msgsdk.MsgClient.Staking.HandleTxMsg(v); ok {
 		return StakingDocInfo, nil
 	}
-	if GovDocInfo, ok := gov.HandleTxMsg(v); ok {
+	if GovDocInfo, ok := msgsdk.MsgClient.Gov.HandleTxMsg(v); ok {
 		return GovDocInfo, nil
 	}
 	//if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
 	//	return IdentityDocInfo, nil
 	//}
-	if RandomDocInfo, ok := random.HandleTxMsg(v); ok {
+	if RandomDocInfo, ok := msgsdk.MsgClient.Random.HandleTxMsg(v); ok {
 		return RandomDocInfo, nil
 	}
-	if OracleDocInfo, ok := oracle.HandleTxMsg(v); ok {
+	if OracleDocInfo, ok := msgsdk.MsgClient.Oracle.HandleTxMsg(v); ok {
 		return OracleDocInfo, nil
 	}
 	//if WasmDocInfo, ok := wasm.HandleTxMsg(v); ok {
 	//	return WasmDocInfo, nil
 	//}
-	if IbcDocinfo, ok := ibc.HandleTxMsg(v); ok {
+	if IbcDocinfo, ok := msgsdk.MsgClient.Ibc.HandleTxMsg(v); ok {
 		return IbcDocinfo, nil
 	}
 	return MsgDocInfo{}, nil
