@@ -27,13 +27,6 @@ type (
 		// primary key pair(used to find a unique record)
 		PkKvPair() map[string]interface{}
 	}
-
-	Coin struct {
-		Denom  string `bson:"denom"`
-		Amount string `bson:"amount"`
-	}
-
-	Coins []*Coin
 )
 
 // Description
