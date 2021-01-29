@@ -21,7 +21,7 @@ type (
 		Memo      string           `bson:"memo"`
 		Status    uint32           `bson:"status"`
 		Log       string           `bson:"log"`
-		Fee       *Fee             `bson:"fee"`
+		Fee       *types.Fee       `bson:"fee"`
 		Types     []string         `bson:"types"`
 		Events    []Event          `bson:"events"`
 		Signers   []string         `bson:"signers"`
@@ -39,11 +39,6 @@ type (
 	KvPair struct {
 		Key   string `bson:"key"`
 		Value string `bson:"value"`
-	}
-
-	Fee struct {
-		Amount []types.Coin `bson:"amount" json:"amount"`
-		Gas    int64  `bson:"gas" json:"gas"`
 	}
 )
 

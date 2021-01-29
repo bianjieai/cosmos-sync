@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"github.com/bianjieai/irita-sync/libs/msgsdk"
-	"github.com/cosmos/cosmos-sdk/types"
 	. "github.com/weichang-bianjie/msg-sdk/modules"
+	"github.com/weichang-bianjie/msg-sdk/types"
 	"gopkg.in/mgo.v2/txn"
 )
 
-func HandleTxMsg(v types.Msg) (MsgDocInfo, []txn.Op) {
+func HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
 	if BankDocInfo, ok := msgsdk.MsgClient.Bank.HandleTxMsg(v); ok {
 		return BankDocInfo, nil
 	}
