@@ -21,7 +21,7 @@ type (
 		Memo      string           `bson:"memo"`
 		Status    uint32           `bson:"status"`
 		Log       string           `bson:"log"`
-		Fee       *Fee             `bson:"fee"`
+		Fee       *types.Fee             `bson:"fee"`
 		Types     []string         `bson:"types"`
 		Events    []Event          `bson:"events"`
 		Signers   []string         `bson:"signers"`
