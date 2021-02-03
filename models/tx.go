@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/bianjieai/irita-sync/confs/server"
-	"github.com/weichang-bianjie/msg-sdk/types"
+	"github.com/kaifei-bianjie/msg-parser/types"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -25,7 +25,7 @@ type (
 		Types     []string         `bson:"types"`
 		Events    []Event          `bson:"events"`
 		Signers   []string         `bson:"signers"`
-		DocTxMsgs []types.DocTxMsg `bson:"msgs"`
+		DocTxMsgs []types.TxMsg `bson:"msgs"`
 		Addrs     []string         `bson:"addrs"`
 		TxIndex   uint32           `bson:"tx_index"`
 		Ext       interface{}      `bson:"ext"`

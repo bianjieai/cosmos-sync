@@ -9,8 +9,8 @@ import (
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
-	"github.com/weichang-bianjie/msg-sdk/codec"
-	msgsdktypes "github.com/weichang-bianjie/msg-sdk/types"
+	"github.com/kaifei-bianjie/msg-parser/codec"
+	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/txn"
 	"time"
@@ -64,7 +64,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	var (
 		docTx models.Tx
 
-		docTxMsgs []msgsdktypes.DocTxMsg
+		docTxMsgs []msgsdktypes.TxMsg
 		txnOps    []txn.Op
 	)
 	txHash := utils.BuildHex(txBytes.Hash())

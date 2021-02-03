@@ -1,39 +1,39 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/libs/msgsdk"
-	. "github.com/weichang-bianjie/msg-sdk/modules"
-	"github.com/weichang-bianjie/msg-sdk/types"
+	"github.com/bianjieai/irita-sync/libs/msgparser"
+	. "github.com/kaifei-bianjie/msg-parser/modules"
+	"github.com/kaifei-bianjie/msg-parser/types"
 	"gopkg.in/mgo.v2/txn"
 )
 
 func HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
-	if BankDocInfo, ok := msgsdk.MsgClient.Bank.HandleTxMsg(v); ok {
+	if BankDocInfo, ok := msgparser.MsgClient.Bank.HandleTxMsg(v); ok {
 		return BankDocInfo, nil
 	}
-	if CrisisDocInfo, ok := msgsdk.MsgClient.Crisis.HandleTxMsg(v); ok {
+	if CrisisDocInfo, ok := msgparser.MsgClient.Crisis.HandleTxMsg(v); ok {
 		return CrisisDocInfo, nil
 	}
-	if DistrubutionDocInfo, ok := msgsdk.MsgClient.Distribution.HandleTxMsg(v); ok {
+	if DistrubutionDocInfo, ok := msgparser.MsgClient.Distribution.HandleTxMsg(v); ok {
 		return DistrubutionDocInfo, nil
 	}
-	if SlashingDocInfo, ok := msgsdk.MsgClient.Slashing.HandleTxMsg(v); ok {
+	if SlashingDocInfo, ok := msgparser.MsgClient.Slashing.HandleTxMsg(v); ok {
 		return SlashingDocInfo, nil
 	}
-	if EvidenceDocInfo, ok := msgsdk.MsgClient.Evidence.HandleTxMsg(v); ok {
+	if EvidenceDocInfo, ok := msgparser.MsgClient.Evidence.HandleTxMsg(v); ok {
 		return EvidenceDocInfo, nil
 	}
-	if StakingDocInfo, ok := msgsdk.MsgClient.Staking.HandleTxMsg(v); ok {
+	if StakingDocInfo, ok := msgparser.MsgClient.Staking.HandleTxMsg(v); ok {
 		return StakingDocInfo, nil
 	}
-	if GovDocInfo, ok := msgsdk.MsgClient.Gov.HandleTxMsg(v); ok {
+	if GovDocInfo, ok := msgparser.MsgClient.Gov.HandleTxMsg(v); ok {
 		return GovDocInfo, nil
 	}
 
 	//if WasmDocInfo, ok := wasm.HandleTxMsg(v); ok {
 	//	return WasmDocInfo, nil
 	//}
-	if IbcDocinfo, ok := msgsdk.MsgClient.Ibc.HandleTxMsg(v); ok {
+	if IbcDocinfo, ok := msgparser.MsgClient.Ibc.HandleTxMsg(v); ok {
 		return IbcDocinfo, nil
 	}
 	return MsgDocInfo{}, nil
