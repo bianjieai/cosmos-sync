@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/bianjieai/irita-sync/confs/server"
-	"github.com/weichang-bianjie/msg-sdk/codec"
+	"github.com/kaifei-bianjie/msg-parser/codec"
 )
 
 const (

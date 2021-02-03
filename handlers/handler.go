@@ -1,65 +1,65 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/libs/msgsdk"
-	. "github.com/weichang-bianjie/msg-sdk/modules"
-	"github.com/weichang-bianjie/msg-sdk/types"
+	"github.com/bianjieai/irita-sync/libs/msgparser"
+	. "github.com/kaifei-bianjie/msg-parser/modules"
+	"github.com/kaifei-bianjie/msg-parser/types"
 	"gopkg.in/mgo.v2/txn"
 )
 
 func HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
-	if BankDocInfo, ok := msgsdk.MsgClient.Bank.HandleTxMsg(v); ok {
+	if BankDocInfo, ok := msgparser.MsgClient.Bank.HandleTxMsg(v); ok {
 		return BankDocInfo, nil
 	}
-	if IServiceDocInfo, ok := msgsdk.MsgClient.Service.HandleTxMsg(v); ok {
+	if IServiceDocInfo, ok := msgparser.MsgClient.Service.HandleTxMsg(v); ok {
 		return IServiceDocInfo, nil
 	}
-	if NftDocInfo, ok := msgsdk.MsgClient.Nft.HandleTxMsg(v); ok {
+	if NftDocInfo, ok := msgparser.MsgClient.Nft.HandleTxMsg(v); ok {
 		return NftDocInfo, nil
 	}
-	if RecordDocInfo, ok := msgsdk.MsgClient.Record.HandleTxMsg(v); ok {
+	if RecordDocInfo, ok := msgparser.MsgClient.Record.HandleTxMsg(v); ok {
 		return RecordDocInfo, nil
 	}
-	if TokenDocInfo, ok := msgsdk.MsgClient.Token.HandleTxMsg(v); ok {
+	if TokenDocInfo, ok := msgparser.MsgClient.Token.HandleTxMsg(v); ok {
 		return TokenDocInfo, nil
 	}
-	if CoinswapDocInfo, ok := msgsdk.MsgClient.Coinswap.HandleTxMsg(v); ok {
+	if CoinswapDocInfo, ok := msgparser.MsgClient.Coinswap.HandleTxMsg(v); ok {
 		return CoinswapDocInfo, nil
 	}
-	if CrisisDocInfo, ok := msgsdk.MsgClient.Crisis.HandleTxMsg(v); ok {
+	if CrisisDocInfo, ok := msgparser.MsgClient.Crisis.HandleTxMsg(v); ok {
 		return CrisisDocInfo, nil
 	}
-	if DistrubutionDocInfo, ok := msgsdk.MsgClient.Distribution.HandleTxMsg(v); ok {
+	if DistrubutionDocInfo, ok := msgparser.MsgClient.Distribution.HandleTxMsg(v); ok {
 		return DistrubutionDocInfo, nil
 	}
-	if SlashingDocInfo, ok := msgsdk.MsgClient.Slashing.HandleTxMsg(v); ok {
+	if SlashingDocInfo, ok := msgparser.MsgClient.Slashing.HandleTxMsg(v); ok {
 		return SlashingDocInfo, nil
 	}
-	if EvidenceDocInfo, ok := msgsdk.MsgClient.Evidence.HandleTxMsg(v); ok {
+	if EvidenceDocInfo, ok := msgparser.MsgClient.Evidence.HandleTxMsg(v); ok {
 		return EvidenceDocInfo, nil
 	}
-	if HtlcDocInfo, ok := msgsdk.MsgClient.Htlc.HandleTxMsg(v); ok {
+	if HtlcDocInfo, ok := msgparser.MsgClient.Htlc.HandleTxMsg(v); ok {
 		return HtlcDocInfo, nil
 	}
-	if StakingDocInfo, ok := msgsdk.MsgClient.Staking.HandleTxMsg(v); ok {
+	if StakingDocInfo, ok := msgparser.MsgClient.Staking.HandleTxMsg(v); ok {
 		return StakingDocInfo, nil
 	}
-	if GovDocInfo, ok := msgsdk.MsgClient.Gov.HandleTxMsg(v); ok {
+	if GovDocInfo, ok := msgparser.MsgClient.Gov.HandleTxMsg(v); ok {
 		return GovDocInfo, nil
 	}
 	//if IdentityDocInfo, ok := identity.HandleTxMsg(v); ok {
 	//	return IdentityDocInfo, nil
 	//}
-	if RandomDocInfo, ok := msgsdk.MsgClient.Random.HandleTxMsg(v); ok {
+	if RandomDocInfo, ok := msgparser.MsgClient.Random.HandleTxMsg(v); ok {
 		return RandomDocInfo, nil
 	}
-	if OracleDocInfo, ok := msgsdk.MsgClient.Oracle.HandleTxMsg(v); ok {
+	if OracleDocInfo, ok := msgparser.MsgClient.Oracle.HandleTxMsg(v); ok {
 		return OracleDocInfo, nil
 	}
 	//if WasmDocInfo, ok := wasm.HandleTxMsg(v); ok {
 	//	return WasmDocInfo, nil
 	//}
-	if IbcDocinfo, ok := msgsdk.MsgClient.Ibc.HandleTxMsg(v); ok {
+	if IbcDocinfo, ok := msgparser.MsgClient.Ibc.HandleTxMsg(v); ok {
 		return IbcDocinfo, nil
 	}
 	return MsgDocInfo{}, nil
