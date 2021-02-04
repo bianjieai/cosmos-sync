@@ -9,11 +9,13 @@ import (
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
+	"github.com/bianjieai/irita-sync/utils/constant"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2/txn"
-	"time"
 	"os"
+	"strings"
+	"time"
 )
 
 func (s *SyncTaskService) StartExecuteTask() {
@@ -184,6 +186,16 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		if err != nil {
 			logger.Error("Parse block fail", logger.Int64("block", inProcessBlock),
 				logger.String("err", err.Error()))
+			switch err.Error() {
+			case constant.NoSupportMsgTypeTag, constant.ErrNoSupportTxPrefix:
+				logger.Warn("skip no support txs",
+					logger.String("err", err.Error()),
+					logger.Int64("height", inProcessBlock))
+			default:
+				logger.Error("Parse block fail", logger.Int64("height", inProcessBlock),
+					logger.String("err", err.Error()))
+				continue
+			}
 		}
 
 		// check task owner
@@ -203,7 +215,12 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 
 			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc, ops)
 			if err != nil {
-				logger.Error("save docs fail", logger.String("err", err.Error()))
+				logger.Error("save docs fail",
+					logger.Int64("height", inProcessBlock),
+					logger.String("err", err.Error()))
+				if !strings.Contains(err.Error(), constant.ErrDbNotFindTransaction) {
+					continue
+				}
 			} else {
 				task.CurrentHeight = inProcessBlock
 			}
