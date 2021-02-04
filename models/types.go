@@ -2,10 +2,6 @@
 
 package models
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
-
 const (
 	CollectionNameTxn = "sync_txn"
 )
@@ -31,13 +27,6 @@ type (
 		// primary key pair(used to find a unique record)
 		PkKvPair() map[string]interface{}
 	}
-
-	Coin struct {
-		Denom  string `bson:"denom"`
-		Amount string `bson:"amount"`
-	}
-
-	Coins []*Coin
 )
 
 // Description
@@ -63,52 +52,3 @@ func ensureDocsIndexes() {
 	}
 }
 
-func BuildDocCoins(coins sdk.Coins) []Coin {
-	var (
-		res []Coin
-	)
-	if len(coins) > 0 {
-		for _, v := range coins {
-			c := Coin{
-				Denom:  v.Denom,
-				Amount: v.Amount.String(),
-			}
-			res = append(res, c)
-		}
-	}
-
-	return res
-}
-
-func BuildDocCoin(coin sdk.Coin) Coin {
-	return Coin{
-		Denom:  coin.Denom,
-		Amount: coin.Amount.String(),
-	}
-}
-
-func BuildDocSigners(signers []sdk.AccAddress) (string, []string) {
-	var (
-		firstSigner string
-		allSigners  []string
-	)
-	if len(signers) == 0 {
-		return firstSigner, allSigners
-	}
-	for _, v := range signers {
-		if firstSigner == "" {
-			firstSigner = v.String()
-		}
-
-		allSigners = append(allSigners, v.String())
-	}
-
-	return firstSigner, allSigners
-}
-
-func BuildFee(fee sdk.Coins, gas uint64) Fee {
-	return Fee{
-		Amount: BuildDocCoins(fee),
-		Gas:    int64(gas),
-	}
-}

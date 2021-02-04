@@ -1,17 +1,16 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
+	"github.com/kaifei-bianjie/msg-parser/codec"
+	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/txn"
 	"time"
@@ -65,7 +64,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	var (
 		docTx models.Tx
 
-		docTxMsgs []models.DocTxMsg
+		docTxMsgs []msgsdktypes.TxMsg
 		txnOps    []txn.Op
 	)
 	txHash := utils.BuildHex(txBytes.Hash())
@@ -92,7 +91,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	docTx.Events = parseEvents(txResult.TxResult.Events)
 	docTx.TxIndex = txResult.Index
 
-	Tx, err := cdc.GetTxDecoder()(txBytes)
+	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
 		logger.Error(
 			"TxDecoder have error",
@@ -101,8 +100,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 			logger.String("err", err.Error()))
 		return docTx, txnOps
 	}
-	authTx := Tx.(signing.Tx)
-	docTx.Fee = BuildFee(authTx.GetFee(), authTx.GetGas())
+	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
 	msgs := authTx.GetMsgs()
@@ -169,11 +167,4 @@ func parseEvents(events []aTypes.Event) []models.Event {
 	}
 
 	return eventDocs
-}
-
-func BuildFee(fee sdk.Coins, gas uint64) *models.Fee {
-	return &models.Fee{
-		Amount: models.BuildDocCoins(fee),
-		Gas:    int64(gas),
-	}
 }

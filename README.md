@@ -26,7 +26,6 @@ A server that synchronize irita chain data into a database
 - BLOCK_NUM_PER_WORKER_HANDLE: `required` `string`  number of blocks per sync TX task（example: `50`）
 
 - BECH32_CHAIN_PREFIX: `option` `string` block chain address prefix（default: `i` example: `i`）
-- CHAIN_ID: `option` `string` block chain id for mongodb create collection name（example: `cschain-bond`）
 - CHAIN_BLOCK_INTERVAL: `option` `string` block interval; default `5` (example: `5`)
 - BEHIND_BLOCK_NUM: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 
