@@ -8,8 +8,8 @@ import (
 
 type (
 	DocMsgSend struct {
-		FromAddress string        `bson:"fromaddress"`
-		ToAddress   string        `bson:"toaddress"`
+		FromAddress string        `bson:"from_address"`
+		ToAddress   string        `bson:"to_address"`
 		Amount      []models.Coin `bson:"amount"`
 	}
 )
@@ -28,7 +28,7 @@ func (m *DocMsgSend) BuildMsg(v interface{}) {
 func (m *DocMsgSend) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
-		msg MsgSend
+		msg   MsgSend
 	)
 
 	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
