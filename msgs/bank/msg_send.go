@@ -8,8 +8,8 @@ import (
 
 type (
 	DocMsgSend struct {
-		FromAddress string        `bson:"fromaddress"`
-		ToAddress   string        `bson:"toaddress"`
+		FromAddress string        `bson:"from_address"`
+		ToAddress   string        `bson:"to_address"`
 		Amount      []models.Coin `bson:"amount"`
 	}
 )

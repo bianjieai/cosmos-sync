@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/bianjieai/irita-sync/libs/cdc"
-	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
@@ -12,6 +12,7 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"gopkg.in/mgo.v2/txn"
+	"strings"
 	"time"
 )
 
@@ -25,9 +26,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	if v, err := client.Block(&b); err != nil {
 		time.Sleep(500 * time.Millisecond)
 		if v2, err := client.Block(&b); err != nil {
-			logger.Error("parse block fail", logger.Int64("height", b),
-				logger.String("err", err.Error()))
-			return &blockDoc, nil, txnOps, err
+			return &blockDoc, nil, txnOps, utils.ConvertErr(b, "", "ParseBlock", err)
 		} else {
 			block = v2
 		}
@@ -45,7 +44,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for _, v := range block.Block.Txs {
-			txDoc, ops := parseTx(client, v, block.Block)
+			txDoc, ops, err := parseTx(client, v, block.Block)
+			if err != nil {
+				return nil, nil, nil, err
+			}
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
 				if len(ops) > 0 {
@@ -58,7 +60,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, txnOps, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, []txn.Op) {
+func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, []txn.Op, error) {
 	var (
 		docTx     models.Tx
 		docTxMsgs []models.DocTxMsg
@@ -66,13 +68,15 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		log       string
 	)
 
+	txHash := utils.BuildHex(txBytes.Hash())
+	height := block.Height
 	Tx, err := cdc.GetTxDecoder()(txBytes)
 	if err != nil {
-		logger.Error(err.Error(), logger.Int64("block height", block.Height))
-		return docTx, txnOps
+		if strings.Contains(err.Error(), constant.ErrNoSupportTxPrefix) {
+			return models.Tx{}, nil, utils.ConvertErr(height, txHash, "TxDecoder", err)
+		}
+		return docTx, txnOps, err
 	}
-	height := block.Height
-	txHash := utils.BuildHex(txBytes.Hash())
 
 	authTx := Tx.(signing.Tx)
 	fee := models.BuildFee(authTx.GetFee(), authTx.GetGas())
@@ -82,10 +86,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	if err != nil {
 		time.Sleep(500 * time.Millisecond)
 		if ret, err := c.Tx(txBytes.Hash(), false); err != nil {
-			logger.Error("get tx result fail",
-				logger.String("txHash", txHash),
-				logger.String("err", err.Error()))
-			return docTx, txnOps
+			return docTx, txnOps, utils.ConvertErr(height, txHash, "TxResult", err)
 		} else {
 			txResult = ret
 		}
@@ -95,11 +96,6 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		log = txResult.TxResult.Log
 	}
 	txIndex := txResult.Index
-
-	msgs := authTx.GetMsgs()
-	if len(msgs) == 0 {
-		return docTx, txnOps
-	}
 	docTx = models.Tx{
 		Height:  height,
 		Time:    block.Time.Unix(),
@@ -111,6 +107,11 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		Events:  parseEvents(txResult.TxResult.Events),
 		TxIndex: txIndex,
 	}
+	msgs := authTx.GetMsgs()
+	if len(msgs) == 0 {
+		return docTx, txnOps, nil
+	}
+
 	for i, v := range msgs {
 		msgDocInfo, ops := HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
@@ -137,11 +138,11 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	docTx.DocTxMsgs = docTxMsgs
 
 	// don't save txs which have not parsed
-	if docTx.Type == "" || docTx.TxHash == "" {
-		return models.Tx{}, txnOps
+	if docTx.Type == "" {
+		return models.Tx{}, txnOps, utils.ConvertErr(height, txHash, "TxMsg", fmt.Errorf(constant.NoSupportMsgTypeTag))
 	}
 
-	return docTx, txnOps
+	return docTx, txnOps, nil
 }
 
 func parseTxStatus(code uint32) uint32 {
