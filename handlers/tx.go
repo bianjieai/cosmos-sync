@@ -94,9 +94,6 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 			logger.Error("get tx result fail",
 				logger.String("txHash", txHash),
 				logger.String("err", err.Error()))
-			if strings.Contains(err.Error(), constant.ErrNoSupportTxPrefix) {
-				return models.Tx{}, nil, fmt.Errorf(constant.ErrNoSupportTxPrefix)
-			}
 			return docTx, txnOps, err
 		} else {
 			txResult = ret
