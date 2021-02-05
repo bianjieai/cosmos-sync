@@ -183,7 +183,7 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		// parse data from block
 		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
-			if !utils.CheckSkipErr(err, constant.ErrDbNotFindTransaction) &&
+			if !utils.CheckSkipErr(err, constant.NoSupportMsgTypeTag) &&
 				!utils.CheckSkipErr(err, constant.ErrNoSupportTxPrefix) {
 				logger.Error("Parse block fail",
 					logger.Int64("height", inProcessBlock),
