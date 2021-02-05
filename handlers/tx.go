@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/bianjieai/irita-sync/libs/cdc"
-	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
@@ -29,9 +28,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(500 * time.Millisecond)
 		if v2, err := client.Block(ctx, &b); err != nil {
-			logger.Error("parse block fail", logger.Int64("height", b),
-				logger.String("err", err.Error()))
-			return &blockDoc, nil, txnOps, err
+			return &blockDoc, nil, txnOps, utils.ConvertErr(b, "", "ParseBlock", err)
 		} else {
 			block = v2
 		}
@@ -74,14 +71,14 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	)
 
 	txHash := utils.BuildHex(txBytes.Hash())
+	height := block.Height
 	Tx, err := cdc.GetTxDecoder()(txBytes)
 	if err != nil {
 		if strings.Contains(err.Error(), constant.ErrNoSupportTxPrefix) {
-			return models.Tx{}, nil, fmt.Errorf(constant.ErrNoSupportTxPrefix)
+			return models.Tx{}, nil, utils.ConvertErr(height, txHash, "TxDecoder", err)
 		}
 		return docTx, txnOps, err
 	}
-	height := block.Height
 
 	authTx := Tx.(signing.Tx)
 	fee := models.BuildFee(authTx.GetFee(), authTx.GetGas())
@@ -91,10 +88,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	if err != nil {
 		time.Sleep(500 * time.Millisecond)
 		if ret, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			logger.Error("get tx result fail",
-				logger.String("txHash", txHash),
-				logger.String("err", err.Error()))
-			return docTx, txnOps, err
+			return docTx, txnOps, utils.ConvertErr(height, txHash, "TxResult", err)
 		} else {
 			txResult = ret
 		}
@@ -147,7 +141,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 
 	// don't save txs which have not parsed
 	if docTx.Type == "" {
-		return models.Tx{}, txnOps, fmt.Errorf(constant.NoSupportMsgTypeTag)
+		return models.Tx{}, txnOps, utils.ConvertErr(height, txHash, "TxMsg", fmt.Errorf(constant.NoSupportMsgTypeTag))
 	}
 
 	return docTx, txnOps, nil

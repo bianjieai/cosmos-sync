@@ -184,18 +184,19 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		// parse data from block
 		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
-			switch err.Error() {
-			case constant.NoSupportMsgTypeTag, constant.ErrNoSupportTxPrefix:
-				logger.Warn("skip no support txs",
-					logger.String("err", err.Error()),
-					logger.Int64("height", inProcessBlock))
-			default:
-				logger.Error("Parse block fail", logger.Int64("height", inProcessBlock),
+			if !utils.CheckSkipErr(err, constant.ErrDbNotFindTransaction) &&
+				!utils.CheckSkipErr(err, constant.ErrNoSupportTxPrefix) {
+				logger.Error("Parse block fail",
+					logger.Int64("height", inProcessBlock),
+					logger.String("errTag", utils.GetErrTag(err)),
 					logger.String("err", err.Error()))
 				//continue to assert task is valid
 				blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 				continue
 			}
+			logger.Warn("skip no support txs",
+				logger.String("err", err.Error()),
+				logger.Int64("height", inProcessBlock))
 		}
 
 		// check task owner
