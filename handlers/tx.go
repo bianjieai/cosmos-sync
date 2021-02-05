@@ -1,18 +1,19 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/libs/logger"
+	"fmt"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
+	"github.com/kaifei-bianjie/msg-parser/codec"
+	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
-	"github.com/kaifei-bianjie/msg-parser/codec"
-	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/txn"
+	"strings"
 	"time"
 )
 
@@ -23,13 +24,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		txnOps   []txn.Op
 	)
 	ctx := context.Background()
-
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
-			logger.Error("parse block fail", logger.Int64("height", b),
-				logger.String("err", err.Error()))
-			return &blockDoc, nil, txnOps, err
+			return &blockDoc, nil, txnOps, utils.ConvertErr(b, "", "ParseBlock", err)
 		} else {
 			block = v2
 		}
@@ -47,7 +45,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for _, v := range block.Block.Txs {
-			txDoc, ops := parseTx(client, v, block.Block.Time)
+			txDoc, ops, err := parseTx(client, v, block.Block)
+			if err != nil {
+				return nil, nil, nil, err
+			}
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
 				if len(ops) > 0 {
@@ -60,7 +61,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, txnOps, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, []txn.Op) {
+func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, []txn.Op, error) {
 	var (
 		docTx models.Tx
 
@@ -73,14 +74,12 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	if err != nil {
 		time.Sleep(1 * time.Second)
 		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			logger.Error("get tx result fail", logger.String("txHash", txHash),
-				logger.String("err", err.Error()))
-			return docTx, txnOps
+			return docTx, txnOps, utils.ConvertErr(block.Height, txHash, "TxResult", err)
 		} else {
 			txResult = v
 		}
 	}
-	docTx.Time = blockTime.Unix()
+	docTx.Time = block.Time.Unix()
 	docTx.Height = txResult.Height
 	docTx.TxHash = txHash
 	docTx.Status = parseTxStatus(txResult.TxResult.Code)
@@ -93,20 +92,19 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
-		logger.Error(
-			"TxDecoder have error",
-			logger.Int64("height", docTx.Height),
-			logger.String("tx_hash", docTx.TxHash),
-			logger.String("err", err.Error()))
-		return docTx, txnOps
+		if strings.Contains(err.Error(), constant.ErrNoSupportTxPrefix) {
+			return models.Tx{}, nil, utils.ConvertErr(block.Height, txHash, "TxDecoder", err)
+		}
+		return docTx, txnOps, err
 	}
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
 	msgs := authTx.GetMsgs()
 	if len(msgs) == 0 {
-		return docTx, txnOps
+		return docTx, txnOps, nil
 	}
+
 	for i, v := range msgs {
 		msgDocInfo, ops := HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
@@ -131,11 +129,11 @@ func parseTx(c *pool.Client, txBytes types.Tx, blockTime time.Time) (models.Tx, 
 	docTx.DocTxMsgs = docTxMsgs
 
 	// don't save txs which have not parsed
-	if docTx.Type == "" || docTx.TxHash == "" {
-		return models.Tx{}, txnOps
+	if docTx.Type == "" {
+		return models.Tx{}, txnOps, utils.ConvertErr(block.Height, txHash, "TxMsg", fmt.Errorf(constant.NoSupportMsgTypeTag))
 	}
 
-	return docTx, txnOps
+	return docTx, txnOps, nil
 }
 
 func parseTxStatus(code uint32) uint32 {
@@ -168,4 +166,3 @@ func parseEvents(events []aTypes.Event) []models.Event {
 
 	return eventDocs
 }
-
