@@ -76,6 +76,9 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	txHash := utils.BuildHex(txBytes.Hash())
 	Tx, err := cdc.GetTxDecoder()(txBytes)
 	if err != nil {
+		if strings.Contains(err.Error(), constant.ErrNoSupportTxPrefix) {
+			return models.Tx{}, nil, fmt.Errorf(constant.ErrNoSupportTxPrefix)
+		}
 		return docTx, txnOps, err
 	}
 	height := block.Height
