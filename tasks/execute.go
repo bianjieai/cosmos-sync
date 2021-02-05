@@ -184,8 +184,6 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		// parse data from block
 		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
-			logger.Error("Parse block fail", logger.Int64("block", inProcessBlock),
-				logger.String("err", err.Error()))
 			switch err.Error() {
 			case constant.NoSupportMsgTypeTag, constant.ErrNoSupportTxPrefix:
 				logger.Warn("skip no support txs",
@@ -215,10 +213,10 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 
 			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc, ops)
 			if err != nil {
-				logger.Error("save docs fail",
-					logger.Int64("height", inProcessBlock),
-					logger.String("err", err.Error()))
 				if !strings.Contains(err.Error(), constant.ErrDbNotFindTransaction) {
+					logger.Error("save docs fail",
+						logger.Int64("height", inProcessBlock),
+						logger.String("err", err.Error()))
 					continue
 				}
 			} else {
