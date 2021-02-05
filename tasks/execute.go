@@ -192,6 +192,8 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 			default:
 				logger.Error("Parse block fail", logger.Int64("height", inProcessBlock),
 					logger.String("err", err.Error()))
+				//continue to assert task is valid
+				blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 				continue
 			}
 		}
@@ -217,6 +219,8 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 					logger.Error("save docs fail",
 						logger.Int64("height", inProcessBlock),
 						logger.String("err", err.Error()))
+					//continue to assert task is valid
+					blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 					continue
 				}
 			} else {
