@@ -46,7 +46,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		for _, v := range block.Block.Txs {
 			txDoc, ops, err := parseTx(client, v, block.Block)
 			if err != nil {
-				return nil, nil, nil, err
+				return &blockDoc, txDocs, txnOps, err
 			}
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
