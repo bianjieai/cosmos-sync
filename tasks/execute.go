@@ -196,9 +196,6 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 				blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 				continue
 			}
-			logger.Warn("skip no support txs",
-				logger.String("err", err.Error()),
-				logger.Int64("height", inProcessBlock))
 		}
 
 		// check task owner
