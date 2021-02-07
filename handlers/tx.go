@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"github.com/bianjieai/irita-sync/libs/cdc"
+	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
@@ -43,10 +44,17 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
-		for _, v := range block.Block.Txs {
+		for i, v := range block.Block.Txs {
 			txDoc, ops, err := parseTx(client, v, block.Block)
 			if err != nil {
-				return &blockDoc, txDocs, txnOps, err
+				if !utils.CheckSkipErr(err, constant.NoSupportMsgTypeTag) &&
+					!utils.CheckSkipErr(err, constant.ErrNoSupportTxPrefix) {
+					return &blockDoc, txDocs, txnOps, err
+				}
+				logger.Warn("skip no support txs",
+					logger.String("err", err.Error()),
+					logger.Int("tx_index", i),
+					logger.Int64("height", block.Block.Height))
 			}
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
