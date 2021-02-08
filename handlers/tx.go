@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
@@ -14,7 +13,6 @@ import (
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/txn"
-	"strings"
 	"time"
 )
 
@@ -45,17 +43,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
-		for i, v := range block.Block.Txs {
+		for _, v := range block.Block.Txs {
 			txDoc, ops, err := parseTx(client, v, block.Block)
 			if err != nil {
-				if !utils.CheckSkipErr(err, constant.NoSupportMsgTypeTag) &&
-					!utils.CheckSkipErr(err, constant.ErrNoSupportTxPrefix) {
-					return &blockDoc, txDocs, txnOps, err
-				}
-				logger.Warn("skip no support txs",
-					logger.String("err", err.Error()),
-					logger.Int("tx_index", i),
-					logger.Int64("height", block.Block.Height))
+				return &blockDoc, txDocs, txnOps, err
 			}
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
@@ -100,10 +91,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
-		if strings.Contains(err.Error(), constant.ErrNoSupportTxPrefix) {
-			return models.Tx{}, nil, utils.ConvertErr(block.Height, txHash, "TxDecoder", err)
-		}
-		return docTx, txnOps, err
+		logger.Warn(err.Error(),
+			logger.String("txhash", txHash),
+			logger.Int64("height", block.Height))
+		return docTx, txnOps, nil
 	}
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
@@ -138,7 +129,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 
 	// don't save txs which have not parsed
 	if docTx.Type == "" {
-		return models.Tx{}, txnOps, utils.ConvertErr(block.Height, txHash, "TxMsg", fmt.Errorf(constant.NoSupportMsgTypeTag))
+		logger.Warn(constant.NoSupportMsgTypeTag,
+			logger.String("txhash", txHash),
+			logger.Int64("height", block.Height))
+		return models.Tx{}, txnOps, nil
 	}
 
 	return docTx, txnOps, nil
