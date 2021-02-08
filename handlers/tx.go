@@ -74,6 +74,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	Tx, err := cdc.GetTxDecoder()(txBytes)
 	if err != nil {
 		logger.Warn(err.Error(),
+			logger.String("errTag", "TxDecoder"),
 			logger.String("txhash", txHash),
 			logger.Int64("height", height))
 		return docTx, txnOps, nil
@@ -141,6 +142,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	// don't save txs which have not parsed
 	if docTx.Type == "" {
 		logger.Warn(constant.NoSupportMsgTypeTag,
+			logger.String("errTag", "TxMsg"),
 			logger.String("txhash", txHash),
 			logger.Int64("height", height))
 		return models.Tx{}, txnOps, nil
