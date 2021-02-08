@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
@@ -13,7 +12,6 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"gopkg.in/mgo.v2/txn"
-	"strings"
 	"time"
 )
 
@@ -44,17 +42,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
-		for i, v := range block.Block.Txs {
+		for _, v := range block.Block.Txs {
 			txDoc, ops, err := parseTx(client, v, block.Block)
 			if err != nil {
-				if !utils.CheckSkipErr(err, constant.NoSupportMsgTypeTag) &&
-					!utils.CheckSkipErr(err, constant.ErrNoSupportTxPrefix) {
-					return &blockDoc, txDocs, txnOps, err
-				}
-				logger.Warn("skip no support txs",
-					logger.String("err", err.Error()),
-					logger.Int("tx_index", i),
-					logger.Int64("height", block.Block.Height))
+				return &blockDoc, txDocs, txnOps, err
 			}
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
@@ -80,10 +71,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	height := block.Height
 	Tx, err := cdc.GetTxDecoder()(txBytes)
 	if err != nil {
-		if strings.Contains(err.Error(), constant.ErrNoSupportTxPrefix) {
-			return models.Tx{}, nil, utils.ConvertErr(height, txHash, "TxDecoder", err)
-		}
-		return docTx, txnOps, err
+		logger.Warn(err.Error(),
+			logger.String("txhash", txHash),
+			logger.Int64("height", height))
+		return docTx, txnOps, nil
 	}
 
 	authTx := Tx.(signing.Tx)
@@ -147,7 +138,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 
 	// don't save txs which have not parsed
 	if docTx.Type == "" {
-		return models.Tx{}, txnOps, utils.ConvertErr(height, txHash, "TxMsg", fmt.Errorf(constant.NoSupportMsgTypeTag))
+		logger.Warn(constant.NoSupportMsgTypeTag,
+			logger.String("txhash", txHash),
+			logger.Int64("height", height))
+		return models.Tx{}, txnOps, nil
 	}
 
 	return docTx, txnOps, nil
