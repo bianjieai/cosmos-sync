@@ -26,7 +26,7 @@ type ServerConf struct {
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://10.1.4.220:26657"}
+	nodeUrls                = []string{"tcp://10.0.1.116:26657"}
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
