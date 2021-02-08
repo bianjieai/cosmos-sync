@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"context"
-	"github.com/bianjieai/irita-sync/libs/cdc"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
+	"github.com/kaifei-bianjie/msg-parser/codec"
+	msgtypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
@@ -64,14 +64,14 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, []txn.Op, error) {
 	var (
 		docTx     models.Tx
-		docTxMsgs []models.DocTxMsg
+		docTxMsgs []msgtypes.TxMsg
 		txnOps    []txn.Op
 		log       string
 	)
 
 	txHash := utils.BuildHex(txBytes.Hash())
 	height := block.Height
-	Tx, err := cdc.GetTxDecoder()(txBytes)
+	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
 		logger.Warn(err.Error(),
 			logger.String("errTag", "TxDecoder"),
@@ -79,9 +79,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 			logger.Int64("height", height))
 		return docTx, txnOps, nil
 	}
-
-	authTx := Tx.(signing.Tx)
-	fee := models.BuildFee(authTx.GetFee(), authTx.GetGas())
+	fee := msgtypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	memo := authTx.GetMemo()
 	ctx := context.Background()
 	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
@@ -102,7 +100,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		Height:  height,
 		Time:    block.Time.Unix(),
 		TxHash:  txHash,
-		Fee:     &fee,
+		Fee:     fee,
 		Memo:    memo,
 		Status:  status,
 		Log:     log,
