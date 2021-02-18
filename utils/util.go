@@ -25,7 +25,7 @@ func CheckSkipErr(err error, tag string) bool {
 func GetErrTag(err error) string {
 	slice := strings.Split(err.Error(), "-")
 	if len(slice) == 4 {
-		return slice[2]
+		return slice[1]
 	}
 	return ""
 }
