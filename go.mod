@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20210326132044-8f7f17bb3486
+	github.com/kaifei-bianjie/msg-parser v0.0.0-20210422060025-02d352da6505
 	github.com/tendermint/tendermint v0.34.8
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
@@ -16,6 +16,5 @@ require (
 replace (
 	github.com/cosmos/cosmos-sdk => github.com/bianjieai/cosmos-sdk v0.34.4-0.20201127022001-791921d241f8
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
-	github.com/kaifei-bianjie/msg-parser => github.com/weichang-bianjie/msg-parser v0.0.0-20210422031951-d69800264262
 	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.33.1-dev0.0.20201126055325-2217bc51b6c7
 )
