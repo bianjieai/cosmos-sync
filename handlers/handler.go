@@ -59,9 +59,9 @@ func HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
 	//if WasmDocInfo, ok := wasm.HandleTxMsg(v); ok {
 	//	return WasmDocInfo, nil
 	//}
-	if IbcDocinfo, ok := msgparser.MsgClient.Ibc.HandleTxMsg(v); ok {
-		return IbcDocinfo, nil
-	}
+	//if IbcDocinfo, ok := msgparser.MsgClient.Ibc.HandleTxMsg(v); ok {
+	//	return IbcDocinfo, nil
+	//}
 	return MsgDocInfo{}, nil
 }
 
