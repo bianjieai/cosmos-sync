@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
-	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
+	jsonrpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
 	"math/rand"
 	"sync"
 )
@@ -20,7 +20,7 @@ type (
 	}
 	Client struct {
 		Id string
-		*rpcclient.HTTP
+		*BlockChainClient
 	}
 )
 
@@ -34,11 +34,8 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 	}
 }
 
+// DestroyObject only websocket need destroy
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {
-	c := object.Object.(*Client)
-	if c.IsRunning() {
-		c.Stop()
-	}
 	return nil
 }
 
@@ -103,10 +100,15 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 }
 
 func newClient(nodeUrl string) (*Client, error) {
-	client, err := rpcclient.New(nodeUrl, "/websocket")
+	client, err := jsonrpcclient.New(nodeUrl)
+
+	myClient := &BlockChainClient{
+		remote: nodeUrl,
+		client: client,
+	}
 	return &Client{
-		Id:     generateId(nodeUrl),
-		HTTP: client,
+		Id:               generateId(nodeUrl),
+		BlockChainClient: myClient,
 	}, err
 }
 
