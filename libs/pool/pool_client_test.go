@@ -21,11 +21,13 @@ func TestMain(m *testing.M) {
 
 func TestBlock(t *testing.T) {
 	var height int64 = 1
-	block, err := c.Block(context.Background(), &height)
-	if err != nil {
-		panic(err)
+	for ; height < 5; height++ {
+		block, err := c.Block(context.Background(), &height)
+		if err != nil {
+			panic(err)
+		}
+		t.Log(block)
 	}
-	t.Log(block)
 }
 
 func TestStatus(t *testing.T) {

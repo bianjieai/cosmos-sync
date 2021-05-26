@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
-	jsonrpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
 	"math/rand"
 	"sync"
 )
@@ -100,15 +99,15 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 }
 
 func newClient(nodeUrl string) (*Client, error) {
-	client, err := jsonrpcclient.New(nodeUrl)
+	customClient, err := NewJsonRpcClient(nodeUrl)
 
-	myClient := &BlockChainClient{
+	blockChainClient := &BlockChainClient{
 		remote: nodeUrl,
-		client: client,
+		client: customClient,
 	}
 	return &Client{
 		Id:               generateId(nodeUrl),
-		BlockChainClient: myClient,
+		BlockChainClient: blockChainClient,
 	}, err
 }
 

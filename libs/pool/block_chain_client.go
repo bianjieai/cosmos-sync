@@ -3,19 +3,19 @@ package pool
 import (
 	"context"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	jsonrpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
+	"strconv"
 )
 
 type BlockChainClient struct {
 	remote string
-	client *jsonrpcclient.Client
+	client *JsonRpcClient
 }
 
 func (c *BlockChainClient) Block(ctx context.Context, height *int64) (*ctypes.ResultBlock, error) {
 	result := new(ctypes.ResultBlock)
 	params := make(map[string]interface{})
 	if height != nil {
-		params["height"] = height
+		params["height"] = strconv.FormatInt(*height, 10)
 	}
 	_, err := c.client.Call(ctx, "block", params, result)
 	if err != nil {
