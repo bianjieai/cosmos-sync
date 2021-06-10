@@ -24,6 +24,7 @@ type (
 		Fee       *types.Fee    `bson:"fee"`
 		Types     []string      `bson:"types"`
 		Events    []Event       `bson:"events"`
+		EventsNew []EventNew    `bson:"events_new"`
 		Signers   []string      `bson:"signers"`
 		DocTxMsgs []types.TxMsg `bson:"msgs"`
 		Addrs     []string      `bson:"addrs"`
@@ -41,9 +42,9 @@ type (
 		Value string `bson:"value"`
 	}
 
-	Fee struct {
-		Amount []types.Coin `bson:"amount" json:"amount"`
-		Gas    int64        `bson:"gas" json:"gas"`
+	EventNew struct {
+		MsgIndex uint32  `bson:"msg_index"`
+		Events   []Event `bson:"events"`
 	}
 )
 
