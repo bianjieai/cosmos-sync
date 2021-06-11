@@ -27,6 +27,7 @@ A server that synchronize irita chain data into a database
 
 - CHAIN_BLOCK_INTERVAL: `option` `string` block interval; default `5` (example: `5`)
 - BEHIND_BLOCK_NUM: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
+- PROMETHOUS_PORT: `option` `string` promethous metrics server port
 
 Note: 
 > synchronizes irita data from specify block height(such as:17908 current time:1576208532)
