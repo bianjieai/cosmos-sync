@@ -43,7 +43,7 @@ type (
 	}
 
 	EventNew struct {
-		MsgIndex uint32  `bson:"msg_index"`
+		MsgIndex uint32  `bson:"msg_index" json:"msg_index"`
 		Events   []Event `bson:"events"`
 	}
 )
