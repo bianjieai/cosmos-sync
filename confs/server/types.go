@@ -23,7 +23,7 @@ type ServerConf struct {
 	ChainBlockInterval int
 	BehindBlockNum     int
 
-	SyncTxModuleType []string
+	SyncTxModuleType map[string]bool
 }
 
 var (
@@ -38,7 +38,7 @@ var (
 	chainBlockInterval = 5
 	behindBlockNum     = 0
 
-	syncTxModuleType = []string{"vote", "submit_proposal"}
+	syncTxModuleType = []string{}
 )
 
 // get value of env var
@@ -107,6 +107,11 @@ func init() {
 		sleepTimeCreateTaskWorker = 1
 	}
 
+	syncTxModuleTypeMap := make(map[string]bool)
+	for _, v := range syncTxModuleType {
+		syncTxModuleTypeMap[v] = true
+	}
+
 	SvrConf = &ServerConf{
 		NodeUrls:                  nodeUrls,
 		WorkerNumCreateTask:       1,
@@ -123,7 +128,7 @@ func init() {
 		ChainBlockInterval: chainBlockInterval,
 		BehindBlockNum:     behindBlockNum,
 
-		SyncTxModuleType: syncTxModuleType,
+		SyncTxModuleType: syncTxModuleTypeMap,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))

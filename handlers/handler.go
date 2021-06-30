@@ -10,15 +10,11 @@ import (
 
 func HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
 	types := conf.SvrConf.SyncTxModuleType
-	flag := false
-	for _, e := range types {
-		if e == v.Type() {
-			flag = true
-			break
+	if len(types) != 0 {
+		flag := types[v.Type()]
+		if !flag {
+			return MsgDocInfo{}, nil
 		}
-	}
-	if !flag {
-		return MsgDocInfo{}, nil
 	}
 
 	if BankDocInfo, ok := msgparser.MsgClient.Bank.HandleTxMsg(v); ok {
