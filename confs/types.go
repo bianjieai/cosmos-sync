@@ -14,4 +14,6 @@ const (
 	EnvNameChainId                 = "CHAIN_ID"
 	EnvNameChainBlockInterval      = "CHAIN_BLOCK_INTERVAL"
 	EnvNameBehindBlockNum          = "BEHIND_BLOCK_NUM"
+
+	EnvNameSyncTxModuleType = "SYNC_TX_MODULE_TYPE"
 )

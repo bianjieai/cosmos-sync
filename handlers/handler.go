@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	conf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/libs/msgparser"
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
@@ -8,6 +9,18 @@ import (
 )
 
 func HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
+	types := conf.SvrConf.SyncTxModuleType
+	flag := false
+	for _, e := range types {
+		if e == v.Type() {
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		return MsgDocInfo{}, nil
+	}
+
 	if BankDocInfo, ok := msgparser.MsgClient.Bank.HandleTxMsg(v); ok {
 		return BankDocInfo, nil
 	}

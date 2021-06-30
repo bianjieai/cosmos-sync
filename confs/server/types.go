@@ -16,29 +16,38 @@ type ServerConf struct {
 	BlockNumPerWorkerHandle   int
 	SleepTimeCreateTaskWorker int
 
-	MaxConnectionNum   int
-	InitConnectionNum  int
+	MaxConnectionNum  int
+	InitConnectionNum int
 	//Bech32ChainPrefix  string
 	ChainId            string
 	ChainBlockInterval int
 	BehindBlockNum     int
+
+	SyncTxModuleType []string
 }
 
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://192.168.150.34:56657"}
+	//nodeUrls                = []string{"tcp://192.168.150.34:56657"}
+	nodeUrls                = []string{"tcp://192.168.150.40:26657"}
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
 	//bech32ChainPrefix       = "i"
-	chainId                 = ""
-	chainBlockInterval      = 5
-	behindBlockNum          = 0
+	chainId            = ""
+	chainBlockInterval = 5
+	behindBlockNum     = 0
+
+	syncTxModuleType = []string{"vote", "submit_proposal"}
 )
 
 // get value of env var
 func init() {
+	if v, ok := os.LookupEnv(constant.EnvNameSyncTxModuleType); ok {
+		syncTxModuleType = strings.Split(v, ",")
+	}
+
 	if v, ok := os.LookupEnv(constant.EnvNameSerNetworkFullNodes); ok {
 		nodeUrls = strings.Split(v, ",")
 	}
@@ -114,6 +123,8 @@ func init() {
 		ChainId:            chainId,
 		ChainBlockInterval: chainBlockInterval,
 		BehindBlockNum:     behindBlockNum,
+
+		SyncTxModuleType: syncTxModuleType,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))
