@@ -16,25 +16,27 @@ type ServerConf struct {
 	BlockNumPerWorkerHandle   int
 	SleepTimeCreateTaskWorker int
 
-	MaxConnectionNum   int
-	InitConnectionNum  int
+	MaxConnectionNum  int
+	InitConnectionNum int
 	//Bech32ChainPrefix  string
 	ChainId            string
 	ChainBlockInterval int
 	BehindBlockNum     int
+	PromethousPort     int
 }
 
 var (
 	SvrConf *ServerConf
 
-	nodeUrls                = []string{"tcp://192.168.150.34:56657"}
+	nodeUrls                = []string{"tcp://192.168.150.40:56657"}
 	workerNumExecuteTask    = 30
 	workerMaxSleepTime      = 2 * 60
 	blockNumPerWorkerHandle = 100
 	//bech32ChainPrefix       = "i"
-	chainId                 = ""
-	chainBlockInterval      = 5
-	behindBlockNum          = 0
+	chainId            = ""
+	chainBlockInterval = 5
+	behindBlockNum     = 0
+	promethousPort     = 9090
 )
 
 // get value of env var
@@ -89,6 +91,13 @@ func init() {
 			behindBlockNum = n
 		}
 	}
+	if v, ok := os.LookupEnv(constant.EnvNamePromethousPort); ok {
+		if n, err := utils.ConvStrToInt(v); err != nil {
+			logger.Fatal("convert str to int fail", logger.String(constant.EnvNamePromethousPort, v))
+		} else {
+			promethousPort = n
+		}
+	}
 
 	// calculate sleep time of create task goroutine, time unit is second
 	// 1. sleepTime must less than blockNumPerWorkerHandle*chainTimeInterval,
@@ -114,6 +123,7 @@ func init() {
 		ChainId:            chainId,
 		ChainBlockInterval: chainBlockInterval,
 		BehindBlockNum:     behindBlockNum,
+		PromethousPort:     promethousPort,
 	}
 
 	logger.Debug("print server config", logger.String("serverConf", utils.MarshalJsonIgnoreErr(SvrConf)))
