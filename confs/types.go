@@ -14,4 +14,5 @@ const (
 	EnvNameChainId                 = "CHAIN_ID"
 	EnvNameChainBlockInterval      = "CHAIN_BLOCK_INTERVAL"
 	EnvNameBehindBlockNum          = "BEHIND_BLOCK_NUM"
+	EnvNamePromethousPort          = "PROMETHOUS_PORT"
 )
