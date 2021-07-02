@@ -38,7 +38,8 @@ type (
 		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
 		BehindBlockNum     int    `mapstructure:"behind_block_num"`
 
-		PromethousPort string `mapstructure:"promethous_port"`
+		PromethousPort    string `mapstructure:"promethous_port"`
+		OnlySupportModule string `mapstructure:"only_support_module"`
 	}
 )
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/bianjieai/irita-sync/config"
+	"github.com/bianjieai/irita-sync/handlers"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
@@ -32,6 +33,7 @@ func main() {
 	}
 	models.Init(conf)
 	pool.Init(conf)
+	handlers.InitRouter(conf)
 
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
