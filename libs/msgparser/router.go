@@ -37,7 +37,6 @@ func NewRouter() Router {
 	}
 }
 
-
 // AddRoute adds a governance handler for a given path. It returns the Router
 // so AddRoute calls can be linked. It will panic if the router is sealed.
 func (rtr *router) AddRoute(path string, h Handler) Router {
@@ -82,6 +81,7 @@ func RegisteRouter() Router {
 		AddRoute(EvidenceRouteKey, handleEvidence).
 		AddRoute(GovRouteKey, handleGov).
 		AddRoute(SlashingRouteKey, handleSlashing).
-		AddRoute(IbcRouteKey, handleIbc)
+		AddRoute(IbcRouteKey, handleIbc).
+		AddRoute(IbcTransferRouteKey, handleIbc)
 	return msgRoute
 }
