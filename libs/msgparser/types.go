@@ -31,4 +31,13 @@ var RouteHandlerMap = map[string]Handler{
 	SlashingRouteKey:     handleSlashing,
 	IbcRouteKey:          handleIbc,
 	IbcTransferRouteKey:  handleIbc,
+	NftRouteKey:          handleNft,
+	ServiceRouteKey:      handleService,
+	TokenRouteKey:        handleToken,
+	HtlcRouteKey:         handleHtlc,
+	CoinswapRouteKey:     handleCoinswap,
+	RandomRouteKey:       handleRandom,
+	OracleRouteKey:       handleOracle,
+	RecordRouteKey:       handleRecord,
+	IdentidyRouteKey:     handleIdentity,
 }
