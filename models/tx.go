@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/bianjieai/irita-sync/confs/server"
 	"github.com/kaifei-bianjie/msg-parser/types"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -45,10 +44,10 @@ type (
 )
 
 func (d Tx) Name() string {
-	if server.SvrConf.ChainId == "" {
+	if GetSrvConf().ChainId == "" {
 		return CollectionNameTx
 	}
-	return fmt.Sprintf("sync_%v_tx", server.SvrConf.ChainId)
+	return fmt.Sprintf("sync_%v_tx", GetSrvConf().ChainId)
 }
 
 func (d Tx) EnsureIndexes() {

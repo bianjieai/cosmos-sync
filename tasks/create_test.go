@@ -6,7 +6,7 @@ import (
 )
 
 func TestSyncTaskService_createTask(t *testing.T) {
-	s := SyncTaskService{}
+	s := syncTaskService{}
 	chanLimit := make(chan bool, 1)
 
 	for {

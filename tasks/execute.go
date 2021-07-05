@@ -3,7 +3,6 @@ package tasks
 import (
 	"context"
 	"fmt"
-	svrConf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/handlers"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
@@ -18,14 +17,14 @@ import (
 	"time"
 )
 
-func (s *SyncTaskService) StartExecuteTask() {
+func (s *syncTaskService) StartExecuteTask() {
 	defer func() {
 		pool.ClosePool()
 	}()
 
 	var (
-		blockNumPerWorkerHandle = int64(svrConf.SvrConf.BlockNumPerWorkerHandle)
-		workerMaxSleepTime      = int64(svrConf.SvrConf.WorkerMaxSleepTime)
+		blockNumPerWorkerHandle = int64(s.conf.Server.BlockNumPerWorkerHandle)
+		workerMaxSleepTime      = int64(s.conf.Server.WorkerMaxSleepTime)
 	)
 	if workerMaxSleepTime <= 1*60 {
 		logger.Fatal("workerMaxSleepTime shouldn't less than 1 minute")
@@ -35,7 +34,7 @@ func (s *SyncTaskService) StartExecuteTask() {
 	s.hostname, _ = os.Hostname()
 
 	// buffer channel to limit goroutine num
-	chanLimit := make(chan bool, svrConf.SvrConf.WorkerNumExecuteTask)
+	chanLimit := make(chan bool, s.conf.Server.WorkerNumExecuteTask)
 
 	for {
 		chanLimit <- true
@@ -44,7 +43,7 @@ func (s *SyncTaskService) StartExecuteTask() {
 	}
 }
 
-func (s *SyncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTime int64, chanLimit chan bool) {
+func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTime int64, chanLimit chan bool) {
 	//var (
 	//	workerId, taskType     string
 	//	blockChainLatestHeight int64
@@ -86,7 +85,7 @@ func (s *SyncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 	task := tasks[utils.RandInt(len(tasks))]
 	s.TakeOverTaskAndExecute(task, client, healthCheckQuit, blockNumPerWorkerHandle)
 }
-func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *pool.Client, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
+func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *pool.Client, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
 	var taskType string
 	workerId := fmt.Sprintf("%v@%v", s.hostname, bson.NewObjectId().Hex())
 	err := s.syncTaskModel.TakeOverTask(task, workerId)
@@ -171,8 +170,10 @@ func (s *SyncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 
 		// if inProcessBlock > blockChainLatestHeight, should wait blockChainLatestHeight update
-		if taskType == models.SyncTaskTypeFollow && inProcessBlock > blockChainLatestHeight {
-			logger.Info("wait blockChain latest height update",
+		if taskType == models.SyncTaskTypeFollow &&
+			inProcessBlock+int64(s.conf.Server.BehindBlockNum) > blockChainLatestHeight {
+			logger.Info(fmt.Sprintf("wait blockChain latest height update, must interval %v block",
+				s.conf.Server.BehindBlockNum),
 				logger.Int64("curSyncedHeight", inProcessBlock-1),
 				logger.Int64("blockChainLatestHeight", blockChainLatestHeight))
 			time.Sleep(2 * time.Second)

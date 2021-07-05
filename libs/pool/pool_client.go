@@ -5,9 +5,11 @@ package pool
 
 import (
 	"context"
-	svrConf "github.com/bianjieai/irita-sync/confs/server"
+	"errors"
+	"github.com/bianjieai/irita-sync/config"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
+	"strings"
 	"sync"
 	"time"
 )
@@ -18,12 +20,12 @@ var (
 	ctx         = context.Background()
 )
 
-func init() {
+func Init(conf *config.Config) {
 	var (
 		syncMap sync.Map
 	)
-	conf := svrConf.SvrConf
-	for _, url := range conf.NodeUrls {
+	nodeUrls := strings.Split(conf.Server.NodeUrls, ",")
+	for _, url := range nodeUrls {
 		key := generateId(url)
 		endPoint := EndPoint{
 			Address:   url,
@@ -38,9 +40,9 @@ func init() {
 	}
 
 	config := commonPool.NewDefaultPoolConfig()
-	config.MaxTotal = conf.MaxConnectionNum
-	config.MaxIdle = conf.InitConnectionNum
-	config.MinIdle = conf.InitConnectionNum
+	config.MaxTotal = conf.Server.MaxConnectionNum
+	config.MaxIdle = conf.Server.InitConnectionNum
+	config.MinIdle = conf.Server.InitConnectionNum
 	config.TestOnBorrow = true
 	config.TestOnCreate = true
 	config.TestWhileIdle = true
@@ -77,4 +79,25 @@ func (c *Client) HeartBeat() error {
 
 func ClosePool() {
 	poolObject.Close(ctx)
+}
+
+func GetClientWithTimeout(timeout time.Duration) (*Client, error) {
+	c := make(chan interface{})
+	errCh := make(chan error)
+	go func() {
+		client, err := poolObject.BorrowObject(ctx)
+		if err != nil {
+			errCh <- err
+		} else {
+			c <- client
+		}
+	}()
+	select {
+	case res := <-c:
+		return res.(*Client), nil
+	case res := <-errCh:
+		return nil, res
+	case <-time.After(timeout):
+		return nil, errors.New("rpc node timeout")
+	}
 }
