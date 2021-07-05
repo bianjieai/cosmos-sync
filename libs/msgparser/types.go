@@ -9,6 +9,7 @@ const (
 	GovRouteKey          string = "gov"
 	SlashingRouteKey     string = "slashing"
 	IbcRouteKey          string = "ibc"
+	IbcTransferRouteKey  string = "transfer"
 )
 
 var RouteHandlerMap = map[string]Handler{
@@ -20,4 +21,5 @@ var RouteHandlerMap = map[string]Handler{
 	GovRouteKey:          handleGov,
 	SlashingRouteKey:     handleSlashing,
 	IbcRouteKey:          handleIbc,
+	IbcTransferRouteKey:  handleIbc,
 }
