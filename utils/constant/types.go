@@ -3,6 +3,7 @@ package constant
 const (
 	TxStatusFail = iota
 	TxStatusSuccess
+	EnvNameConfigFilePath = "CONFIG_FILE_PATH"
 
 	NoSupportMsgTypeTag = "no support msg parse"
 	//unable to resolve type URL /cosmos.bank.v1beta1.MsgSend
