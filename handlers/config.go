@@ -26,7 +26,7 @@ const (
 	PrefixAddress = "a"
 )
 
-func initBech32Prefi(conf *config.Config) {
+func initBech32Prefix(conf *config.Config) {
 	var (
 		// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 		Bech32PrefixAccAddr = conf.Server.Bech32AccPrefix + PrefixAcc + PrefixAddress
