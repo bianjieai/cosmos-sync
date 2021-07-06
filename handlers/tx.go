@@ -32,6 +32,9 @@ func InitRouter(conf *config.Config) {
 				logger.Fatal("no support module: " + one)
 			}
 			msgRoute = msgRoute.AddRoute(one, fn)
+			if one == msgparser.IbcRouteKey {
+				msgRoute = msgRoute.AddRoute(msgparser.IbcTransferRouteKey, msgparser.RouteHandlerMap[one])
+			}
 		}
 		if msgRoute.GetRoutesLen() > 0 {
 			router = msgRoute

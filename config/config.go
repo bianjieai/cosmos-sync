@@ -50,8 +50,7 @@ func init() {
 	if found {
 		ConfigFilePath = websit
 	} else {
-		ConfigFilePath = `D:\bianjie\dev\irita-sync\config\config.toml`
-		//panic("not found CONFIG_FILE_PATH")
+		panic("not found CONFIG_FILE_PATH")
 	}
 }
 
