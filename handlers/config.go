@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/confs/server"
+	"github.com/bianjieai/irita-sync/config"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 )
 
@@ -26,22 +26,21 @@ const (
 	PrefixAddress = "a"
 )
 
-var (
-	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
-	Bech32PrefixAccAddr = server.SvrConf.Bech32ChainPrefix + PrefixAcc + PrefixAddress
-	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key
-	Bech32PrefixAccPub = server.SvrConf.Bech32ChainPrefix + PrefixAcc + PrefixPublic
-	// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address
-	Bech32PrefixValAddr = server.SvrConf.Bech32ChainPrefix + PrefixValidator + PrefixAddress
-	// Bech32PrefixValPub defines the Bech32 prefix of a validator's operator public key
-	Bech32PrefixValPub = server.SvrConf.Bech32ChainPrefix + PrefixValidator + PrefixPublic
-	// Bech32PrefixConsAddr defines the Bech32 prefix of a consensus node address
-	Bech32PrefixConsAddr = server.SvrConf.Bech32ChainPrefix + PrefixConsensus + PrefixAddress
-	// Bech32PrefixConsPub defines the Bech32 prefix of a consensus node public key
-	Bech32PrefixConsPub = server.SvrConf.Bech32ChainPrefix + PrefixConsensus + PrefixPublic
-)
-
-func init() {
+func initBech32Prefi(conf *config.Config) {
+	var (
+		// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
+		Bech32PrefixAccAddr = conf.Server.Bech32AccPrefix + PrefixAcc + PrefixAddress
+		// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key
+		Bech32PrefixAccPub = conf.Server.Bech32AccPrefix + PrefixAcc + PrefixPublic
+		// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address
+		Bech32PrefixValAddr = conf.Server.Bech32AccPrefix + PrefixValidator + PrefixAddress
+		// Bech32PrefixValPub defines the Bech32 prefix of a validator's operator public key
+		Bech32PrefixValPub = conf.Server.Bech32AccPrefix + PrefixValidator + PrefixPublic
+		// Bech32PrefixConsAddr defines the Bech32 prefix of a consensus node address
+		Bech32PrefixConsAddr = conf.Server.Bech32AccPrefix + PrefixConsensus + PrefixAddress
+		// Bech32PrefixConsPub defines the Bech32 prefix of a consensus node public key
+		Bech32PrefixConsPub = conf.Server.Bech32AccPrefix + PrefixConsensus + PrefixPublic
+	)
 	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
 		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)
 }
