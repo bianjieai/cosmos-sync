@@ -17,6 +17,9 @@ const (
 	NodeStatusNotReachable = 0
 	NodeStatusSyncing      = 1
 	NodeStatusCatchingUp   = 2
+
+	SyncTaskFollowing  = 1
+	SyncTaskCatchingUp = 0
 )
 
 type clientNode struct {
@@ -24,6 +27,7 @@ type clientNode struct {
 	nodeHeight  metrics.Guage
 	dbHeight    metrics.Guage
 	nodeTimeGap metrics.Guage
+	syncWorkWay metrics.Guage
 }
 
 func NewMetricNode(server metrics.Monitor) clientNode {
@@ -55,22 +59,31 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		"the seconds gap between node block time with sync db block time",
 		nil,
 	)
-	server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric)
+	syncWorkwayMetric := metrics.NewGuage(
+		"sync",
+		"",
+		"task_working_status",
+		"sync task working status(0:CatchingUp 1:Following)",
+		nil,
+	)
+	server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
 	nodeHeight, _ := metrics.CovertGuage(nodeHeightMetric)
 	dbHeight, _ := metrics.CovertGuage(dbHeightMetric)
 	nodeStatus, _ := metrics.CovertGuage(nodeStatusMetric)
 	nodeTimeGap, _ := metrics.CovertGuage(nodeTimeGapMetric)
+	syncWorkway, _ := metrics.CovertGuage(syncWorkwayMetric)
 	return clientNode{
 		nodeStatus:  nodeStatus,
 		nodeHeight:  nodeHeight,
 		dbHeight:    dbHeight,
 		nodeTimeGap: nodeTimeGap,
+		syncWorkWay: syncWorkway,
 	}
 }
 
 func (node *clientNode) Report() {
 	for {
-		t := time.NewTimer(time.Duration(5) * time.Second)
+		t := time.NewTimer(time.Duration(10) * time.Second)
 		select {
 		case <-t.C:
 			node.nodeStatusReport()
@@ -97,17 +110,31 @@ func (node *clientNode) nodeStatusReport() {
 	if err != nil {
 		logger.Error("rpc node connection exception", logger.String("error", err.Error()))
 		node.nodeStatus.Set(float64(NodeStatusNotReachable))
-		return
+		//return
+	} else {
+		if status.SyncInfo.CatchingUp {
+			node.nodeStatus.Set(float64(NodeStatusCatchingUp))
+		} else {
+			node.nodeStatus.Set(float64(NodeStatusSyncing))
+		}
+		node.nodeHeight.Set(float64(status.SyncInfo.LatestBlockHeight))
 	}
 
-	if status.SyncInfo.CatchingUp {
-		node.nodeStatus.Set(float64(NodeStatusCatchingUp))
-	} else {
-		node.nodeStatus.Set(float64(NodeStatusSyncing))
+	follow, err := new(models.SyncTask).QueryValidFollowTasks()
+	if err != nil {
+		logger.Error("query valid follow task exception", logger.String("error", err.Error()))
+		return
 	}
-	node.nodeHeight.Set(float64(status.SyncInfo.LatestBlockHeight))
-	timeGap := status.SyncInfo.LatestBlockTime.Unix() - block.Time
-	node.nodeTimeGap.Set(float64(timeGap))
+	if follow && block.Time > 0 {
+		timeGap := time.Now().Unix() - block.Time
+		node.nodeTimeGap.Set(float64(timeGap))
+	}
+
+	if follow {
+		node.syncWorkWay.Set(float64(SyncTaskFollowing))
+	} else {
+		node.syncWorkWay.Set(float64(SyncTaskCatchingUp))
+	}
 	return
 }
 
