@@ -43,6 +43,8 @@ func InitRouter(conf *config.Config) {
 		router = msgparser.RegisteRouter()
 	}
 	_parser = msgparser.NewMsgParser(router)
+
+	Init(conf)
 }
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, []txn.Op, error) {

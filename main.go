@@ -35,7 +35,6 @@ func main() {
 	models.Init(conf)
 	pool.Init(conf)
 	handlers.InitRouter(conf)
-	handlers.Init(conf)
 
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
