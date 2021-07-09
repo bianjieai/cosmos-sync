@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"github.com/bianjieai/irita-sync/config"
 	"github.com/bianjieai/irita-sync/libs/logger"
+	"github.com/bianjieai/irita-sync/libs/msgparser"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/utils"
@@ -13,8 +15,32 @@ import (
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2/txn"
+	"strings"
 	"time"
 )
+
+var _parser msgparser.MsgParser
+
+func InitRouter(conf *config.Config) {
+	initBech32Prefix(conf)
+	router := msgparser.RegisteRouter()
+	if conf.Server.OnlySupportModule != "" {
+		modules := strings.Split(conf.Server.OnlySupportModule, ",")
+		msgRoute := msgparser.NewRouter()
+		for _, one := range modules {
+			fn, exist := msgparser.RouteHandlerMap[one]
+			if !exist {
+				logger.Fatal("no support module: " + one)
+			}
+			msgRoute = msgRoute.AddRoute(one, fn)
+		}
+		if msgRoute.GetRoutesLen() > 0 {
+			router = msgRoute
+		}
+
+	}
+	_parser = msgparser.NewMsgParser(router)
+}
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, []txn.Op, error) {
 	var (
@@ -106,7 +132,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	}
 
 	for i, v := range msgs {
-		msgDocInfo, ops := HandleTxMsg(v)
+		msgDocInfo, ops := _parser.HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
 			continue
 		}
@@ -169,4 +195,18 @@ func parseEvents(events []aTypes.Event) []models.Event {
 	}
 
 	return eventDocs
+}
+
+func removeDuplicatesFromSlice(data []string) (result []string) {
+	tempSet := make(map[string]string, len(data))
+	for _, val := range data {
+		if _, ok := tempSet[val]; ok || val == "" {
+			continue
+		}
+		tempSet[val] = val
+	}
+	for one := range tempSet {
+		result = append(result, one)
+	}
+	return
 }
