@@ -1,7 +1,10 @@
 package main
 
 import (
+	"github.com/bianjieai/irita-sync/config"
+	"github.com/bianjieai/irita-sync/handlers"
 	"github.com/bianjieai/irita-sync/libs/logger"
+	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
 	"github.com/bianjieai/irita-sync/tasks"
 	"os"
@@ -25,8 +28,16 @@ func main() {
 		}
 	}()
 
+	conf, err := config.ReadConfig()
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+	models.Init(conf)
+	pool.Init(conf)
+	handlers.InitRouter(conf)
+
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
-	tasks.Start()
+	tasks.Start(tasks.NewSyncTask(conf))
 	<-c
 }
