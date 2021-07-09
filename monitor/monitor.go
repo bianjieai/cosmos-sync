@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"context"
-	conf "github.com/bianjieai/irita-sync/confs/server"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/pool"
 	"github.com/bianjieai/irita-sync/models"
@@ -144,7 +143,7 @@ func Start() {
 	//monitor system signal
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	// start monitor
-	server := metrics.NewMonitor(conf.SvrConf.PromethousPort)
+	server := metrics.NewMonitor(models.GetSrvConf().PromethousPort)
 	node := NewMetricNode(server)
 
 	server.Report(func() {

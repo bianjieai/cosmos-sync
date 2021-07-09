@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/bianjieai/irita-sync/confs/db"
+	"github.com/bianjieai/irita-sync/config"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/utils"
 	"gopkg.in/mgo.v2"
@@ -14,15 +14,30 @@ import (
 
 var (
 	session *mgo.Session
+	_conf   *config.Config
 )
 
-func init() {
-	addrs := strings.Split(db.DbConf.Addrs, ",")
+func getDbConf() *config.DataBaseConf {
+	if _conf == nil {
+		logger.Fatal("db.Init not work")
+	}
+	return &_conf.DataBase
+}
+func GetSrvConf() *config.ServerConf {
+	if _conf == nil {
+		logger.Fatal("db.Init not work")
+	}
+	return &_conf.Server
+}
+
+func Init(conf *config.Config) {
+	_conf = conf
+	addrs := strings.Split(conf.DataBase.Addrs, ",")
 	dialInfo := &mgo.DialInfo{
 		Addrs:     addrs,
-		Database:  db.DbConf.Database,
-		Username:  db.DbConf.User,
-		Password:  db.DbConf.Passwd,
+		Database:  conf.DataBase.Database,
+		Username:  conf.DataBase.User,
+		Password:  conf.DataBase.Passwd,
 		Direct:    true,
 		Timeout:   time.Second * 10,
 		PoolLimit: 4096, // Session.SetPoolLimit
@@ -51,7 +66,7 @@ func getSession() *mgo.Session {
 }
 
 func ensureIndexes(collectionName string, indexes []mgo.Index) {
-	c := session.DB(db.DbConf.Database).C(collectionName)
+	c := session.DB(getDbConf().Database).C(collectionName)
 	if len(indexes) > 0 {
 		for _, v := range indexes {
 			if err := c.EnsureIndex(v); err != nil {
@@ -67,7 +82,7 @@ func ensureIndexes(collectionName string, indexes []mgo.Index) {
 func ExecCollection(collectionName string, s func(*mgo.Collection) error) error {
 	session := getSession()
 	defer session.Close()
-	c := session.DB(db.DbConf.Database).C(collectionName)
+	c := session.DB(getDbConf().Database).C(collectionName)
 	return s(c)
 }
 
@@ -105,7 +120,7 @@ func Txn(ops []txn.Op) error {
 	session := getSession()
 	defer session.Close()
 
-	c := session.DB(db.DbConf.Database).C(CollectionNameTxn)
+	c := session.DB(getDbConf().Database).C(CollectionNameTxn)
 	runner := txn.NewRunner(c)
 
 	txObjectId := bson.NewObjectId()

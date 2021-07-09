@@ -16,7 +16,7 @@ type client struct {
 	metric_sdk.MetricClient
 }
 
-func NewMonitor(port int) Monitor {
+func NewMonitor(port string) Monitor {
 	metricClient := metric_sdk.NewClient(types.Config{
 		Address: fmt.Sprintf(":%v", port),
 	})
