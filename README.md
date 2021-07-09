@@ -50,10 +50,15 @@ only_support_module=""
 ### Server config
 
 - node_urls: `required` `string`  full node uri（example: `tcp://127.0.0.1:26657, tcp://127.0.0.2:26657, ...`）
+- worker_num_create_task: `required` `string` the maximum time (in seconds) that create task are allowed （default: `1`
+  example: `1`）
 - worker_num_execute_task: `required` `string` the maximum time (in seconds) that synchronization TX threads are allowed
   to be out of work（example: `30`）
 - worker_max_sleep_time: `required` `string` num of worker to create tasks(unit: seconds)（example: `90`）
 - block_num_per_worker_handle: `required` `string`  number of blocks per sync TX task（example: `50`）
+
+- max_connection_num: `required` `string` client pool config total max connection
+- init_connection_num: `required` `string` client pool config idle connection
 
 - bech32_acc_prefix: `option` `string` block chain address prefix（default: `i` example: `i`）
 - chain_block_interval: `option` `string` block interval; default `5` (example: `5`)
@@ -62,6 +67,8 @@ only_support_module=""
 - only_support_module: `option` `string` setting only support module tx sync,default
   support [all module](https://github.com/bianjieai/irita-sync/blob/opb-bsn/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
+
+- chain_id: `option` `string` setting collection name by chain_id
 
 Note:
 > synchronizes irita data from specify block height(such as:17908 current time:1576208532)
