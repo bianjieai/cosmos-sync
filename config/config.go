@@ -34,7 +34,7 @@ type (
 
 		MaxConnectionNum   int    `mapstructure:"max_connection_num"`
 		InitConnectionNum  int    `mapstructure:"init_connection_num"`
-		ChainId            string `mapstructure:"chain_id"`
+		Chain              string `mapstructure:"chain"`
 		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
 		BehindBlockNum     int    `mapstructure:"behind_block_num"`
 

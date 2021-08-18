@@ -29,6 +29,7 @@ type (
 		Addrs     []string      `bson:"addrs"`
 		TxIndex   uint32        `bson:"tx_index"`
 		Ext       interface{}   `bson:"ext"`
+		ChainId   string        `bson:"chain_id"`
 	}
 
 	Event struct {
@@ -48,10 +49,10 @@ type (
 )
 
 func (d Tx) Name() string {
-	if GetSrvConf().ChainId == "" {
+	if GetSrvConf().Chain == "" {
 		return CollectionNameTx
 	}
-	return fmt.Sprintf("sync_%v_tx", GetSrvConf().ChainId)
+	return fmt.Sprintf("sync_%v_tx", GetSrvConf().Chain)
 }
 
 func (d Tx) EnsureIndexes() {

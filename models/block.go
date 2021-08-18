@@ -21,10 +21,10 @@ type (
 )
 
 func (d Block) Name() string {
-	if GetSrvConf().ChainId == "" {
+	if GetSrvConf().Chain == "" {
 		return CollectionNameBlock
 	}
-	return fmt.Sprintf("sync_%v_block", GetSrvConf().ChainId)
+	return fmt.Sprintf("sync_%v_block", GetSrvConf().Chain)
 }
 
 func (d Block) EnsureIndexes() {
