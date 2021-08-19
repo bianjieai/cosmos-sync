@@ -12,6 +12,7 @@ worker_max_sleep_time=120
 block_num_per_worker_handle=100
 max_connection_num=100
 init_connection_num=5
+bech32_acc_prefix=""
 chain="zone"
 chain_block_interval=5
 behind_block_num=0

@@ -25,6 +25,9 @@ import (
 var _parser msgparser.MsgParser
 
 func InitRouter(conf *config.Config) {
+	if conf.Server.Bech32AccPrefix != "" {
+		InitBech32Prefix(conf)
+	}
 	router := msgparser.RegisteRouter()
 	if conf.Server.OnlySupportModule != "" {
 		modules := strings.Split(conf.Server.OnlySupportModule, ",")
