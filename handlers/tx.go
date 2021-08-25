@@ -82,7 +82,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 			if err != nil {
 				return &blockDoc, txDocs, txnOps, err
 			}
-			txDoc.ChainId = block.Block.ChainID
+			//txDoc.ChainId = block.Block.ChainID
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
 				if len(ops) > 0 {

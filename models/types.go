@@ -9,10 +9,10 @@ const (
 )
 
 func getTxnName() string {
-	if GetSrvConf().Chain == "" {
+	if GetSrvConf().ChainId == "" {
 		return CollectionNameTxn
 	}
-	return fmt.Sprintf("sync_%v_txn", GetSrvConf().Chain)
+	return fmt.Sprintf("sync_%v_txn", GetSrvConf().ChainId)
 }
 
 var (
