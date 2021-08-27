@@ -89,6 +89,7 @@ func RegisteRouter() Router {
 		AddRoute(GovRouteKey, handleGov).
 		AddRoute(RandomRouteKey, handleRandom).
 		AddRoute(OracleRouteKey, handleOracle).
+		AddRoute(FarmRouteKey, handleFarm).
 		AddRoute(IbcRouteKey, handleIbc).
 		AddRoute(IbcTransferRouteKey, handleIbc)
 	return msgRoute

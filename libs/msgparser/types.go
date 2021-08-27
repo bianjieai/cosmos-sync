@@ -16,6 +16,7 @@ const (
 	GovRouteKey          string = "gov"
 	RandomRouteKey       string = "random"
 	OracleRouteKey       string = "oracle"
+	FarmRouteKey         string = "farm"
 	IbcRouteKey          string = "ibc"
 	IbcTransferRouteKey  string = "transfer"
 )
@@ -38,4 +39,5 @@ var RouteHandlerMap = map[string]Handler{
 	OracleRouteKey:       handleOracle,
 	IbcRouteKey:          handleIbc,
 	IbcTransferRouteKey:  handleIbc,
+	FarmRouteKey:         handleFarm,
 }

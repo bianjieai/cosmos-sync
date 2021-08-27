@@ -105,3 +105,7 @@ func handleIbc(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Ibc.HandleTxMsg(v)
 	return docInfo
 }
+func handleFarm(v types.SdkMsg) MsgDocInfo {
+	docInfo, _ := _client.Farm.HandleTxMsg(v)
+	return docInfo
+}
