@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/bianjieai/irita-sync/config"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/libs/msgparser"
@@ -9,6 +10,8 @@ import (
 	"github.com/bianjieai/irita-sync/utils"
 	"github.com/bianjieai/irita-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
+	"github.com/kaifei-bianjie/msg-parser/modules"
+	"github.com/kaifei-bianjie/msg-parser/modules/ibc"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
@@ -22,6 +25,9 @@ import (
 var _parser msgparser.MsgParser
 
 func InitRouter(conf *config.Config) {
+	if conf.Server.Bech32AccPrefix != "" {
+		InitBech32Prefix(conf)
+	}
 	router := msgparser.RegisteRouter()
 	if conf.Server.OnlySupportModule != "" {
 		modules := strings.Split(conf.Server.OnlySupportModule, ",")
@@ -76,6 +82,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 			if err != nil {
 				return &blockDoc, txDocs, txnOps, err
 			}
+			//txDoc.ChainId = block.Block.ChainID
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
 				if len(ops) > 0 {
@@ -129,18 +136,39 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
-	msgs := authTx.GetMsgs()
-	if len(msgs) == 0 {
+	eventsIndexMap := make(map[uint32][]models.Event, len(docTx.EventsNew))
+	for _, val := range docTx.EventsNew {
+		eventsIndexMap[val.MsgIndex] = val.Events
+	}
+
+	msgDatas := authTx.GetMsgs()
+	if len(msgDatas) == 0 {
 		return docTx, txnOps, nil
 	}
 
-	for i, v := range msgs {
+	for i, v := range msgDatas {
 		msgDocInfo, ops := _parser.HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
 			continue
 		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
+		}
+
+		switch msgDocInfo.DocTxMsg.Type {
+		case msgs.MsgTypeIBCTransfer:
+			if ibcTranferMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgTransfer); ok {
+				if val, exist := eventsIndexMap[uint32(i)]; exist {
+					ibcTranferMsg.PacketId = buildPacketId(val)
+					msgDocInfo.DocTxMsg.Msg = ibcTranferMsg
+				}
+
+			} else {
+				logger.Warn("ibc transfer handler packet_id failed", logger.String("errTag", "TxMsg"),
+					logger.String("txhash", txHash),
+					logger.Int("msg_index", i),
+					logger.Int64("height", block.Height))
+			}
 		}
 
 		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
@@ -220,4 +248,29 @@ func removeDuplicatesFromSlice(data []string) (result []string) {
 		result = append(result, one)
 	}
 	return
+}
+
+func buildPacketId(events []models.Event) string {
+	if len(events) > 0 {
+		var mapKeyValue map[string]string
+		for _, e := range events {
+			if len(e.Attributes) > 0 && e.Type == constant.IbcTransferEventTypeSendPacket {
+				mapKeyValue = make(map[string]string, len(e.Attributes))
+				for _, v := range e.Attributes {
+					mapKeyValue[string(v.Key)] = string(v.Value)
+				}
+				break
+			}
+		}
+
+		if len(mapKeyValue) > 0 {
+			scPort := mapKeyValue[constant.IbcTransferEventAttriKeyPacketScPort]
+			scChannel := mapKeyValue[constant.IbcTransferEventAttriKeyPacketScChannel]
+			dcPort := mapKeyValue[constant.IbcTransferEventAttriKeyPacketDcPort]
+			dcChannel := mapKeyValue[constant.IbcTransferEventAttriKeyPacketDcChannels]
+			sequence := mapKeyValue[constant.IbcTransferEventAttriKeyPacketSequence]
+			return fmt.Sprintf("%v%v%v%v%v", scPort, scChannel, dcPort, dcChannel, sequence)
+		}
+	}
+	return ""
 }

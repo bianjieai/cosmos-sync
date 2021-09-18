@@ -29,6 +29,7 @@ type (
 		Addrs     []string      `bson:"addrs"`
 		TxIndex   uint32        `bson:"tx_index"`
 		Ext       interface{}   `bson:"ext"`
+		//ChainId   string        `bson:"chain_id"`
 	}
 
 	Event struct {

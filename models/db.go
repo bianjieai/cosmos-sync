@@ -120,7 +120,7 @@ func Txn(ops []txn.Op) error {
 	session := getSession()
 	defer session.Close()
 
-	c := session.DB(getDbConf().Database).C(CollectionNameTxn)
+	c := session.DB(getDbConf().Database).C(getTxnName())
 	runner := txn.NewRunner(c)
 
 	txObjectId := bson.NewObjectId()

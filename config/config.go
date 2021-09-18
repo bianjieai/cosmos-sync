@@ -37,6 +37,7 @@ type (
 		ChainId            string `mapstructure:"chain_id"`
 		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
 		BehindBlockNum     int    `mapstructure:"behind_block_num"`
+		Bech32AccPrefix    string `mapstructure:"bech32_acc_prefix"`
 
 		PromethousPort    string `mapstructure:"promethous_port"`
 		OnlySupportModule string `mapstructure:"only_support_module"`
