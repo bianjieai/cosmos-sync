@@ -9,7 +9,6 @@ import (
 	"github.com/bianjieai/irita-sync/config"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"strings"
 	"sync"
 	"time"
@@ -73,8 +72,8 @@ func (c *Client) Release() {
 }
 
 func (c *Client) HeartBeat() error {
-	result := new(ctypes.ResultStatus)
-	_, err := c.client.Call(ctx, "health", map[string]interface{}{}, result)
+	http := c.HTTP
+	_, err := http.Health(context.Background())
 	return err
 }
 
