@@ -41,6 +41,7 @@ type (
 		Bech32AccPrefix   string `mapstructure:"bech32_acc_prefix"`
 		PromethousPort    string `mapstructure:"promethous_port"`
 		OnlySupportModule string `mapstructure:"only_support_module"`
+		UseJrpcWay        bool   `mapstructure:"use_jrpc_way"`
 	}
 )
 
