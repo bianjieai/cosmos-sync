@@ -9,21 +9,24 @@ import (
 	"github.com/bianjieai/irita-sync/config"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
+	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"strings"
 	"sync"
 	"time"
 )
 
 var (
-	poolObject  *commonPool.ObjectPool
-	poolFactory PoolFactory
-	ctx         = context.Background()
+	poolObject        *commonPool.ObjectPool
+	poolFactory       PoolFactory
+	ctx               = context.Background()
+	isJsonRpcProtocol bool
 )
 
 func Init(conf *config.Config) {
 	var (
 		syncMap sync.Map
 	)
+	isJsonRpcProtocol = conf.Server.IsJsonRpcProtocol
 	nodeUrls := strings.Split(conf.Server.NodeUrls, ",")
 	for _, url := range nodeUrls {
 		key := generateId(url)
@@ -72,9 +75,21 @@ func (c *Client) Release() {
 }
 
 func (c *Client) HeartBeat() error {
+	if isJsonRpcProtocol {
+		return c.Jrpc.HeartBeat(context.Background())
+	}
 	http := c.HTTP
 	_, err := http.Health(context.Background())
 	return err
+}
+
+func (c *Client) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
+	if isJsonRpcProtocol {
+		return c.Jrpc.Status(ctx)
+	}
+	http := c.HTTP
+	return http.Status(ctx)
+
 }
 
 func ClosePool() {
