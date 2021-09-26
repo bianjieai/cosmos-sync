@@ -38,7 +38,7 @@ chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
 only_support_module="" 
-use_jrpc_way=false
+is_json_rpc_protocol=false
 ```
 
 ### Db config
@@ -69,7 +69,7 @@ use_jrpc_way=false
   support [all module](https://github.com/bianjieai/irita-sync/blob/opb-bsn/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
 
-- use_jrpc_way: `option` `string` setting connection way to block_chain(default: `false`)
+- is_json_rpc_protocol: `option` `string` whether use json rpc protocol to connection with full node(default: `false`)
 
 - chain_id: `option` `string` setting collection name by chain_id
 

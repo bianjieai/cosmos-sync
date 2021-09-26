@@ -6,7 +6,7 @@ import (
 )
 
 func (c *Client) Block(ctx context.Context, height *int64) (*ctypes.ResultBlock, error) {
-	if useJrpc {
+	if isJsonRpcProtocol {
 		return c.Jrpc.Block(ctx, height)
 	}
 	http := c.HTTP
@@ -15,7 +15,7 @@ func (c *Client) Block(ctx context.Context, height *int64) (*ctypes.ResultBlock,
 }
 
 func (c *Client) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {
-	if useJrpc {
+	if isJsonRpcProtocol {
 		return c.Jrpc.Tx(ctx, hash, prove)
 	}
 	http := c.HTTP

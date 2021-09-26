@@ -16,17 +16,17 @@ import (
 )
 
 var (
-	poolObject  *commonPool.ObjectPool
-	poolFactory PoolFactory
-	ctx         = context.Background()
-	useJrpc     bool
+	poolObject        *commonPool.ObjectPool
+	poolFactory       PoolFactory
+	ctx               = context.Background()
+	isJsonRpcProtocol bool
 )
 
 func Init(conf *config.Config) {
 	var (
 		syncMap sync.Map
 	)
-	useJrpc = conf.Server.UseJrpcWay
+	isJsonRpcProtocol = conf.Server.IsJsonRpcProtocol
 	nodeUrls := strings.Split(conf.Server.NodeUrls, ",")
 	for _, url := range nodeUrls {
 		key := generateId(url)
@@ -75,7 +75,7 @@ func (c *Client) Release() {
 }
 
 func (c *Client) HeartBeat() error {
-	if useJrpc {
+	if isJsonRpcProtocol {
 		return c.Jrpc.HeartBeat(context.Background())
 	}
 	http := c.HTTP
@@ -84,7 +84,7 @@ func (c *Client) HeartBeat() error {
 }
 
 func (c *Client) Status(ctx context.Context) (*ctypes.ResultStatus, error) {
-	if useJrpc {
+	if isJsonRpcProtocol {
 		return c.Jrpc.Status(ctx)
 	}
 	http := c.HTTP

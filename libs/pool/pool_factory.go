@@ -37,7 +37,7 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 }
 
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {
-	if !useJrpc {
+	if !isJsonRpcProtocol {
 		c := object.Object.(*Client)
 		if c.IsRunning() {
 			c.Stop()
@@ -107,7 +107,7 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 }
 
 func newClient(nodeUrl string) (*Client, error) {
-	if useJrpc {
+	if isJsonRpcProtocol {
 		client, err := jrpc.NewBlockChainClient(nodeUrl)
 		return &Client{
 			Id:   generateId(nodeUrl),
