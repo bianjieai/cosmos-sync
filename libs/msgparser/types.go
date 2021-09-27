@@ -19,6 +19,8 @@ const (
 	FarmRouteKey         string = "farm"
 	IbcRouteKey          string = "ibc"
 	IbcTransferRouteKey  string = "transfer"
+	TIbcTransferRouteKey string = "nftTransfer"
+	TIbcRouteKey         string = "tibc"
 )
 
 var RouteHandlerMap = map[string]Handler{
@@ -40,4 +42,6 @@ var RouteHandlerMap = map[string]Handler{
 	IbcRouteKey:          handleIbc,
 	IbcTransferRouteKey:  handleIbc,
 	FarmRouteKey:         handleFarm,
+	TIbcTransferRouteKey: handleTIbc,
+	TIbcRouteKey:         handleTIbc,
 }
