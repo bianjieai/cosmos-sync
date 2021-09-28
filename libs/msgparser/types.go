@@ -19,7 +19,7 @@ const (
 	FarmRouteKey         string = "farm"
 	IbcRouteKey          string = "ibc"
 	IbcTransferRouteKey  string = "transfer"
-	TIbcTransferRouteKey string = "nftTransfer"
+	TIbcTransferRouteKey string = "NFT"
 	TIbcRouteKey         string = "tibc"
 )
 
