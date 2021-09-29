@@ -50,6 +50,10 @@ func InitRouter(conf *config.Config) {
 	if conf.Server.DisableSupportModule != "" {
 		modules := strings.Split(conf.Server.DisableSupportModule, ",")
 		for _, one := range modules {
+			_, exist := msgparser.RouteHandlerMap[one]
+			if !exist {
+				logger.Fatal("disable no exist module: " + one)
+			}
 			if router.HasRoute(one) {
 				switch one {
 				case msgparser.IbcRouteKey:
