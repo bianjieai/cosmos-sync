@@ -23,8 +23,8 @@ var _parser msgparser.MsgParser
 
 func InitRouter(conf *config.Config) {
 	var router msgparser.Router
-	if conf.Server.OnlySupportModule != "" {
-		modules := strings.Split(conf.Server.OnlySupportModule, ",")
+	if conf.Server.SupportModules != "" {
+		modules := strings.Split(conf.Server.SupportModules, ",")
 		msgRoute := msgparser.NewRouter()
 		for _, one := range modules {
 			fn, exist := msgparser.RouteHandlerMap[one]
@@ -32,8 +32,11 @@ func InitRouter(conf *config.Config) {
 				logger.Fatal("no support module: " + one)
 			}
 			msgRoute = msgRoute.AddRoute(one, fn)
-			if one == msgparser.IbcRouteKey {
+			switch one {
+			case msgparser.IbcRouteKey:
 				msgRoute = msgRoute.AddRoute(msgparser.IbcTransferRouteKey, msgparser.RouteHandlerMap[one])
+			case msgparser.TIbcRouteKey:
+				msgRoute = msgRoute.AddRoute(msgparser.TIbcTransferRouteKey, msgparser.RouteHandlerMap[one])
 			}
 		}
 		if msgRoute.GetRoutesLen() > 0 {
@@ -41,6 +44,29 @@ func InitRouter(conf *config.Config) {
 		}
 	} else {
 		router = msgparser.RegisteRouter()
+	}
+
+	// check and remove disable support module route path
+	if conf.Server.DenyModules != "" {
+		modules := strings.Split(conf.Server.DenyModules, ",")
+		for _, one := range modules {
+			_, exist := msgparser.RouteHandlerMap[one]
+			if !exist {
+				logger.Fatal("disable no exist module: " + one)
+			}
+			if router.HasRoute(one) {
+				switch one {
+				case msgparser.IbcRouteKey:
+					router.RemoveRoute(msgparser.IbcRouteKey)
+					router.RemoveRoute(msgparser.IbcTransferRouteKey)
+				case msgparser.TIbcRouteKey:
+					router.RemoveRoute(msgparser.TIbcRouteKey)
+					router.RemoveRoute(msgparser.TIbcTransferRouteKey)
+				default:
+					router.RemoveRoute(one)
+				}
+			}
+		}
 	}
 	_parser = msgparser.NewMsgParser(router)
 
