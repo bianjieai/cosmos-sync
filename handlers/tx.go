@@ -23,8 +23,8 @@ var _parser msgparser.MsgParser
 
 func InitRouter(conf *config.Config) {
 	var router msgparser.Router
-	if conf.Server.OnlySupportModule != "" {
-		modules := strings.Split(conf.Server.OnlySupportModule, ",")
+	if conf.Server.SupportModules != "" {
+		modules := strings.Split(conf.Server.SupportModules, ",")
 		msgRoute := msgparser.NewRouter()
 		for _, one := range modules {
 			fn, exist := msgparser.RouteHandlerMap[one]
@@ -47,8 +47,8 @@ func InitRouter(conf *config.Config) {
 	}
 
 	// check and remove disable support module route path
-	if conf.Server.DisableSupportModule != "" {
-		modules := strings.Split(conf.Server.DisableSupportModule, ",")
+	if conf.Server.DenyModules != "" {
+		modules := strings.Split(conf.Server.DenyModules, ",")
 		for _, one := range modules {
 			_, exist := msgparser.RouteHandlerMap[one]
 			if !exist {

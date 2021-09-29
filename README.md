@@ -37,8 +37,8 @@ chain_id=""
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
-only_support_module="" 
-disable_support_module=""
+support_modules="" 
+deny_modules=""
 ```
 
 ### Db config
@@ -65,10 +65,10 @@ disable_support_module=""
 - chain_block_interval: `option` `string` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `string` promethous metrics server port
-- only_support_module: `option` `string` setting only support module tx sync,default
+- support_modules: `option` `string` setting only support module tx sync,default
   support [all module](https://github.com/bianjieai/irita-sync/blob/irishub/1.1.0/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
-- disable_support_module: `option` `string` disable support module tx sync
+- deny_modules: `option` `string` disable support module tx sync
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:

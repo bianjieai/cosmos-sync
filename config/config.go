@@ -40,9 +40,9 @@ type (
 		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
 		BehindBlockNum     int    `mapstructure:"behind_block_num"`
 
-		PromethousPort       string `mapstructure:"promethous_port"`
-		OnlySupportModule    string `mapstructure:"only_support_module"`
-		DisableSupportModule string `mapstructure:"disable_support_module"`
+		PromethousPort string `mapstructure:"promethous_port"`
+		SupportModules string `mapstructure:"support_modules"`
+		DenyModules    string `mapstructure:"deny_modules"`
 	}
 )
 
