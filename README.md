@@ -67,7 +67,7 @@ only_support_module=""
 - only_support_module: `option` `string` setting only support module tx sync,default
   support [all module](https://github.com/bianjieai/irita-sync/blob/irishub/1.1.0/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
-
+- disable_support_module: `option` `string` disable support module tx sync
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:

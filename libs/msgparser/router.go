@@ -24,6 +24,7 @@ type Router interface {
 	HasRoute(r string) bool
 	GetRoute(path string) (h Handler, err error)
 	GetRoutesLen() int
+	RemoveRoute(path string)
 }
 
 type router struct {
@@ -70,6 +71,13 @@ func (rtr *router) GetRoute(path string) (Handler, error) {
 
 func (rtr *router) GetRoutesLen() int {
 	return len(rtr.routes)
+}
+
+func (rtr *router) RemoveRoute(path string) {
+	if !rtr.HasRoute(path) {
+		return
+	}
+	delete(rtr.routes, path)
 }
 
 func RegisteRouter() Router {

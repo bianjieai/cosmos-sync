@@ -32,8 +32,11 @@ func InitRouter(conf *config.Config) {
 				logger.Fatal("no support module: " + one)
 			}
 			msgRoute = msgRoute.AddRoute(one, fn)
-			if one == msgparser.IbcRouteKey {
+			switch one {
+			case msgparser.IbcRouteKey:
 				msgRoute = msgRoute.AddRoute(msgparser.IbcTransferRouteKey, msgparser.RouteHandlerMap[one])
+			case msgparser.TIbcRouteKey:
+				msgRoute = msgRoute.AddRoute(msgparser.TIbcTransferRouteKey, msgparser.RouteHandlerMap[one])
 			}
 		}
 		if msgRoute.GetRoutesLen() > 0 {
@@ -41,6 +44,25 @@ func InitRouter(conf *config.Config) {
 		}
 	} else {
 		router = msgparser.RegisteRouter()
+	}
+
+	// check and remove disable support module route path
+	if conf.Server.DisableSupportModule != "" {
+		modules := strings.Split(conf.Server.DisableSupportModule, ",")
+		for _, one := range modules {
+			if router.HasRoute(one) {
+				switch one {
+				case msgparser.IbcRouteKey:
+					router.RemoveRoute(msgparser.IbcRouteKey)
+					router.RemoveRoute(msgparser.IbcTransferRouteKey)
+				case msgparser.TIbcRouteKey:
+					router.RemoveRoute(msgparser.TIbcRouteKey)
+					router.RemoveRoute(msgparser.TIbcTransferRouteKey)
+				default:
+					router.RemoveRoute(one)
+				}
+			}
+		}
 	}
 	_parser = msgparser.NewMsgParser(router)
 
