@@ -2,7 +2,7 @@ package tasks
 
 import (
 	"fmt"
-	conf "github.com/bianjieai/irita-sync/confs/server"
+	"github.com/bianjieai/irita-sync/config"
 	"github.com/bianjieai/irita-sync/libs/logger"
 	"github.com/bianjieai/irita-sync/models"
 	"gopkg.in/mgo.v2/bson"
@@ -12,27 +12,39 @@ import (
 
 const maxRecordNumForBatchInsert = 1000
 
-type SyncTaskService struct {
-	syncTaskModel models.SyncTask
-	hostname      string
+type SyncTask interface {
+	StartCreateTask()
+	StartExecuteTask()
 }
 
-func (s *SyncTaskService) StartCreateTask() {
-	blockNumPerWorkerHandle := int64(conf.SvrConf.BlockNumPerWorkerHandle)
+func NewSyncTask(config *config.Config) SyncTask {
+	return &syncTaskService{
+		conf: config,
+	}
+}
+
+type syncTaskService struct {
+	syncTaskModel models.SyncTask
+	hostname      string
+	conf          *config.Config
+}
+
+func (s *syncTaskService) StartCreateTask() {
+	blockNumPerWorkerHandle := int64(s.conf.Server.BlockNumPerWorkerHandle)
 
 	logger.Info("init create task")
 
 	// buffer channel to limit goroutine num
-	chanLimit := make(chan bool, conf.SvrConf.WorkerNumCreateTask)
+	chanLimit := make(chan bool, s.conf.Server.WorkerNumCreateTask)
 
 	for {
 		chanLimit <- true
 		go s.createTask(blockNumPerWorkerHandle, chanLimit)
-		time.Sleep(time.Duration(conf.SvrConf.SleepTimeCreateTaskWorker) * time.Second)
+		time.Sleep(time.Duration(s.conf.Server.SleepTimeCreateTaskWorker) * time.Second)
 	}
 }
 
-func (s *SyncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit chan bool) {
+func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit chan bool) {
 	var (
 		syncIrisTasks     []*models.SyncTask
 		ops               []txn.Op
@@ -184,7 +196,7 @@ func createCatchUpTask(maxEndHeight, blockNumPerWorker, currentBlockHeight int64
 	return syncTasks
 }
 
-func (s *SyncTaskService) assertAllCatchUpTaskFinished() (bool, error) {
+func (s *syncTaskService) assertAllCatchUpTaskFinished() (bool, error) {
 	var (
 		allCatchUpTaskFinished = false
 	)
