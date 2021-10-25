@@ -41,6 +41,7 @@ type (
 
 		PromethousPort    string `mapstructure:"promethous_port"`
 		OnlySupportModule string `mapstructure:"only_support_module"`
+		IsJsonRpcProtocol bool   `mapstructure:"is_json_rpc_protocol"`
 	}
 )
 
