@@ -6,6 +6,7 @@ import (
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
 	"gopkg.in/mgo.v2/txn"
+	"strings"
 )
 
 type MsgParser interface {
@@ -26,12 +27,39 @@ type msgParser struct {
 	rh Router
 }
 
+// Handler returns the MsgServiceHandler for a given msg or nil if not found.
+func (parser msgParser) getModule(v types.SdkMsg) (string, string) {
+	var (
+		route   string
+		msgType string
+	)
+	if legacyMsg, ok := v.(types.LegacyMsg); ok {
+		route = legacyMsg.Route()
+		msgType = legacyMsg.Type()
+	} else {
+		data := types.MsgTypeURL(v)
+		if strings.HasPrefix(data, "/ibc.core.") {
+			route = IbcRouteKey
+		} else if strings.HasPrefix(data, "/ibc.applications.") {
+			route = IbcTransferRouteKey
+		} else if strings.HasPrefix(data, "/tibc.core.") {
+			route = TIbcRouteKey
+		} else if strings.HasPrefix(data, "/tibc.apps.") {
+			route = TIbcTransferRouteKey
+		} else {
+			route = data
+		}
+	}
+	return route, msgType
+}
+
 func (parser msgParser) HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
-	handleFunc, err := parser.rh.GetRoute(v.Route())
+	module, msgType := parser.getModule(v)
+	handleFunc, err := parser.rh.GetRoute(module)
 	if err != nil {
 		logger.Error(err.Error(),
-			logger.String("route", v.Route()),
-			logger.String("type", v.Type()))
+			logger.String("route", module),
+			logger.String("type", msgType))
 		return MsgDocInfo{}, nil
 	}
 	return handleFunc(v), nil
