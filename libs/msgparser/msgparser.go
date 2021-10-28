@@ -1,7 +1,7 @@
 package msgparser
 
 import (
-	"github.com/bianjieai/irita-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
 	msg_parser "github.com/kaifei-bianjie/msg-parser"
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
