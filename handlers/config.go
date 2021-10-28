@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 )
 
@@ -40,13 +39,13 @@ var (
 	Bech32PrefixConsPub string
 )
 
-func Init(conf *config.Config) {
-	Bech32PrefixAccAddr = conf.Server.Bech32AccPrefix + PrefixAcc + PrefixAddress
-	Bech32PrefixAccPub = conf.Server.Bech32AccPrefix + PrefixAcc + PrefixPublic
-	Bech32PrefixValAddr = conf.Server.Bech32AccPrefix + PrefixValidator + PrefixAddress
-	Bech32PrefixValPub = conf.Server.Bech32AccPrefix + PrefixValidator + PrefixPublic
-	Bech32PrefixConsAddr = conf.Server.Bech32AccPrefix + PrefixConsensus + PrefixAddress
-	Bech32PrefixConsPub = conf.Server.Bech32AccPrefix + PrefixConsensus + PrefixPublic
+func initBech32Prefix(bech32AccPrefix string) {
+	Bech32PrefixAccAddr = bech32AccPrefix + PrefixAcc + PrefixAddress
+	Bech32PrefixAccPub = bech32AccPrefix + PrefixAcc + PrefixPublic
+	Bech32PrefixValAddr = bech32AccPrefix + PrefixValidator + PrefixAddress
+	Bech32PrefixValPub = bech32AccPrefix + PrefixValidator + PrefixPublic
+	Bech32PrefixConsAddr = bech32AccPrefix + PrefixConsensus + PrefixAddress
+	Bech32PrefixConsPub = bech32AccPrefix + PrefixConsensus + PrefixPublic
 
 	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
 		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)
