@@ -70,7 +70,9 @@ func InitRouter(conf *config.Config) {
 	}
 	_parser = msgparser.NewMsgParser(router)
 
-	Init(conf)
+	if conf.Server.Bech32AccPrefix != "" {
+		Init(conf)
+	}
 }
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, []txn.Op, error) {
