@@ -105,7 +105,7 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 func newClient(nodeUrl string) (*Client, error) {
 	client, err := rpcclient.New(nodeUrl, "/websocket")
 	return &Client{
-		Id:     generateId(nodeUrl),
+		Id:   generateId(nodeUrl),
 		HTTP: client,
 	}, err
 }

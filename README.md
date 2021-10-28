@@ -1,5 +1,5 @@
 # cosmos-sync
-A server that synchronize irita chain data into a database
+A server that synchronize cosmos chain data into a database
 
 # SetUp
 
@@ -72,7 +72,7 @@ deny_modules=""
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:
-> synchronizes irita data from specify block height(such as:17908 current time:1576208532)
+> synchronizes cosmos data from specify block height(such as:17908 current time:1576208532)
 At first,stop the cosmos-sync and create the task. Run:
 
   ```
