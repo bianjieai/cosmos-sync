@@ -3,8 +3,8 @@ package pool
 import (
 	"context"
 	"fmt"
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/libs/pool/jrpc"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/pool/jrpc"
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"math/rand"

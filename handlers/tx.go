@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/config"
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/libs/msgparser"
-	"github.com/bianjieai/irita-sync/libs/pool"
-	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/utils"
-	"github.com/bianjieai/irita-sync/utils/constant"
+	"github.com/bianjieai/cosmos-sync/config"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser"
+	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/models"
+	"github.com/bianjieai/cosmos-sync/utils"
+	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"

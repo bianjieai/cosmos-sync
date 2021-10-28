@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/config"
+	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 )
 
