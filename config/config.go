@@ -1,9 +1,9 @@
 package config
 
 import (
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/utils"
-	"github.com/bianjieai/irita-sync/utils/constant"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/utils"
+	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -35,7 +35,7 @@ type (
 
 		MaxConnectionNum   int    `mapstructure:"max_connection_num"`
 		InitConnectionNum  int    `mapstructure:"init_connection_num"`
-		Bech32ChainPrefix  string `mapstructure:"bech32_chain_prefix"`
+		Bech32AccPrefix    string `mapstructure:"bech32_acc_prefix"`
 		ChainId            string `mapstructure:"chain_id"`
 		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
 		BehindBlockNum     int    `mapstructure:"behind_block_num"`

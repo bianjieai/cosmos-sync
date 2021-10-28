@@ -6,8 +6,8 @@ package pool
 import (
 	"context"
 	"errors"
-	"github.com/bianjieai/irita-sync/config"
-	"github.com/bianjieai/irita-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/config"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
 	commonPool "github.com/jolestar/go-commons-pool"
 	"strings"
 	"sync"

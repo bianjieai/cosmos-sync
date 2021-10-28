@@ -1,4 +1,4 @@
-module github.com/bianjieai/irita-sync
+module github.com/bianjieai/cosmos-sync
 
 go 1.15
 
