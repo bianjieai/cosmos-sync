@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/bianjieai/irita-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"math/rand"
 	"strconv"
 	"strings"

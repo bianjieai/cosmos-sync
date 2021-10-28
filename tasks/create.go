@@ -2,9 +2,9 @@ package tasks
 
 import (
 	"fmt"
-	"github.com/bianjieai/irita-sync/config"
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/models"
+	"github.com/bianjieai/cosmos-sync/config"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/models"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2/txn"
 	"time"

@@ -1,5 +1,5 @@
-# irita-sync
-A server that synchronize irita chain data into a database
+# cosmos-sync
+A server that synchronize cosmos chain data into a database
 
 # SetUp
 
@@ -15,7 +15,7 @@ A server that synchronize irita chain data into a database
 
 ## Config Descriptiom
 
-### [config.toml](https://github.com/bianjieai/irita-sync/blob/stargate/config/config.toml)
+### [config.toml](https://github.com/bianjieai/cosmos-sync/blob/cosmos-economy/config/config.toml)
 
 ```text
 [database]
@@ -60,19 +60,19 @@ only_support_module=""
 - max_connection_num: `required` `string` client pool config total max connection
 - init_connection_num: `required` `string` client pool config idle connection
 
-- bech32_acc_prefix: `option` `string` block chain address prefix（default: `i` example: `i`）
+- bech32_acc_prefix: `option` `string` block chain address prefix（default: `` example: `iaa`）
 - chain_block_interval: `option` `string` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `string` promethous metrics server port
 - only_support_module: `option` `string` setting only support module tx sync,default
-  support [all module](https://github.com/bianjieai/irita-sync/blob/stargate/libs/msgparser/types.go) (default: ``
+  support [all module](https://github.com/bianjieai/cosmos-sync/blob/stargate/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
 
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:
-> synchronizes irita data from specify block height(such as:17908 current time:1576208532)
-At first,stop the irita-sync and create the task. Run:
+> synchronizes cosmos data from specify block height(such as:17908 current time:1576208532)
+At first,stop the cosmos-sync and create the task. Run:
 
   ```
   db.sync_task.insert({

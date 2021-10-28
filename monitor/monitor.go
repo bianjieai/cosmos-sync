@@ -2,10 +2,10 @@ package monitor
 
 import (
 	"context"
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/libs/pool"
-	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/monitor/metrics"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/models"
+	"github.com/bianjieai/cosmos-sync/monitor/metrics"
 	"os"
 	"os/signal"
 	"syscall"

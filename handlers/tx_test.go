@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/config"
-	"github.com/bianjieai/irita-sync/libs/pool"
-	"github.com/bianjieai/irita-sync/utils"
+	"github.com/bianjieai/cosmos-sync/config"
+	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/utils"
 	"testing"
 )
 

@@ -11,6 +11,6 @@ RUN apk add --no-cache $PACKAGES && make all
 
 FROM alpine:3.10
 
-COPY --from=builder /go/src/irita-sync /usr/local/bin
+COPY --from=builder /go/src/cosmos-sync /usr/local/bin
 
-CMD irita-sync
+CMD cosmos-sync

@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/config"
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/libs/msgparser"
-	"github.com/bianjieai/irita-sync/libs/pool"
-	"github.com/bianjieai/irita-sync/models"
-	"github.com/bianjieai/irita-sync/utils"
-	"github.com/bianjieai/irita-sync/utils/constant"
+	"github.com/bianjieai/cosmos-sync/config"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser"
+	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/models"
+	"github.com/bianjieai/cosmos-sync/utils"
+	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"
@@ -22,9 +22,9 @@ import (
 var _parser msgparser.MsgParser
 
 func InitRouter(conf *config.Config) {
-	router := msgparser.RegisteRouter()
-	if conf.Server.OnlySupportModule != "" {
-		modules := strings.Split(conf.Server.OnlySupportModule, ",")
+	var router msgparser.Router
+	if conf.Server.SupportModules != "" {
+		modules := strings.Split(conf.Server.SupportModules, ",")
 		msgRoute := msgparser.NewRouter()
 		for _, one := range modules {
 			fn, exist := msgparser.RouteHandlerMap[one]
@@ -32,16 +32,40 @@ func InitRouter(conf *config.Config) {
 				logger.Fatal("no support module: " + one)
 			}
 			msgRoute = msgRoute.AddRoute(one, fn)
-			if one == msgparser.IbcRouteKey {
+			switch one {
+			case msgparser.IbcRouteKey:
 				msgRoute = msgRoute.AddRoute(msgparser.IbcTransferRouteKey, msgparser.RouteHandlerMap[one])
 			}
 		}
 		if msgRoute.GetRoutesLen() > 0 {
 			router = msgRoute
 		}
+	} else {
+		router = msgparser.RegisteRouter()
+	}
 
+	// check and remove disable support module route path
+	if conf.Server.DenyModules != "" {
+		modules := strings.Split(conf.Server.DenyModules, ",")
+		for _, one := range modules {
+			_, exist := msgparser.RouteHandlerMap[one]
+			if !exist {
+				logger.Fatal("disable no exist module: " + one)
+			}
+			if router.HasRoute(one) {
+				switch one {
+				case msgparser.IbcRouteKey:
+					router.RemoveRoute(msgparser.IbcRouteKey)
+					router.RemoveRoute(msgparser.IbcTransferRouteKey)
+				default:
+					router.RemoveRoute(one)
+				}
+			}
+		}
 	}
 	_parser = msgparser.NewMsgParser(router)
+
+	Init(conf)
 }
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, []txn.Op, error) {
