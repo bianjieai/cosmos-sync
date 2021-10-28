@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 )
 
@@ -31,8 +30,8 @@ var (
 	Bech32PrefixConsPub string
 )
 
-func Init(conf *config.Config) {
-	Bech32PrefixAccAddr = conf.Server.Bech32AccPrefix
+func initBech32Prefix(bech32AccPrefix string) {
+	Bech32PrefixAccAddr = bech32AccPrefix
 	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key
 	Bech32PrefixAccPub = Bech32PrefixAccAddr + PrefixPublic
 	// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address

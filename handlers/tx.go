@@ -66,7 +66,7 @@ func InitRouter(conf *config.Config) {
 	_parser = msgparser.NewMsgParser(router)
 
 	if conf.Server.Bech32AccPrefix != "" {
-		Init(conf)
+		initBech32Prefix(conf.Server.Bech32AccPrefix)
 	}
 }
 
