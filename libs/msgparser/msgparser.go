@@ -28,38 +28,65 @@ type msgParser struct {
 }
 
 // Handler returns the MsgServiceHandler for a given msg or nil if not found.
-func (parser msgParser) getModule(v types.SdkMsg) (string, string) {
+func (parser msgParser) getModule(v types.SdkMsg) string {
 	var (
-		route   string
-		msgType string
+		route string
 	)
-	if legacyMsg, ok := v.(types.LegacyMsg); ok {
-		route = legacyMsg.Route()
-		msgType = legacyMsg.Type()
+
+	data := types.MsgTypeURL(v)
+	if strings.HasPrefix(data, "/ibc.core.") {
+		route = IbcRouteKey
+	} else if strings.HasPrefix(data, "/ibc.applications.") {
+		route = IbcTransferRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.bank.") {
+		route = BankRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.crisis.") {
+		route = CrisisRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.distribution.") {
+		route = DistributionRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.slashing.") {
+		route = SlashingRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.evidence.") {
+		route = EvidenceRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.staking.") {
+		route = StakingRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.gov.") {
+		route = GovRouteKey
+	} else if strings.HasPrefix(data, "/tibc.core.") {
+		route = TIbcRouteKey
+	} else if strings.HasPrefix(data, "/tibc.apps.") {
+		route = TIbcTransferRouteKey
+	} else if strings.HasPrefix(data, "/irismod.nft.") {
+		route = NftRouteKey
+	} else if strings.HasPrefix(data, "/irismod.farm.") {
+		route = FarmRouteKey
+	} else if strings.HasPrefix(data, "/irismod.coinswap.") {
+		route = CoinswapRouteKey
+	} else if strings.HasPrefix(data, "/irismod.token.") {
+		route = TokenRouteKey
+	} else if strings.HasPrefix(data, "/irismod.record.") {
+		route = RecordRouteKey
+	} else if strings.HasPrefix(data, "/irismod.service.") {
+		route = ServiceRouteKey
+	} else if strings.HasPrefix(data, "/irismod.htlc.") {
+		route = HtlcRouteKey
+	} else if strings.HasPrefix(data, "/irismod.random.") {
+		route = RandomRouteKey
+	} else if strings.HasPrefix(data, "/irismod.oracle.") {
+		route = OracleRouteKey
 	} else {
-		data := types.MsgTypeURL(v)
-		if strings.HasPrefix(data, "/ibc.core.") {
-			route = IbcRouteKey
-		} else if strings.HasPrefix(data, "/ibc.applications.") {
-			route = IbcTransferRouteKey
-		} else if strings.HasPrefix(data, "/tibc.core.") {
-			route = TIbcRouteKey
-		} else if strings.HasPrefix(data, "/tibc.apps.") {
-			route = TIbcTransferRouteKey
-		} else {
-			route = data
-		}
+		route = data
 	}
-	return route, msgType
+	return route
 }
 
 func (parser msgParser) HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
-	module, msgType := parser.getModule(v)
+	module := parser.getModule(v)
 	handleFunc, err := parser.rh.GetRoute(module)
 	if err != nil {
-		logger.Error(err.Error(),
+		logger.Warn(err.Error(),
 			logger.String("route", module),
-			logger.String("type", msgType))
+			logger.String("type", module))
 		return MsgDocInfo{}, nil
 	}
 	return handleFunc(v), nil
