@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/bianjieai/irita-sync/config"
+	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 )
 
@@ -41,12 +41,12 @@ var (
 )
 
 func Init(conf *config.Config) {
-	Bech32PrefixAccAddr = conf.Server.Bech32ChainPrefix + PrefixAcc + PrefixAddress
-	Bech32PrefixAccPub = conf.Server.Bech32ChainPrefix + PrefixAcc + PrefixPublic
-	Bech32PrefixValAddr = conf.Server.Bech32ChainPrefix + PrefixValidator + PrefixAddress
-	Bech32PrefixValPub = conf.Server.Bech32ChainPrefix + PrefixValidator + PrefixPublic
-	Bech32PrefixConsAddr = conf.Server.Bech32ChainPrefix + PrefixConsensus + PrefixAddress
-	Bech32PrefixConsPub = conf.Server.Bech32ChainPrefix + PrefixConsensus + PrefixPublic
+	Bech32PrefixAccAddr = conf.Server.Bech32AccPrefix + PrefixAcc + PrefixAddress
+	Bech32PrefixAccPub = conf.Server.Bech32AccPrefix + PrefixAcc + PrefixPublic
+	Bech32PrefixValAddr = conf.Server.Bech32AccPrefix + PrefixValidator + PrefixAddress
+	Bech32PrefixValPub = conf.Server.Bech32AccPrefix + PrefixValidator + PrefixPublic
+	Bech32PrefixConsAddr = conf.Server.Bech32AccPrefix + PrefixConsensus + PrefixAddress
+	Bech32PrefixConsPub = conf.Server.Bech32AccPrefix + PrefixConsensus + PrefixPublic
 
 	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
 		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)

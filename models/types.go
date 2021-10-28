@@ -51,4 +51,3 @@ func ensureDocsIndexes() {
 		}
 	}
 }
-

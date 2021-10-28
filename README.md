@@ -1,5 +1,5 @@
-# irita-sync
-A server that synchronize irita chain data into a database
+# cosmos-sync
+A server that synchronize cosmos chain data into a database
 
 # SetUp
 
@@ -15,7 +15,7 @@ A server that synchronize irita chain data into a database
 
 ## Config Descriptiom
 
-### [config.toml](https://github.com/bianjieai/irita-sync/blob/irishub/1.1.0/config/config.toml)
+### [config.toml](https://github.com/bianjieai/cosmos-sync/blob/irishub/1.1.0/config/config.toml)
 
 ```text
 [database]
@@ -37,7 +37,8 @@ chain_id=""
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
-only_support_module="" 
+support_modules="" 
+deny_modules=""
 ```
 
 ### Db config
@@ -64,15 +65,15 @@ only_support_module=""
 - chain_block_interval: `option` `string` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `string` promethous metrics server port
-- only_support_module: `option` `string` setting only support module tx sync,default
-  support [all module](https://github.com/bianjieai/irita-sync/blob/irishub/1.1.0/libs/msgparser/types.go) (default: ``
+- support_modules: `option` `string` setting only support module tx sync,default
+  support [all module](https://github.com/bianjieai/cosmos-sync/blob/irishub/1.1.0/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
-
+- deny_modules: `option` `string` disable support module tx sync
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:
-> synchronizes irita data from specify block height(such as:17908 current time:1576208532)
-At first,stop the irita-sync and create the task. Run:
+> synchronizes cosmos data from specify block height(such as:17908 current time:1576208532)
+At first,stop the cosmos-sync and create the task. Run:
 
   ```
   db.sync_task.insert({

@@ -2,7 +2,7 @@ package msgparser
 
 import (
 	"fmt"
-	"github.com/bianjieai/irita-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
 	"regexp"
@@ -24,6 +24,7 @@ type Router interface {
 	HasRoute(r string) bool
 	GetRoute(path string) (h Handler, err error)
 	GetRoutesLen() int
+	RemoveRoute(path string)
 }
 
 type router struct {
@@ -72,6 +73,13 @@ func (rtr *router) GetRoutesLen() int {
 	return len(rtr.routes)
 }
 
+func (rtr *router) RemoveRoute(path string) {
+	if !rtr.HasRoute(path) {
+		return
+	}
+	delete(rtr.routes, path)
+}
+
 func RegisteRouter() Router {
 	msgRoute := NewRouter()
 	msgRoute.AddRoute(BankRouteKey, handleBank).
@@ -89,7 +97,10 @@ func RegisteRouter() Router {
 		AddRoute(GovRouteKey, handleGov).
 		AddRoute(RandomRouteKey, handleRandom).
 		AddRoute(OracleRouteKey, handleOracle).
+		AddRoute(FarmRouteKey, handleFarm).
 		AddRoute(IbcRouteKey, handleIbc).
-		AddRoute(IbcTransferRouteKey, handleIbc)
+		AddRoute(IbcTransferRouteKey, handleIbc).
+		AddRoute(TIbcRouteKey, handleTIbc).
+		AddRoute(TIbcTransferRouteKey, handleTIbc)
 	return msgRoute
 }
