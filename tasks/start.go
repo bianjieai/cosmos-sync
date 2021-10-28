@@ -1,6 +1,6 @@
 package tasks
 
-import "github.com/bianjieai/irita-sync/monitor"
+import "github.com/bianjieai/cosmos-sync/monitor"
 
 func Start(synctask SyncTask) {
 	go synctask.StartCreateTask()

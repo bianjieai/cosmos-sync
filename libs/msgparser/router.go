@@ -2,7 +2,7 @@ package msgparser
 
 import (
 	"fmt"
-	"github.com/bianjieai/irita-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
 	"regexp"
@@ -75,19 +75,16 @@ func (rtr *router) GetRoutesLen() int {
 func RegisteRouter() Router {
 	msgRoute := NewRouter()
 	msgRoute.AddRoute(BankRouteKey, handleBank).
-
 		AddRoute(StakingRouteKey, handleStaking).
 		AddRoute(DistributionRouteKey, handleDistribution).
 		AddRoute(CrisisRouteKey, handleCrisis).
 		AddRoute(EvidenceRouteKey, handleEvidence).
 		AddRoute(GovRouteKey, handleGov).
-
 		AddRoute(SlashingRouteKey, handleSlashing).
 		AddRoute(NftRouteKey, handleNft).
 		AddRoute(ServiceRouteKey, handleService).
 		AddRoute(TokenRouteKey, handleToken).
 		AddRoute(HtlcRouteKey, handleHtlc).
-
 		AddRoute(CoinswapRouteKey, handleCoinswap).
 		AddRoute(RandomRouteKey, handleRandom).
 		AddRoute(OracleRouteKey, handleOracle).

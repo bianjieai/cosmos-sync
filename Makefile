@@ -5,7 +5,7 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 GO_MOD=$(GOCMD) mod
 GO_ENV=$(GOCMD) env
-BINARY_NAME=irita-sync
+BINARY_NAME=cosmos-sync
 BINARY_UNIX=$(BINARY_NAME)-unix
 export GO111MODULE = on
 

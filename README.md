@@ -1,5 +1,5 @@
-# irita-sync
-A server that synchronize irita chain data into a database
+# cosmos-sync
+A server that synchronize cosmos chain data into a database
 
 # SetUp
 
@@ -15,7 +15,7 @@ A server that synchronize irita chain data into a database
 
 ## Config Descriptiom
 
-### [config.toml](https://github.com/bianjieai/irita-sync/blob/cs-otc/x-v0.40/config/config.toml)
+### [config.toml](https://github.com/bianjieai/cosmos-sync/blob/cs-otc/x-v0.40/config/config.toml)
 
 ```text
 [database]
@@ -66,7 +66,7 @@ is_json_rpc_protocol=false
 - behind_block_num: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `string` promethous metrics server port
 - only_support_module: `option` `string` setting only support module tx sync,default
-  support [all module](https://github.com/bianjieai/irita-sync/blob/opb-bsn/libs/msgparser/types.go) (default: ``
+  support [all module](https://github.com/bianjieai/cosmos-sync/blob/opb-bsn/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
 
 - is_json_rpc_protocol: `option` `string` whether use json rpc protocol to connection with full node(default: `false`)
@@ -74,8 +74,8 @@ is_json_rpc_protocol=false
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:
-> synchronizes irita data from specify block height(such as:17908 current time:1576208532)
-At first,stop the irita-sync and create the task. Run:
+> synchronizes cosmos data from specify block height(such as:17908 current time:1576208532)
+At first,stop the cosmos-sync and create the task. Run:
 
   ```
   db.sync_task.insert({

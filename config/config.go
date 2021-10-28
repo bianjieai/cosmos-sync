@@ -1,9 +1,9 @@
 package config
 
 import (
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/utils"
-	"github.com/bianjieai/irita-sync/utils/constant"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/utils"
+	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/spf13/viper"
 	"os"
 )
