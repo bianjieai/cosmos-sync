@@ -1,9 +1,9 @@
 package server
 
 import (
-	constant "github.com/bianjieai/irita-sync/confs"
-	"github.com/bianjieai/irita-sync/libs/logger"
-	"github.com/bianjieai/irita-sync/utils"
+	constant "github.com/bianjieai/cosmos-sync/confs"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/utils"
 	"os"
 	"strings"
 )
