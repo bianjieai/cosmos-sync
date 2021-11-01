@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
@@ -9,6 +10,8 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
+	. "github.com/kaifei-bianjie/msg-parser/modules"
+	"github.com/kaifei-bianjie/msg-parser/modules/ibc"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
@@ -143,6 +146,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	docTx.Events = parseEvents(txResult.TxResult.Events)
 	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
 	docTx.TxIndex = txResult.Index
+	eventsIndexMap := make(map[uint32]models.EventNew)
+	if txResult.TxResult.Code == 0 {
+		eventsIndexMap = splitEvents(txResult.TxResult.Log)
+	}
 
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
@@ -164,6 +171,21 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		msgDocInfo, ops := _parser.HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
 			continue
+		}
+		switch msgDocInfo.DocTxMsg.Type {
+		case MsgTypeIBCTransfer:
+			if ibcTranferMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgTransfer); ok {
+				if val, exist := eventsIndexMap[uint32(i)]; exist {
+					ibcTranferMsg.PacketId = buildPacketId(val.Events)
+					msgDocInfo.DocTxMsg.Msg = ibcTranferMsg
+				}
+
+			} else {
+				logger.Warn("ibc transfer handler packet_id failed", logger.String("errTag", "TxMsg"),
+					logger.String("txhash", txHash),
+					logger.Int("msg_index", i),
+					logger.Int64("height", block.Height))
+			}
 		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
@@ -195,12 +217,51 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 	return docTx, txnOps, nil
 }
 
+func buildPacketId(events []models.Event) string {
+	if len(events) > 0 {
+		var mapKeyValue map[string]string
+		for _, e := range events {
+			if len(e.Attributes) > 0 && e.Type == constant.IbcTransferEventTypeSendPacket {
+				mapKeyValue = make(map[string]string, len(e.Attributes))
+				for _, v := range e.Attributes {
+					mapKeyValue[string(v.Key)] = string(v.Value)
+				}
+				break
+			}
+		}
+
+		if len(mapKeyValue) > 0 {
+			scPort := mapKeyValue[constant.IbcTransferEventAttriKeyPacketScPort]
+			scChannel := mapKeyValue[constant.IbcTransferEventAttriKeyPacketScChannel]
+			dcPort := mapKeyValue[constant.IbcTransferEventAttriKeyPacketDcPort]
+			dcChannel := mapKeyValue[constant.IbcTransferEventAttriKeyPacketDcChannels]
+			sequence := mapKeyValue[constant.IbcTransferEventAttriKeyPacketSequence]
+			return fmt.Sprintf("%v%v%v%v%v", scPort, scChannel, dcPort, dcChannel, sequence)
+		}
+	}
+	return ""
+}
+
 func parseTxStatus(code uint32) uint32 {
 	if code == 0 {
 		return constant.TxStatusSuccess
 	} else {
 		return constant.TxStatusFail
 	}
+}
+
+func splitEvents(log string) map[uint32]models.EventNew {
+	var eventDocs []models.EventNew
+	if log != "" {
+		utils.UnMarshalJsonIgnoreErr(log, &eventDocs)
+
+	}
+
+	msgIndexMap := make(map[uint32]models.EventNew, len(eventDocs))
+	for _, val := range eventDocs {
+		msgIndexMap[val.MsgIndex] = val
+	}
+	return msgIndexMap
 }
 
 func parseEvents(events []aTypes.Event) []models.Event {
