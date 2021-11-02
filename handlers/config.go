@@ -1,28 +1,6 @@
 package handlers
 
-import (
-	"github.com/kaifei-bianjie/msg-parser/codec"
-)
-
-const (
-	// Bech32ChainPrefix defines the prefix of this chain
-	Bech32ChainPrefix = "i"
-
-	// PrefixAcc is the prefix for account
-	PrefixAcc = "a"
-
-	// PrefixValidator is the prefix for validator keys
-	PrefixValidator = "v"
-
-	// PrefixConsensus is the prefix for consensus keys
-	PrefixConsensus = "c"
-
-	// PrefixPublic is the prefix for public
-	PrefixPublic = "p"
-
-	// PrefixAddress is the prefix for address
-	PrefixAddress = "a"
-)
+import "github.com/kaifei-bianjie/msg-parser/codec"
 
 var (
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
@@ -39,7 +17,16 @@ var (
 	Bech32PrefixConsPub string
 )
 
-func initBech32Prefix(bech32AccPrefix string) {
+func initIrisPrefix() {
+	const (
+		Bech32ChainPrefix = "i"
+		PrefixAcc         = "a"
+		PrefixValidator   = "v"
+		PrefixConsensus   = "c"
+		PrefixPublic      = "p"
+		PrefixAddress     = "a"
+	)
+	bech32AccPrefix := Bech32ChainPrefix
 	Bech32PrefixAccAddr = bech32AccPrefix + PrefixAcc + PrefixAddress
 	Bech32PrefixAccPub = bech32AccPrefix + PrefixAcc + PrefixPublic
 	Bech32PrefixValAddr = bech32AccPrefix + PrefixValidator + PrefixAddress
@@ -49,4 +36,32 @@ func initBech32Prefix(bech32AccPrefix string) {
 
 	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
 		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)
+}
+
+func initCosmosPrefix(bech32AccPrefix string) {
+	const (
+		PrefixValidator = "val"
+		PrefixConsensus = "cons"
+		PrefixPublic    = "pub"
+		PrefixOperator  = "oper"
+	)
+	Bech32PrefixAccAddr = bech32AccPrefix
+	Bech32PrefixAccPub = Bech32PrefixAccAddr + PrefixPublic
+	Bech32PrefixValAddr = Bech32PrefixAccAddr + PrefixValidator + PrefixOperator
+	Bech32PrefixValPub = Bech32PrefixAccAddr + PrefixValidator + PrefixOperator + PrefixPublic
+	Bech32PrefixConsAddr = Bech32PrefixAccAddr + PrefixValidator + PrefixConsensus
+	Bech32PrefixConsPub = Bech32PrefixAccAddr + PrefixValidator + PrefixConsensus + PrefixPublic
+
+	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
+		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)
+}
+
+func initBech32Prefix(bech32AccPrefix string) {
+	if bech32AccPrefix != "" {
+		if bech32AccPrefix == "iaa" {
+			initIrisPrefix()
+		} else {
+			initCosmosPrefix(bech32AccPrefix)
+		}
+	}
 }
