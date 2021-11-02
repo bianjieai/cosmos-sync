@@ -61,7 +61,7 @@ deny_modules=""
 - max_connection_num: `required` `string` client pool config total max connection
 - init_connection_num: `required` `string` client pool config idle connection
 
-- bech32_acc_prefix: `option` `string` block chain address prefix（default: `` example(irishub): `iaa`）
+- bech32_acc_prefix: `option` `string` block chain address prefix（default: `i` example: `i`）
 - chain_block_interval: `option` `string` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `string` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `string` promethous metrics server port
