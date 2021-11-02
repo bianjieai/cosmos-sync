@@ -18,4 +18,6 @@ const (
 	IbcTransferEventAttriKeyPacketScChannel  = "packet_src_channel"
 	IbcTransferEventAttriKeyPacketDcPort     = "packet_dst_port"
 	IbcTransferEventAttriKeyPacketDcChannels = "packet_dst_channel"
+	IbcRecvPacketEventTypeWriteAcknowledge   = "write_acknowledgement"
+	IbcRecvPacketEventAttriKeyPacketAck      = "packet_ack"
 )
