@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20211028033959-a5a2975078f2
+	github.com/kaifei-bianjie/msg-parser v0.0.0-20211102103616-3f39405cee9d
 	github.com/spf13/viper v1.8.1
 	github.com/tendermint/tendermint v0.34.13
 	github.com/weichang-bianjie/metric-sdk v1.0.0
