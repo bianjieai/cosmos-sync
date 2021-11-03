@@ -6,7 +6,6 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/monitor/metrics"
-	"gopkg.in/mgo.v2"
 	"os"
 	"os/signal"
 	"syscall"
@@ -102,7 +101,7 @@ func (node *clientNode) nodeStatusReport() {
 	}()
 
 	block, err := new(models.Block).GetMaxBlockHeight()
-	if err != nil && err != mgo.ErrNotFound {
+	if err != nil {
 		logger.Error("query block exception", logger.String("error", err.Error()))
 	}
 	node.dbHeight.Set(float64(block.Height))
@@ -121,7 +120,7 @@ func (node *clientNode) nodeStatusReport() {
 	}
 
 	follow, err := new(models.SyncTask).QueryValidFollowTasks()
-	if err != nil && err != mgo.ErrNotFound {
+	if err != nil {
 		logger.Error("query valid follow task exception", logger.String("error", err.Error()))
 		return
 	}
