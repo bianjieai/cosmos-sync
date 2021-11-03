@@ -191,6 +191,21 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 					logger.Int("msg_index", i),
 					logger.Int64("height", block.Height))
 			}
+		case MsgTypeTIBCRecvPacket:
+			docTx.Events = updateEvents(docTx.Events, UnmarshalTibcAcknowledgement)
+			for id, one := range docTx.EventsNew {
+				if one.MsgIndex == uint32(i) {
+					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalTibcAcknowledgement)
+				}
+			}
+		case MsgTypeRecvPacket:
+			docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
+			for id, one := range docTx.EventsNew {
+				if one.MsgIndex == uint32(i) {
+					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
+				}
+			}
+
 		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
@@ -267,6 +282,33 @@ func splitEvents(log string) map[uint32]models.EventNew {
 		msgIndexMap[val.MsgIndex] = val
 	}
 	return msgIndexMap
+}
+
+func updateEvents(events []models.Event, fn func([]byte) string) []models.Event {
+
+	for i, e := range events {
+		if e.Type != constant.IbcRecvPacketEventTypeWriteAcknowledge {
+			continue
+		}
+		if len(e.Attributes) > 0 {
+			for j, v := range e.Attributes {
+				if v.Key == constant.IbcRecvPacketEventAttriKeyPacketAck {
+					attr := models.KvPair{
+						Key:   string(v.Key),
+						Value: string(v.Value),
+					}
+					attr.Value = fn([]byte(v.Value))
+					e.Attributes[j] = attr
+				}
+			}
+		}
+		one := models.Event{
+			Type:       e.Type,
+			Attributes: e.Attributes,
+		}
+		events[i] = one
+	}
+	return events
 }
 
 func parseEvents(events []aTypes.Event) []models.Event {
