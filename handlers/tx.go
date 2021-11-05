@@ -192,14 +192,14 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 					logger.Int64("height", block.Height))
 			}
 		case MsgTypeTIBCRecvPacket:
-			docTx.Events = updateEvents(docTx.Events, UnmarshalTibcAcknowledgement)
+			//docTx.Events = updateEvents(docTx.Events, UnmarshalTibcAcknowledgement)
 			for id, one := range docTx.EventsNew {
 				if one.MsgIndex == uint32(i) {
 					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalTibcAcknowledgement)
 				}
 			}
 		case MsgTypeRecvPacket:
-			docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
+			//docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
 			for id, one := range docTx.EventsNew {
 				if one.MsgIndex == uint32(i) {
 					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
