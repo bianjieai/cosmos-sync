@@ -6,6 +6,7 @@ import (
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
 	"gopkg.in/mgo.v2/txn"
+	"strings"
 )
 
 type MsgParser interface {
@@ -26,12 +27,60 @@ type msgParser struct {
 	rh Router
 }
 
-func (parser *msgParser) HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
-	handleFunc, err := parser.rh.GetRoute(v.Route())
+// Handler returns the MsgServiceHandler for a given msg or nil if not found.
+func (parser msgParser) getModule(v types.SdkMsg) string {
+	var (
+		route string
+	)
+
+	data := types.MsgTypeURL(v)
+	if strings.HasPrefix(data, "/cosmos.bank.") {
+		route = BankRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.crisis.") {
+		route = CrisisRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.distribution.") {
+		route = DistributionRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.slashing.") {
+		route = SlashingRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.evidence.") {
+		route = EvidenceRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.staking.") {
+		route = StakingRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.gov.") {
+		route = GovRouteKey
+	} else if strings.HasPrefix(data, "/tibc.core.") {
+		route = TIbcRouteKey
+	} else if strings.HasPrefix(data, "/tibc.apps.") {
+		route = TIbcTransferRouteKey
+	} else if strings.HasPrefix(data, "/irismod.nft.") {
+		route = NftRouteKey
+	} else if strings.HasPrefix(data, "/irismod.coinswap.") {
+		route = CoinswapRouteKey
+	} else if strings.HasPrefix(data, "/irismod.token.") {
+		route = TokenRouteKey
+	} else if strings.HasPrefix(data, "/irismod.record.") {
+		route = RecordRouteKey
+	} else if strings.HasPrefix(data, "/irismod.service.") {
+		route = ServiceRouteKey
+	} else if strings.HasPrefix(data, "/irismod.htlc.") {
+		route = HtlcRouteKey
+	} else if strings.HasPrefix(data, "/irismod.random.") {
+		route = RandomRouteKey
+	} else if strings.HasPrefix(data, "/irismod.oracle.") {
+		route = OracleRouteKey
+	} else {
+		route = data
+	}
+	return route
+}
+
+func (parser msgParser) HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
+	module := parser.getModule(v)
+	handleFunc, err := parser.rh.GetRoute(module)
 	if err != nil {
-		logger.Error(err.Error(),
-			logger.String("route", v.Route()),
-			logger.String("type", v.Type()))
+		logger.Warn(err.Error(),
+			logger.String("route", module),
+			logger.String("type", module))
 		return MsgDocInfo{}, nil
 	}
 	return handleFunc(v), nil
@@ -107,5 +156,10 @@ func handleHtlc(v types.SdkMsg) MsgDocInfo {
 
 func handleCoinswap(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Coinswap.HandleTxMsg(v)
+	return docInfo
+}
+
+func handleTIbc(v types.SdkMsg) MsgDocInfo {
+	docInfo, _ := _client.Tibc.HandleTxMsg(v)
 	return docInfo
 }
