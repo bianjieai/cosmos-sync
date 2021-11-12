@@ -22,7 +22,10 @@ import (
 	"time"
 )
 
-var _parser msgparser.MsgParser
+var (
+	_parser    msgparser.MsgParser
+	_filterMap map[string]string
+)
 
 func InitRouter(conf *config.Config) {
 	var router msgparser.Router
@@ -75,6 +78,14 @@ func InitRouter(conf *config.Config) {
 
 	if conf.Server.Bech32AccPrefix != "" {
 		initBech32Prefix(conf.Server.Bech32AccPrefix)
+	}
+	//ibc-zone
+	if filterMsgType := models.GetSrvConf().SupportTypes; filterMsgType != "" {
+		msgTypes := strings.Split(filterMsgType, ",")
+		_filterMap = make(map[string]string, len(msgTypes))
+		for _, val := range msgTypes {
+			_filterMap[val] = val
+		}
 	}
 }
 
@@ -176,6 +187,16 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		msgDocInfo, ops := _parser.HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
 			continue
+		}
+		if len(_filterMap) > 0 {
+			_, ok := _filterMap[msgDocInfo.DocTxMsg.Type]
+			if !ok {
+				//set support types but not match msg type,skip this msg.
+				continue
+			}
+			if docTx.Type == "" {
+				docTx.Type = msgDocInfo.DocTxMsg.Type
+			}
 		}
 		switch msgDocInfo.DocTxMsg.Type {
 		case MsgTypeIBCTransfer:

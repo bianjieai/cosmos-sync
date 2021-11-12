@@ -43,6 +43,7 @@ type (
 		PromethousPort string `mapstructure:"promethous_port"`
 		SupportModules string `mapstructure:"support_modules"`
 		DenyModules    string `mapstructure:"deny_modules"`
+		SupportTypes   string `mapstructure:"support_types"`
 	}
 )
 

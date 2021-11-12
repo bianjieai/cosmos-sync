@@ -19,3 +19,4 @@ behind_block_num=0
 promethous_port=9090
 support_modules=""
 deny_modules=""
+support_types="recv_packet,transfer,timeout_packet,acknowledge_packet"
