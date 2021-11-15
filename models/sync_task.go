@@ -2,8 +2,10 @@ package models
 
 import (
 	"fmt"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/qiniu/qmgo"
+	"github.com/qiniu/qmgo/options"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -27,14 +29,14 @@ const (
 
 type (
 	SyncTask struct {
-		ID             bson.ObjectId `bson:"_id"`
-		StartHeight    int64         `bson:"start_height"`     // task start height
-		EndHeight      int64         `bson:"end_height"`       // task end height
-		CurrentHeight  int64         `bson:"current_height"`   // task current height
-		Status         string        `bson:"status"`           // task status
-		WorkerId       string        `bson:"worker_id"`        // worker id
-		WorkerLogs     []WorkerLog   `bson:"worker_logs"`      // worker logs
-		LastUpdateTime int64         `bson:"last_update_time"` // unix timestamp
+		ID             primitive.ObjectID `bson:"_id"`
+		StartHeight    int64              `bson:"start_height"`     // task start height
+		EndHeight      int64              `bson:"end_height"`       // task end height
+		CurrentHeight  int64              `bson:"current_height"`   // task current height
+		Status         string             `bson:"status"`           // task status
+		WorkerId       string             `bson:"worker_id"`        // worker id
+		WorkerLogs     []WorkerLog        `bson:"worker_logs"`      // worker logs
+		LastUpdateTime int64              `bson:"last_update_time"` // unix timestamp
 	}
 
 	WorkerLog struct {
@@ -51,13 +53,13 @@ func (d SyncTask) Name() string {
 }
 
 func (d SyncTask) EnsureIndexes() {
-	var indexes []mgo.Index
-	indexes = append(indexes, mgo.Index{
+	var indexes []options.IndexModel
+	indexes = append(indexes, options.IndexModel{
 		Key:        []string{"-start_height", "-end_height"},
 		Unique:     true,
 		Background: true,
 	})
-	indexes = append(indexes, mgo.Index{
+	indexes = append(indexes, options.IndexModel{
 		Key:        []string{"-status"},
 		Background: true,
 	})
@@ -84,8 +86,8 @@ func (d SyncTask) GetMaxBlockHeight() (int64, error) {
 		},
 	}
 
-	getMaxBlockHeightFn := func(c *mgo.Collection) error {
-		return c.Pipe(q).All(&res)
+	getMaxBlockHeightFn := func(c *qmgo.Collection) error {
+		return c.Aggregate(nil, q).All(&res)
 	}
 	err := ExecCollection(d.Name(), getMaxBlockHeightFn)
 
@@ -123,8 +125,8 @@ func (d SyncTask) QueryAll(status []string, taskType string) ([]SyncTask, error)
 		break
 	}
 
-	fn := func(c *mgo.Collection) error {
-		return c.Find(q).All(&syncTasks)
+	fn := func(c *qmgo.Collection) error {
+		return c.Find(_ctx, q).All(&syncTasks)
 	}
 
 	err := ExecCollection(d.Name(), fn)
@@ -146,8 +148,8 @@ func (d SyncTask) GetExecutableTask(maxWorkerSleepTime int64) ([]SyncTask, error
 		},
 	}
 
-	fn := func(c *mgo.Collection) error {
-		return c.Find(q).Sort("-status").Limit(1000).All(&tasks)
+	fn := func(c *qmgo.Collection) error {
+		return c.Find(_ctx, q).Sort("-status").Limit(1000).All(&tasks)
 	}
 
 	err := ExecCollection(d.Name(), fn)
@@ -168,11 +170,13 @@ func (d SyncTask) GetExecutableTask(maxWorkerSleepTime int64) ([]SyncTask, error
 	return ret, nil
 }
 
-func (d SyncTask) GetTaskById(id bson.ObjectId) (SyncTask, error) {
+func (d SyncTask) GetTaskById(id primitive.ObjectID) (SyncTask, error) {
 	var task SyncTask
 
-	fn := func(c *mgo.Collection) error {
-		return c.FindId(id).One(&task)
+	fn := func(c *qmgo.Collection) error {
+		return c.Find(_ctx, bson.M{
+			"_id": id,
+		}).One(&task)
 	}
 
 	err := ExecCollection(d.Name(), fn)
@@ -182,16 +186,16 @@ func (d SyncTask) GetTaskById(id bson.ObjectId) (SyncTask, error) {
 	return task, nil
 }
 
-func (d SyncTask) GetTaskByIdAndWorker(id bson.ObjectId, worker string) (SyncTask, error) {
+func (d SyncTask) GetTaskByIdAndWorker(id primitive.ObjectID, worker string) (SyncTask, error) {
 	var task SyncTask
 
-	fn := func(c *mgo.Collection) error {
+	fn := func(c *qmgo.Collection) error {
 		q := bson.M{
 			"_id":       id,
 			"worker_id": worker,
 		}
 
-		return c.Find(q).One(&task)
+		return c.Find(_ctx, q).One(&task)
 	}
 
 	err := ExecCollection(d.Name(), fn)
@@ -206,7 +210,7 @@ func (d SyncTask) GetTaskByIdAndWorker(id bson.ObjectId, worker string) (SyncTas
 func (d SyncTask) TakeOverTask(task SyncTask, workerId string) error {
 	// multiple goroutine attempt to update same record,
 	// use this selector to ensure only one goroutine can update success at same time
-	fn := func(c *mgo.Collection) error {
+	fn := func(c *qmgo.Collection) error {
 		selector := bson.M{
 			"_id":              task.ID,
 			"last_update_time": task.LastUpdateTime,
@@ -219,8 +223,16 @@ func (d SyncTask) TakeOverTask(task SyncTask, workerId string) error {
 			WorkerId:  workerId,
 			BeginTime: time.Now(),
 		})
+		update := bson.M{
+			"$set": bson.M{
+				"status":           task.Status,
+				"worker_id":        task.WorkerId,
+				"last_update_time": task.LastUpdateTime,
+				"worker_logs":      task.WorkerLogs,
+			},
+		}
 
-		return c.Update(selector, task)
+		return c.UpdateOne(_ctx, selector, update)
 	}
 
 	return ExecCollection(d.Name(), fn)
@@ -228,15 +240,20 @@ func (d SyncTask) TakeOverTask(task SyncTask, workerId string) error {
 
 // update task last update time
 func (d SyncTask) UpdateLastUpdateTime(task SyncTask) error {
-	fn := func(c *mgo.Collection) error {
+	fn := func(c *qmgo.Collection) error {
 		selector := bson.M{
 			"_id":       task.ID,
 			"worker_id": task.WorkerId,
 		}
 
 		task.LastUpdateTime = time.Now().Unix()
+		update := bson.M{
+			"$set": bson.M{
+				"last_update_time": task.LastUpdateTime,
+			},
+		}
 
-		return c.Update(selector, task)
+		return c.UpdateOne(_ctx, selector, update)
 	}
 
 	return ExecCollection(d.Name(), fn)
@@ -253,8 +270,8 @@ func (d SyncTask) QueryValidFollowTasks() (bool, error) {
 		"$eq": 0,
 	}
 
-	fn := func(c *mgo.Collection) error {
-		return c.Find(q).All(&syncTasks)
+	fn := func(c *qmgo.Collection) error {
+		return c.Find(_ctx, q).All(&syncTasks)
 	}
 
 	err := ExecCollection(d.Name(), fn)
