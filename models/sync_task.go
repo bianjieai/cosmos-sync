@@ -87,7 +87,7 @@ func (d SyncTask) GetMaxBlockHeight() (int64, error) {
 	}
 
 	getMaxBlockHeightFn := func(c *qmgo.Collection) error {
-		return c.Aggregate(nil, q).All(&res)
+		return c.Aggregate(_ctx, q).All(&res)
 	}
 	err := ExecCollection(d.Name(), getMaxBlockHeightFn)
 

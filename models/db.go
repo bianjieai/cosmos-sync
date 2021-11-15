@@ -8,7 +8,6 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/qiniu/qmgo"
 	"github.com/qiniu/qmgo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var (
@@ -37,13 +36,10 @@ func GetClient() *qmgo.Client {
 func Init(conf *config.Config) {
 	_conf = conf
 	var maxPoolSize uint64 = 4096
+	// PrimaryMode indicates that only a primary is considered for reading. This is the default mode.
 	client, err := qmgo.NewClient(_ctx, &qmgo.Config{
-		Uri:      conf.DataBase.NodeUri,
-		Database: conf.DataBase.Database,
-		ReadPreference: &qmgo.ReadPref{
-			MaxStalenessMS: 90000,
-			Mode:           readpref.SecondaryPreferredMode,
-		},
+		Uri:         conf.DataBase.NodeUri,
+		Database:    conf.DataBase.Database,
 		MaxPoolSize: &maxPoolSize,
 	})
 	if err != nil {
