@@ -19,9 +19,7 @@ type (
 	}
 
 	DataBaseConf struct {
-		Addrs    string `mapstructure:"addrs"`
-		User     string `mapstructure:"user"`
-		Passwd   string `mapstructure:"passwd" json:"-"`
+		NodeUri  string `mapstructure:"node_uri"`
 		Database string `mapstructure:"database"`
 	}
 
@@ -43,6 +41,7 @@ type (
 		PromethousPort string `mapstructure:"promethous_port"`
 		SupportModules string `mapstructure:"support_modules"`
 		DenyModules    string `mapstructure:"deny_modules"`
+		SupportTypes   string `mapstructure:"support_types"`
 	}
 )
 

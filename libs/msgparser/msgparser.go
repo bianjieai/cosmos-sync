@@ -5,12 +5,11 @@ import (
 	msg_parser "github.com/kaifei-bianjie/msg-parser"
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
-	"gopkg.in/mgo.v2/txn"
 	"strings"
 )
 
 type MsgParser interface {
-	HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op)
+	HandleTxMsg(v types.SdkMsg) MsgDocInfo
 }
 
 var (
@@ -80,16 +79,16 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 	return route
 }
 
-func (parser msgParser) HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
+func (parser msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
 	module := parser.getModule(v)
 	handleFunc, err := parser.rh.GetRoute(module)
 	if err != nil {
 		logger.Warn(err.Error(),
 			logger.String("route", module),
 			logger.String("type", module))
-		return MsgDocInfo{}, nil
+		return MsgDocInfo{}
 	}
-	return handleFunc(v), nil
+	return handleFunc(v)
 }
 
 func init() {

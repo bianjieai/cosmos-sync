@@ -19,9 +19,7 @@ A server that synchronize cosmos chain data into a database
 
 ```text
 [database]
-addrs= "localhost:27018"
-user= "iris"
-passwd= "irispassword"
+node_uri= "mongodb://root:123456@10.1.4.157:27017/?connect=direct&authSource=temp"
 database= "bifrost-sync"
 
 [server]
@@ -43,9 +41,7 @@ deny_modules=""
 
 ### Db config
 
-- addrs: `required` `string` db addr（example: `127.0.0.1:27017, 127.0.0.2:27017, ...`）
-- user: `required` `string` db user（example: `user`）
-- passwd: `required` `string` db password（example: `DB_PASSWD`）
+- node_uri: `required` `string` db connection uri（example: `mongodb://root:123456@10.1.4.157:27017/?connect=direct&authSource=temp, ...`）
 - database：`required` `string` database name（example：`DB_DATABASE`）
 
 ### Server config

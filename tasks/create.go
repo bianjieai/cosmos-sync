@@ -1,12 +1,13 @@
 package tasks
 
 import (
+	"context"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/models"
-	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2/txn"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -47,7 +48,6 @@ func (s *syncTaskService) StartCreateTask() {
 func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit chan bool) {
 	var (
 		syncIrisTasks     []*models.SyncTask
-		ops               []txn.Op
 		invalidFollowTask models.SyncTask
 		logMsg            string
 	)
@@ -112,53 +112,39 @@ func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 			invalidFollowTask = followTask
 			logMsg = fmt.Sprintf("Create catch up task during follow task exist, "+
 				"from-to:%v-%v, invalidFollowTaskId: %v, invalidFollowTaskCurHeight: %v",
-				followedHeight+1, blockChainLatestHeight, invalidFollowTask.ID.Hex(), invalidFollowTask.CurrentHeight)
+				followedHeight+1, blockChainLatestHeight, invalidFollowTask.ID, invalidFollowTask.CurrentHeight)
 
 		}
 	}
 
 	// bulk insert or remove use transaction
-	ops = make([]txn.Op, 0, len(syncIrisTasks)+1)
-	if len(syncIrisTasks) > 0 {
-		for _, v := range syncIrisTasks {
-			objectId := bson.NewObjectId()
-			v.ID = objectId
-			op := txn.Op{
-				C:      models.SyncTaskModel.Name(),
-				Id:     objectId,
-				Assert: nil,
-				Insert: v,
+
+	if _, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
+		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
+
+		if len(syncIrisTasks) > 0 {
+			if _, err := taskCli.InsertMany(sessCtx, syncIrisTasks); err != nil {
+				return nil, err
 			}
-
-			ops = append(ops, op)
 		}
-	}
 
-	if invalidFollowTask.ID.Valid() {
-		op := txn.Op{
-			C:  models.SyncTaskModel.Name(),
-			Id: invalidFollowTask.ID,
-			Assert: bson.M{
-				"current_height":   invalidFollowTask.CurrentHeight,
-				"last_update_time": invalidFollowTask.LastUpdateTime,
-			},
-			Update: bson.M{
+		if !invalidFollowTask.ID.IsZero() {
+			cond := bson.M{"_id": invalidFollowTask.ID}
+			update := bson.M{
 				"$set": bson.M{
 					"status":           models.FollowTaskStatusInvalid,
 					"last_update_time": time.Now().Unix(),
 				},
-			},
+			}
+			if err := taskCli.UpdateOne(sessCtx, cond, update); err != nil {
+				return nil, err
+			}
 		}
-		ops = append(ops, op)
-	}
-
-	if len(ops) > 0 {
-		err := models.Txn(ops)
-		if err != nil {
-			logger.Warn("Create sync task fail", logger.String("err", err.Error()))
-		} else {
-			logger.Info(fmt.Sprintf("Create sync task success,%v", logMsg))
-		}
+		return nil, nil
+	}); err != nil {
+		logger.Warn("Create sync task fail", logger.String("err", err.Error()))
+	} else {
+		logger.Info(fmt.Sprintf("Create sync task success,%v", logMsg))
 	}
 
 	time.Sleep(1 * time.Second)
@@ -183,6 +169,7 @@ func createCatchUpTask(maxEndHeight, blockNumPerWorker, currentBlockHeight int64
 			break
 		}
 		syncTask := models.SyncTask{
+			ID:             primitive.NewObjectID(),
 			StartHeight:    maxEndHeight + 1,
 			EndHeight:      maxEndHeight + blockNumPerWorker,
 			Status:         models.SyncTaskStatusUnHandled,
@@ -227,6 +214,7 @@ func createFollowTask(maxEndHeight, blockNumPerWorker, currentBlockHeight int64)
 
 	if maxEndHeight+blockNumPerWorker > currentBlockHeight {
 		syncTask := models.SyncTask{
+			ID:             primitive.NewObjectID(),
 			StartHeight:    maxEndHeight + 1,
 			EndHeight:      0,
 			Status:         models.SyncTaskStatusUnHandled,
