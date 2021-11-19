@@ -130,8 +130,9 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 
 func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, error) {
 	var (
-		docTx     models.Tx
-		docTxMsgs []msgsdktypes.TxMsg
+		docTx          models.Tx
+		docTxMsgs      []msgsdktypes.TxMsg
+		includeCfgType bool
 	)
 	txHash := utils.BuildHex(txBytes.Hash())
 	ctx := context.Background()
@@ -182,13 +183,8 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, e
 			continue
 		}
 		if len(_filterMap) > 0 {
-			_, ok := _filterMap[msgDocInfo.DocTxMsg.Type]
-			if !ok {
-				//set support types but not match msg type,skip this msg.
-				continue
-			}
-			if docTx.Type == "" {
-				docTx.Type = msgDocInfo.DocTxMsg.Type
+			if _, ok := _filterMap[msgDocInfo.DocTxMsg.Type]; ok && !includeCfgType {
+				includeCfgType = true
 			}
 		}
 		switch msgDocInfo.DocTxMsg.Type {
@@ -235,6 +231,15 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, e
 	docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
 	docTx.DocTxMsgs = docTxMsgs
+
+	//setting type but not included in tx,skip this tx
+	if len(_filterMap) > 0 && !includeCfgType {
+		logger.Warn("skip tx for no include setting types",
+			logger.String("types", strings.Join(docTx.Types, ",")),
+			logger.String("txhash", txHash),
+			logger.Int64("height", block.Height))
+		return models.Tx{}, nil
+	}
 
 	// don't save txs which have not parsed
 	if docTx.Type == "" {
