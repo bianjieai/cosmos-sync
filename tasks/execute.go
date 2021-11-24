@@ -9,9 +9,9 @@ import (
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2/txn"
+	"github.com/qiniu/qmgo"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"os"
 	"strings"
 	"time"
@@ -87,10 +87,10 @@ func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 }
 func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *pool.Client, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
 	var taskType string
-	workerId := fmt.Sprintf("%v@%v", s.hostname, bson.NewObjectId().Hex())
+	workerId := fmt.Sprintf("%v@%v", s.hostname, primitive.NewObjectID().Hex())
 	err := s.syncTaskModel.TakeOverTask(task, workerId)
 	if err != nil {
-		if err == mgo.ErrNotFound {
+		if err == qmgo.ErrNoSuchDocuments {
 			// this task has been take over by other goroutine
 			logger.Info("Task has been take over by other goroutine")
 		} else {
@@ -115,7 +115,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 	// health check will exit in follow conditions:
 	// 1. task is not owned by current worker
 	// 2. task is invalid
-	workerHealthCheck := func(taskId bson.ObjectId, currentWorker string) {
+	workerHealthCheck := func(taskId primitive.ObjectID, currentWorker string) {
 		defer func() {
 			if r := recover(); r != nil {
 				logger.Error("worker health check err", logger.Any("err", r))
@@ -141,7 +141,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 							return
 						}
 					} else {
-						if err == mgo.ErrNotFound {
+						if err == qmgo.ErrNoSuchDocuments {
 							logger.Info("task may be task over by other goroutine, exit health check",
 								logger.String("taskId", taskId.Hex()), logger.String("curWorker", workerId))
 							return
@@ -181,7 +181,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 
 		// parse data from block
-		blockDoc, txDocs, ops, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
+		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
 			logger.Error("Parse block fail",
 				logger.Int64("height", inProcessBlock),
@@ -199,7 +199,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 		if workerUnchanged {
 			// save data and update sync task
-			taskDoc := task
+			taskDoc := &task
 			taskDoc.CurrentHeight = inProcessBlock
 			taskDoc.LastUpdateTime = time.Now().Unix()
 			taskDoc.Status = models.SyncTaskStatusUnderway
@@ -207,7 +207,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 				taskDoc.Status = models.SyncTaskStatusCompleted
 			}
 
-			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc, ops)
+			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc)
 			if err != nil {
 				if !strings.Contains(err.Error(), constant.ErrDbNotFindTransaction) {
 					logger.Error("save docs fail",
@@ -276,7 +276,7 @@ func assertTaskValid(task models.SyncTask, blockNumPerWorkerHandle int64) (int64
 }
 
 // assert task worker unchanged
-func assertTaskWorkerUnchanged(taskId bson.ObjectId, workerId string) (bool, error) {
+func assertTaskWorkerUnchanged(taskId primitive.ObjectID, workerId string) (bool, error) {
 	var (
 		syncTaskModel models.SyncTask
 	)
@@ -307,59 +307,41 @@ func getBlockChainLatestHeight() (int64, error) {
 	return status.SyncInfo.LatestBlockHeight, nil
 }
 
-func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask, opsDoc []txn.Op) error {
-	var (
-		ops, binanceTxsOps []txn.Op
-	)
-
+func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *models.SyncTask) error {
 	if blockDoc.Height == 0 {
 		return fmt.Errorf("invalid block, height equal 0")
 	}
 
-	blockOp := txn.Op{
-		C:      models.BlockModel.Name(),
-		Id:     bson.NewObjectId(),
-		Insert: blockDoc,
-	}
-
-	if length := len(txDocs); length > 0 {
-
-		binanceTxsOps = make([]txn.Op, 0, length)
-		for _, v := range txDocs {
-			op := txn.Op{
-				C:      models.TxModel.Name(),
-				Id:     bson.NewObjectId(),
-				Insert: v,
-			}
-			binanceTxsOps = append(binanceTxsOps, op)
+	_, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
+		blockCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Block{}.Name())
+		txCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Tx{}.Name())
+		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
+		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil {
+			return nil, err
 		}
-	}
-
-	updateOp := txn.Op{
-		C:      models.SyncTaskModel.Name(),
-		Id:     taskDoc.ID,
-		Assert: txn.DocExists,
-		Update: bson.M{
+		sizeTxDocs := len(txDocs)
+		if sizeTxDocs == 1 {
+			if _, err := txCli.InsertOne(sessCtx, txDocs[0]); err != nil {
+				return nil, err
+			}
+		} else if sizeTxDocs > 1 {
+			if _, err := txCli.InsertMany(sessCtx, txDocs); err != nil {
+				return nil, err
+			}
+		}
+		cond := bson.M{"_id": taskDoc.ID}
+		update := bson.M{
 			"$set": bson.M{
 				"current_height":   taskDoc.CurrentHeight,
 				"status":           taskDoc.Status,
 				"last_update_time": taskDoc.LastUpdateTime,
 			},
-		},
-	}
-
-	ops = make([]txn.Op, 0, len(binanceTxsOps)+2)
-	ops = append(append(ops, blockOp, updateOp), binanceTxsOps...)
-	if len(opsDoc) > 0 {
-		ops = append(ops, opsDoc...)
-	}
-
-	if len(ops) > 0 {
-		err := models.Txn(ops)
-		if err != nil {
-			return err
 		}
-	}
+		if err := taskCli.UpdateOne(sessCtx, cond, update); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	})
 
-	return nil
+	return err
 }

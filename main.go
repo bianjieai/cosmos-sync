@@ -27,10 +27,12 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+	config.InitEnv()
 	conf, err := config.ReadConfig()
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
+
 	models.Init(conf)
 	pool.Init(conf)
 	handlers.InitRouter(conf)

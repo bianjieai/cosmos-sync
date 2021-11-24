@@ -1,4 +1,4 @@
-package tasks
+package integration
 
 import (
 	"github.com/bianjieai/cosmos-sync/config"
@@ -6,14 +6,27 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
+	"github.com/stretchr/testify/suite"
 	"os"
 	"testing"
-	"time"
 )
 
-var testCfg *config.Config
+type IntegrationTestSuite struct {
+	*config.Config
+	suite.Suite
+}
 
-func TestMain(m *testing.M) {
+type SubTest struct {
+	testName string
+	testCase func(s IntegrationTestSuite)
+}
+
+func TestSuite(t *testing.T) {
+	t.Parallel()
+	suite.Run(t, new(IntegrationTestSuite))
+}
+
+func (s *IntegrationTestSuite) SetupSuite() {
 	os.Setenv(constant.EnvNameConfigFilePath, "../config/config.toml")
 
 	config.InitEnv()
@@ -24,17 +37,9 @@ func TestMain(m *testing.M) {
 	models.Init(cfg)
 	pool.Init(cfg)
 	handlers.InitRouter(cfg)
-	testCfg = cfg
-	m.Run()
+	s.Config = cfg
 }
 
-func TestSyncTaskService_createTask(t *testing.T) {
-	s := syncTaskService{conf: testCfg}
-	chanLimit := make(chan bool, 1)
-
-	for {
-		chanLimit <- true
-		go s.createTask(100, chanLimit)
-		time.Sleep(time.Duration(1) * time.Minute)
-	}
+func (s *IntegrationTestSuite) TearDownSuite() {
+	models.Close()
 }

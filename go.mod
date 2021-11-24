@@ -5,13 +5,14 @@ go 1.16
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/kaifei-bianjie/msg-parser v0.0.0-20211022081833-96bb9d9bea64
+	github.com/qiniu/qmgo v1.0.4
 	github.com/spf13/viper v1.7.1
+	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/tendermint v0.34.0-rc6
 	github.com/weichang-bianjie/metric-sdk v1.0.0
+	go.mongodb.org/mongo-driver v1.7.4
 	go.uber.org/zap v1.15.0
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637 // indirect
 )
 
 replace (

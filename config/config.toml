@@ -1,11 +1,9 @@
 [database]
-addrs= "localhost:27018"
-user= "iris"
-passwd= "irispassword"
-database= "bifrost-sync"
+node_uri= "mongodb://root:123456@localhost:27017/?connect=direct&authSource=test"
+database= "test"
 
 [server]
-node_urls="tcp://192.168.150.40:26657"
+node_urls="tcp://10.0.4.4:32657"
 worker_num_create_task=1
 worker_num_execute_task=30
 worker_max_sleep_time=120
