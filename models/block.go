@@ -46,7 +46,7 @@ func (d Block) GetMaxBlockHeight() (Block, error) {
 	var result Block
 
 	getMaxBlockHeightFn := func(c *qmgo.Collection) error {
-		return c.Find(_ctx, nil).Select(bson.M{"height": 1, "time": 1}).Sort("-height").Limit(1).One(&result)
+		return c.Find(_ctx, bson.M{}).Select(bson.M{"height": 1, "time": 1}).Sort("-height").Limit(1).One(&result)
 	}
 
 	if err := ExecCollection(d.Name(), getMaxBlockHeightFn); err != nil {
