@@ -5,11 +5,10 @@ import (
 	msg_parser "github.com/kaifei-bianjie/msg-parser"
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/types"
-	"gopkg.in/mgo.v2/txn"
 )
 
 type MsgParser interface {
-	HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op)
+	HandleTxMsg(v types.SdkMsg) MsgDocInfo
 }
 
 var (
@@ -26,15 +25,15 @@ type msgParser struct {
 	rh Router
 }
 
-func (parser *msgParser) HandleTxMsg(v types.SdkMsg) (MsgDocInfo, []txn.Op) {
+func (parser *msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
 	handleFunc, err := parser.rh.GetRoute(v.Route())
 	if err != nil {
 		logger.Error(err.Error(),
 			logger.String("route", v.Route()),
 			logger.String("type", v.Type()))
-		return MsgDocInfo{}, nil
+		return MsgDocInfo{}
 	}
-	return handleFunc(v), nil
+	return handleFunc(v)
 }
 
 func init() {

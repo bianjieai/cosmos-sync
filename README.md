@@ -19,10 +19,8 @@ A server that synchronize cosmos chain data into a database
 
 ```text
 [database]
-addrs= "localhost:27018"
-user= "iris"
-passwd= "irispassword"
-database= "bifrost-sync"
+node_uri= "mongodb://root:123456@10.1.4.157:27017/?connect=direct&authSource=temp"
+database= "test"
 
 [server]
 node_urls="tcp://192.168.150.40:26657"
@@ -36,8 +34,8 @@ chain_id=""
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
-only_support_module="" 
-is_json_rpc_protocol=false
+only_support_module=""
+is_json_rpc_protocol=true
 ```
 
 ### Db config

@@ -18,9 +18,7 @@ type (
 		Server   ServerConf   `mapstructure:"server"`
 	}
 	DataBaseConf struct {
-		Addrs    string `mapstructure:"addrs"`
-		User     string `mapstructure:"user"`
-		Passwd   string `mapstructure:"passwd" json:"-"`
+		NodeUri  string `mapstructure:"node_uri"`
 		Database string `mapstructure:"database"`
 	}
 
@@ -45,7 +43,7 @@ type (
 	}
 )
 
-func init() {
+func InitEnv() {
 	websit, found := os.LookupEnv(constant.EnvNameConfigFilePath)
 	if found {
 		ConfigFilePath = websit
@@ -55,7 +53,6 @@ func init() {
 }
 
 func ReadConfig() (*Config, error) {
-
 	rootViper := viper.New()
 	// Find home directory.
 	rootViper.SetConfigFile(ConfigFilePath)
