@@ -89,6 +89,7 @@ func RegisteRouter() Router {
 		AddRoute(RandomRouteKey, handleRandom).
 		AddRoute(OracleRouteKey, handleOracle).
 		AddRoute(RecordRouteKey, handleRecord).
+		AddRoute(IdentityRouteKey, handleIdentity).
 		AddRoute(TIbcRouteKey, handleTIbc).
 		AddRoute(TIbcTransferRouteKey, handleTIbc)
 	return msgRoute

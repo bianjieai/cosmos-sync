@@ -68,6 +68,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = RandomRouteKey
 	} else if strings.HasPrefix(data, "/irismod.oracle.") {
 		route = OracleRouteKey
+	} else if strings.HasPrefix(data, "/iritamod.identity.") {
+		route = IdentityRouteKey
 	} else {
 		route = data
 	}
@@ -161,5 +163,10 @@ func handleCoinswap(v types.SdkMsg) MsgDocInfo {
 
 func handleTIbc(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Tibc.HandleTxMsg(v)
+	return docInfo
+}
+
+func handleIdentity(v types.SdkMsg) MsgDocInfo {
+	docInfo, _ := _client.Identity.HandleTxMsg(v)
 	return docInfo
 }
