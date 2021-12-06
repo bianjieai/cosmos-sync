@@ -130,6 +130,7 @@ github.com/bgentry/speakeasy v0.1.0 h1:ByYyxL9InA1OWqxJqqp2A5pYHUrCiAL6K3J+LKSsQ
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/bianjieai/cosmos-sdk v0.44.2-irita-20211102 h1:o+vk7ds4Bnx9nHND4Oom3hySqLjygJNyu9ap5P+0qlc=
 github.com/bianjieai/cosmos-sdk v0.44.2-irita-20211102/go.mod h1:GGKbc9mvV37/jXlFz8eMSfhMQG+1svdAcpdmLn3FDr4=
+github.com/bianjieai/iritamod v1.0.1-0.20211026024119-806ffe494860 h1:X85DtWeDJs4MOACKlqXSfMLH+mcPEdhnXJyFIHvx/PA=
 github.com/bianjieai/iritamod v1.0.1-0.20211026024119-806ffe494860/go.mod h1:PetrZQFHKNt+bzhrw5ksSi6jjxz3BmfE5F3ahtr8iQQ=
 github.com/bianjieai/tendermint v0.34.8-irita-210413.0.20211012090339-cee6e09e8ae3 h1:M4C+ilCPiP2c2yMdeYaZLwquEBfFa4Uvt1BDviSYD0E=
 github.com/bianjieai/tendermint v0.34.8-irita-210413.0.20211012090339-cee6e09e8ae3/go.mod h1:2u6xthTnwDYLhO38cDYp8CxzKq7hwJFvCXeK1pEErtM=
@@ -539,8 +540,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/jung-kurt/gofpdf v1.0.3-0.20190309125859-24315acbbda5/go.mod h1:7Id9E/uU8ce6rXgefFLlgrJj/GYY22cpxn+r32jIOes=
 github.com/jwilder/encoding v0.0.0-20170811194829-b4e1701a28ef/go.mod h1:Ct9fl0F6iIOGgxJ5npU/IUOhOhqlVrGjyIZc8/MagT0=
-github.com/kaifei-bianjie/msg-parser v0.0.0-20211112092028-4c2c23d72fe9 h1:UQ+BxtsUQWNLEz5xfoeFZG/qbDYAH747WmIPJZ+Q57U=
-github.com/kaifei-bianjie/msg-parser v0.0.0-20211112092028-4c2c23d72fe9/go.mod h1:5FYsk8exOYd4t0RkRmoWnYUaloA6dhW2DCodrKsUkCQ=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20211206094340-b6fc4bc16d04 h1:oPjP/+IHsZc+tevjFTGYWG9dfmW9KUKCQCo/EyJCgmI=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20211206094340-b6fc4bc16d04/go.mod h1:m34nMJQUJp4wqZsnHVQzrQJdcn4vdC6oMOh10HJAT8Y=
 github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d/go.mod h1:JJNrCn9otv/2QP4D7SMJBgaleKpOf66PnW6F5WGNRIc=
 github.com/keybase/go-keychain v0.0.0-20191114153608-ccd67945d59e h1:M88A1cGUWZRErgbiGFZ6OFOXCCeCKdVRFoSa+t+vgfY=
@@ -778,6 +779,7 @@ github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=
 github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa h1:0U2s5loxrTy6/VgfVoLuVLFJcURKLH49ie0zSch7gh4=
 github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa/go.mod h1:F73l+cr82YSh10GxyRI6qZiCgK64VaZjwesgfQ1/iLM=
+github.com/satori/go.uuid v1.2.0 h1:0uYX9dsZ2yD7q2RtLRtPSdGDWzjeM3TbMJP9utgA0ww=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/seccomp/libseccomp-golang v0.9.1/go.mod h1:GbW5+tmTXfcxTToHLXlScSlAvWlF4P2Ca7zGrPiEpWo=

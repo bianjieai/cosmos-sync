@@ -16,6 +16,7 @@ const (
 	RandomRouteKey       string = "random"
 	OracleRouteKey       string = "oracle"
 	RecordRouteKey       string = "record"
+	IdentityRouteKey     string = "identity"
 	TIbcTransferRouteKey string = "NFT"
 	TIbcRouteKey         string = "tibc"
 )
@@ -36,6 +37,7 @@ var RouteHandlerMap = map[string]Handler{
 	RandomRouteKey:       handleRandom,
 	OracleRouteKey:       handleOracle,
 	RecordRouteKey:       handleRecord,
+	IdentityRouteKey:     handleIdentity,
 	TIbcTransferRouteKey: handleTIbc,
 	TIbcRouteKey:         handleTIbc,
 }
