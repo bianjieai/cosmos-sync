@@ -146,7 +146,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, e
 		}
 	}
 	docTx.Time = block.Time.Unix()
-	docTx.Height = txResult.Height
+	docTx.Height = block.Height
 	docTx.TxHash = txHash
 	docTx.Status = parseTxStatus(txResult.TxResult.Code)
 	if docTx.Status == constant.TxStatusFail {

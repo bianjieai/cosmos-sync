@@ -57,7 +57,7 @@ func (d Tx) Name() string {
 func (d Tx) EnsureIndexes() {
 	var indexes []options.IndexModel
 	indexes = append(indexes, options.IndexModel{
-		Key:        []string{"-tx_hash"},
+		Key:        []string{"-tx_hash", "-height"},
 		Unique:     true,
 		Background: true,
 	})
