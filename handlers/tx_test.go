@@ -10,13 +10,13 @@ import (
 )
 
 func TestParseTxs(t *testing.T) {
-	block := int64(3399387)
+	block := int64(8674497)
+	//block := int64(3705556) //sentinel
 	conf, err := config.ReadConfig()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	//models.Init(conf)
-	models.SetConfig(conf)
+	models.Init(conf)
 	InitRouter(conf)
 	pool.Init(conf)
 	c := pool.GetClient()
