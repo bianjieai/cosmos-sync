@@ -114,8 +114,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
-		for _, v := range block.Block.Txs {
-			txDoc, err := parseTx(client, v, block.Block)
+		for index, v := range block.Block.Txs {
+			txDoc, err := parseTx(client, v, block.Block, index)
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}
@@ -128,7 +128,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, error) {
+func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block, index int) (models.Tx, error) {
 	var (
 		docTx          models.Tx
 		docTxMsgs      []msgsdktypes.TxMsg
@@ -155,7 +155,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, e
 
 	docTx.Events = parseEvents(txResult.TxResult.Events)
 	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
-	docTx.TxIndex = txResult.Index
+	docTx.TxIndex = uint32(index)
 	eventsIndexMap := make(map[uint32]models.EventNew)
 	if txResult.TxResult.Code == 0 {
 		eventsIndexMap = splitEvents(txResult.TxResult.Log)

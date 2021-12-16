@@ -15,7 +15,8 @@ func TestParseTxs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	models.Init(conf)
+	//models.Init(conf)
+	models.SetConfig(conf)
 	InitRouter(conf)
 	pool.Init(conf)
 	c := pool.GetClient()
