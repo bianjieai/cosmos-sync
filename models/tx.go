@@ -61,10 +61,8 @@ func (d Tx) EnsureIndexes() {
 		Unique:     true,
 		Background: true,
 	})
-
 	indexes = append(indexes, options.IndexModel{
-		Key:        []string{"-height", "tx_index"},
-		Unique:     true,
+		Key:        []string{"-height"},
 		Background: true,
 	})
 
