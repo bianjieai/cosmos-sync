@@ -11,7 +11,6 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2/txn"
 	"os"
 	"strings"
 	"time"
@@ -209,7 +208,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 				taskDoc.Status = models.SyncTaskStatusCompleted
 			}
 
-			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc, ops)
+			err := handlers.SaveDocsWithTxn(blockDoc, txDocs, taskDoc, ops)
 			if err != nil {
 				if !strings.Contains(err.Error(), constant.ErrDbNotFindTransaction) {
 					logger.Error("save docs fail",
@@ -309,59 +308,59 @@ func getBlockChainLatestHeight() (int64, error) {
 	return status.SyncInfo.LatestBlockHeight, nil
 }
 
-func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask, opsDoc []txn.Op) error {
-	var (
-		ops, binanceTxsOps []txn.Op
-	)
-
-	if blockDoc.Height == 0 {
-		return fmt.Errorf("invalid block, height equal 0")
-	}
-
-	blockOp := txn.Op{
-		C:      models.BlockModel.Name(),
-		Id:     bson.NewObjectId(),
-		Insert: blockDoc,
-	}
-
-	if length := len(txDocs); length > 0 {
-
-		binanceTxsOps = make([]txn.Op, 0, length)
-		for _, v := range txDocs {
-			op := txn.Op{
-				C:      models.TxModel.Name(),
-				Id:     bson.NewObjectId(),
-				Insert: v,
-			}
-			binanceTxsOps = append(binanceTxsOps, op)
-		}
-	}
-
-	updateOp := txn.Op{
-		C:      models.SyncTaskModel.Name(),
-		Id:     taskDoc.ID,
-		Assert: txn.DocExists,
-		Update: bson.M{
-			"$set": bson.M{
-				"current_height":   taskDoc.CurrentHeight,
-				"status":           taskDoc.Status,
-				"last_update_time": taskDoc.LastUpdateTime,
-			},
-		},
-	}
-
-	ops = make([]txn.Op, 0, len(binanceTxsOps)+2)
-	ops = append(append(ops, blockOp, updateOp), binanceTxsOps...)
-	if len(opsDoc) > 0 {
-		ops = append(ops, opsDoc...)
-	}
-
-	if len(ops) > 0 {
-		err := models.Txn(ops)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
+//func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask, opsDoc []txn.Op) error {
+//	var (
+//		ops, binanceTxsOps []txn.Op
+//	)
+//
+//	if blockDoc.Height == 0 {
+//		return fmt.Errorf("invalid block, height equal 0")
+//	}
+//
+//	blockOp := txn.Op{
+//		C:      models.BlockModel.Name(),
+//		Id:     bson.NewObjectId(),
+//		Insert: blockDoc,
+//	}
+//
+//	if length := len(txDocs); length > 0 {
+//
+//		binanceTxsOps = make([]txn.Op, 0, length)
+//		for _, v := range txDocs {
+//			op := txn.Op{
+//				C:      models.TxModel.Name(),
+//				Id:     bson.NewObjectId(),
+//				Insert: v,
+//			}
+//			binanceTxsOps = append(binanceTxsOps, op)
+//		}
+//	}
+//
+//	updateOp := txn.Op{
+//		C:      models.SyncTaskModel.Name(),
+//		Id:     taskDoc.ID,
+//		Assert: txn.DocExists,
+//		Update: bson.M{
+//			"$set": bson.M{
+//				"current_height":   taskDoc.CurrentHeight,
+//				"status":           taskDoc.Status,
+//				"last_update_time": taskDoc.LastUpdateTime,
+//			},
+//		},
+//	}
+//
+//	ops = make([]txn.Op, 0, len(binanceTxsOps)+2)
+//	ops = append(append(ops, blockOp, updateOp), binanceTxsOps...)
+//	if len(opsDoc) > 0 {
+//		ops = append(ops, opsDoc...)
+//	}
+//
+//	if len(ops) > 0 {
+//		err := models.Txn(ops)
+//		if err != nil {
+//			return err
+//		}
+//	}
+//
+//	return nil
+//}
