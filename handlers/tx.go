@@ -126,6 +126,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, e
 		Events:  parseEvents(txResult.TxResult.Events),
 		TxIndex: txIndex,
 	}
+	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
 	msgs := authTx.GetMsgs()
 	if len(msgs) == 0 {
 		return docTx, nil
@@ -194,6 +195,14 @@ func parseEvents(events []aTypes.Event) []models.Event {
 	}
 
 	return eventDocs
+}
+
+// parseABCILogs attempts to parse a stringified ABCI tx log into a slice of
+// EventNe types. It ignore error upon JSON decoding failure.
+func parseABCILogs(logs string) []models.EventNew {
+	var res []models.EventNew
+	utils.UnMarshalJsonIgnoreErr(logs, &res)
+	return res
 }
 
 func removeDuplicatesFromSlice(data []string) (result []string) {
