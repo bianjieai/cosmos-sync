@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20211022081833-96bb9d9bea64
+	github.com/kaifei-bianjie/msg-parser v0.0.0-20220118054403-07d57dfaa9ab
 	github.com/qiniu/qmgo v1.0.4
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
@@ -16,8 +16,8 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/bianjieai/cosmos-sdk v0.34.4-0.20201127022001-791921d241f8
+	github.com/cosmos/cosmos-sdk => github.com/bianjieai/cosmos-sdk v0.28.2-0.20210112055458-b53a7d5a7c9c
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
-	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.33.1-dev0.0.20201126055325-2217bc51b6c7
+	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.34.0-irita-210104.0.20210112015006-57e95aa6402f
 	google.golang.org/grpc => google.golang.org/grpc v1.35.0
 )
