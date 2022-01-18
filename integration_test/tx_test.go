@@ -8,7 +8,7 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestParseTxs() {
-	block := int64(1201)
+	block := int64(25105114)
 	c := pool.GetClient()
 	defer func() {
 		c.Release()

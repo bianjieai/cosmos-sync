@@ -1,4 +1,5 @@
 # cosmos-sync
+
 A server that synchronize cosmos chain data into a database
 
 # SetUp
@@ -81,8 +82,8 @@ At first,stop the cosmos-sync and create the task. Run:
       'end_height':NumberLong(0),
       'current_height':NumberLong(0),
       'status':'unhandled',
-      ﻿'worker_id' : '',
-       'worker_logs' : [],
+      'worker_id' : '',
+      'worker_logs' : [],
       'last_update_time' : NumberLong(0)
   })
   ```
