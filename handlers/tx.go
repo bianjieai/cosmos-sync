@@ -114,23 +114,20 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Proposer: block.Block.ProposerAddress.String(),
 	}
 
-	if _conf == nil {
-		logger.Fatal("InitRouter don't work")
-	}
+	txResultMap := handleTxResult(client, block.Block)
+
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
-	if _conf.Server.ThreadNumParseTx <= 0 {
-		_conf.Server.ThreadNumParseTx = 1
-	}
-	chanParseTxLimit := make(chan bool, _conf.Server.ThreadNumParseTx)
 	if len(block.Block.Txs) > 0 {
 		for index, v := range block.Block.Txs {
-			chanParseTxLimit <- true
-			var (
-				txDoc models.Tx
-				err   error
-			)
-			// parse tx with more goroutine concurrency
-			go parseTx(client, v, block.Block, index, chanParseTxLimit, &txDoc, err)
+			txHash := utils.BuildHex(v.Hash())
+			txResult, ok := txResultMap[txHash]
+			if !ok {
+				logger.Warn("skip this tx for no found TxResult",
+					logger.Int64("height", block.Block.Height),
+					logger.String("txHash", txHash))
+				continue
+			}
+			txDoc, err := parseTx(v, &txResult, block.Block, index)
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}
@@ -143,29 +140,14 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block, index int, chanLimit chan bool, docTx *models.Tx, err0 error) {
+func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, index int) (models.Tx, error) {
 	var (
+		docTx          models.Tx
 		docTxMsgs      []msgsdktypes.TxMsg
 		includeCfgType bool
 	)
-	defer func() {
-		if r := recover(); r != nil {
-			logger.Error("execute parseTx fail", logger.Any("err", r))
-		}
-		<-chanLimit
-	}()
 	txHash := utils.BuildHex(txBytes.Hash())
-	ctx := context.Background()
-	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
-	if err != nil {
-		time.Sleep(1 * time.Second)
-		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			err0 = utils.ConvertErr(block.Height, txHash, "TxResult", err)
-			return
-		} else {
-			txResult = v
-		}
-	}
+
 	docTx.Time = block.Time.Unix()
 	docTx.Height = block.Height
 	docTx.TxHash = txHash
@@ -188,14 +170,14 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block, index int, ch
 			logger.String("errTag", "TxDecoder"),
 			logger.String("txhash", txHash),
 			logger.Int64("height", block.Height))
-		return
+		return docTx, nil
 	}
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
 	msgs := authTx.GetMsgs()
 	if len(msgs) == 0 {
-		return
+		return docTx, nil
 	}
 
 	for i, v := range msgs {
@@ -259,7 +241,7 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block, index int, ch
 			logger.String("types", strings.Join(docTx.Types, ",")),
 			logger.String("txhash", txHash),
 			logger.Int64("height", block.Height))
-		return
+		return models.Tx{}, nil
 	}
 
 	// don't save txs which have not parsed
@@ -268,10 +250,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block, index int, ch
 			logger.String("errTag", "TxMsg"),
 			logger.String("txhash", txHash),
 			logger.Int64("height", block.Height))
-		return
+		return models.Tx{}, nil
 	}
 
-	return
+	return docTx, nil
 }
 
 func buildPacketId(events []models.Event) string {
