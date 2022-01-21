@@ -7,40 +7,44 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
-	"sync"
 	"time"
 )
+
+type chanTxResult struct {
+	TxHash   string
+	TxResult *ctypes.ResultTx
+}
 
 // parse tx with more goroutine concurrency
 func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.ResultTx {
 	if _conf == nil {
 		logger.Fatal("InitRouter don't work")
 	}
-	txRetMap := make(map[string]*ctypes.ResultTx, len(block.Txs))
 	if _conf.Server.ThreadNumParseTx <= 0 {
 		_conf.Server.ThreadNumParseTx = 1
 	}
 
-	mutex := &sync.Mutex{}
-	group := &sync.WaitGroup{}
 	chanParseTxLimit := make(chan bool, _conf.Server.ThreadNumParseTx)
+	chanRes := make(chan chanTxResult, len(block.Txs))
 	for _, v := range block.Txs {
 		chanParseTxLimit <- true
-		group.Add(1)
 		// parse txReult with more goroutine concurrency
-		go getTxResult(client, v, block.Height, chanParseTxLimit, txRetMap, mutex, group)
+		go getTxResult(client, v, block.Height, chanParseTxLimit, chanRes)
 	}
-	group.Wait()
+	txRetMap := make(map[string]*ctypes.ResultTx, len(block.Txs))
+	for i := 0; i < len(block.Txs); i++ {
+		chanValue := <-chanRes
+		txRetMap[chanValue.TxHash] = chanValue.TxResult
+
+	}
 	return txRetMap
 }
 
-func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan bool, txRetMap map[string]*ctypes.ResultTx,
-	mutex *sync.Mutex, group *sync.WaitGroup) {
+func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan bool, chanRes chan chanTxResult) {
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Error("execute getTxResult fail", logger.Any("err", r))
 		}
-		group.Done()
 		<-chanLimit
 	}()
 	txHash := utils.BuildHex(txBytes.Hash())
@@ -54,9 +58,12 @@ func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan 
 			txResult = v
 		}
 	}
-	logger.Debug("get txResult ok", logger.String("txHash", txHash))
-	mutex.Lock()
-	txRetMap[txHash] = txResult
-	mutex.Unlock()
+
+	ret := chanTxResult{
+		TxHash:   txResult.Hash.String(),
+		TxResult: txResult,
+	}
+	chanRes <- ret
+
 	return
 }
