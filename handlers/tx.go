@@ -23,10 +23,12 @@ import (
 
 var (
 	_parser    msgparser.MsgParser
+	_conf      *config.Config
 	_filterMap map[string]string
 )
 
 func InitRouter(conf *config.Config) {
+	_conf = conf
 	var router msgparser.Router
 	if conf.Server.SupportModules != "" {
 		modules := strings.Split(conf.Server.SupportModules, ",")
@@ -112,10 +114,20 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Proposer: block.Block.ProposerAddress.String(),
 	}
 
+	txResultMap := handleTxResult(client, block.Block)
+
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for index, v := range block.Block.Txs {
-			txDoc, err := parseTx(client, v, block.Block, index)
+			txHash := utils.BuildHex(v.Hash())
+			txResult, ok := txResultMap[txHash]
+			if !ok || txResult == nil {
+				logger.Warn("skip this tx for no found TxResult",
+					logger.Int64("height", block.Block.Height),
+					logger.String("txHash", txHash))
+				continue
+			}
+			txDoc, err := parseTx(v, txResult, block.Block, index)
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}
@@ -128,23 +140,14 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block, index int) (models.Tx, error) {
+func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, index int) (models.Tx, error) {
 	var (
 		docTx          models.Tx
 		docTxMsgs      []msgsdktypes.TxMsg
 		includeCfgType bool
 	)
 	txHash := utils.BuildHex(txBytes.Hash())
-	ctx := context.Background()
-	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
-	if err != nil {
-		time.Sleep(1 * time.Second)
-		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			return docTx, utils.ConvertErr(block.Height, txHash, "TxResult", err)
-		} else {
-			txResult = v
-		}
-	}
+
 	docTx.Time = block.Time.Unix()
 	docTx.Height = block.Height
 	docTx.TxHash = txHash

@@ -10,7 +10,7 @@ import (
 )
 
 func TestParseTxs(t *testing.T) {
-	block := int64(8674497)
+	block := int64(2874954)
 	//block := int64(3705556) //sentinel
 	conf, err := config.ReadConfig()
 	if err != nil {

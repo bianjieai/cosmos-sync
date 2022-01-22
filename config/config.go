@@ -27,6 +27,7 @@ type (
 		NodeUrls                  string `mapstructure:"node_urls"`
 		WorkerNumCreateTask       int    `mapstructure:"worker_num_create_task"`
 		WorkerNumExecuteTask      int    `mapstructure:"worker_num_execute_task"`
+		ThreadNumParseTx          int    `mapstructure:"thread_num_parse_tx"`
 		WorkerMaxSleepTime        int    `mapstructure:"worker_max_sleep_time"`
 		BlockNumPerWorkerHandle   int    `mapstructure:"block_num_per_worker_handle"`
 		SleepTimeCreateTaskWorker int    `mapstructure:"sleep_time_create_task_worker"`
