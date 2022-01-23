@@ -84,7 +84,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 					logger.String("txHash", txHash))
 				continue
 			}
-			txDoc, ops, err := parseTx(v, &txResult, block.Block)
+			txDoc, ops, err := parseTx(v, txResult, block.Block)
 			if err != nil {
 				return &blockDoc, txDocs, txnOps, err
 			}

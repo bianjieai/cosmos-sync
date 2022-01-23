@@ -5,7 +5,7 @@ passwd= "irispassword"
 database= "bifrost-sync"
 
 [server]
-node_urls="tcp://192.168.150.40:26657"
+node_urls="http://47.100.192.234:26657"
 thread_num_parse_tx = 1
 worker_num_create_task=1
 worker_num_execute_task=30

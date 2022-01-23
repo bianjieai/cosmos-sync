@@ -10,31 +10,37 @@ import (
 	"time"
 )
 
+type chanTxResult struct {
+	TxHash   string
+	TxResult *ctypes.ResultTx
+}
+
 // parse tx with more goroutine concurrency
-func handleTxResult(client *pool.Client, block *types.Block) map[string]ctypes.ResultTx {
+func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.ResultTx {
 	if _conf == nil {
 		logger.Fatal("InitRouter don't work")
 	}
-	txRetMap := make(map[string]ctypes.ResultTx, len(block.Txs))
 	if _conf.Server.ThreadNumParseTx <= 0 {
 		_conf.Server.ThreadNumParseTx = 1
 	}
 
 	chanParseTxLimit := make(chan bool, _conf.Server.ThreadNumParseTx)
+	chanRes := make(chan chanTxResult, len(block.Txs))
 	for _, v := range block.Txs {
 		chanParseTxLimit <- true
-		var txResult ctypes.ResultTx
 		// parse txReult with more goroutine concurrency
-		go getTxResult(client, v, block.Height, chanParseTxLimit, &txResult)
-		txHash := utils.BuildHex(v.Hash())
-		logger.Debug("get txResult ok", logger.String("txHash", txHash))
-		txRetMap[txHash] = txResult
+		go getTxResult(client, v, block.Height, chanParseTxLimit, chanRes)
 	}
+	txRetMap := make(map[string]*ctypes.ResultTx, len(block.Txs))
+	for i := 0; i < len(block.Txs); i++ {
+		chanValue := <-chanRes
+		txRetMap[chanValue.TxHash] = chanValue.TxResult
 
+	}
 	return txRetMap
 }
 
-func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan bool, ret *ctypes.ResultTx) {
+func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan bool, chanRes chan chanTxResult) {
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Error("execute getTxResult fail", logger.Any("err", r))
@@ -49,11 +55,15 @@ func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan 
 		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
 			logger.Error(utils.ConvertErr(height, txHash, "TxResult", err).Error())
 		} else {
-			ret = v
+			txResult = v
 		}
-	} else {
-		ret = txResult
 	}
+
+	ret := chanTxResult{
+		TxHash:   txResult.Hash.String(),
+		TxResult: txResult,
+	}
+	chanRes <- ret
 
 	return
 }
