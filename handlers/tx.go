@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
@@ -52,7 +53,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		block    *ctypes.ResultBlock
 		txnOps   []txn.Op
 	)
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
@@ -78,13 +80,15 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		for _, v := range block.Block.Txs {
 			txHash := utils.BuildHex(v.Hash())
 			txResult, ok := txResultMap[txHash]
-			if !ok {
-				logger.Warn("skip this tx for no found TxResult",
-					logger.Int64("height", block.Block.Height),
-					logger.String("txHash", txHash))
-				continue
+			if !ok || txResult.TxResult == nil {
+				return &blockDoc, txDocs, txnOps, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					fmt.Errorf("no found"))
 			}
-			txDoc, ops, err := parseTx(v, txResult, block.Block)
+			if txResult.Err != nil {
+				return &blockDoc, txDocs, txnOps, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					txResult.Err)
+			}
+			txDoc, ops, err := parseTx(v, txResult.TxResult, block.Block)
 			if err != nil {
 				return &blockDoc, txDocs, txnOps, err
 			}
