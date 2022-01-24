@@ -95,7 +95,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		blockDoc models.Block
 		block    *ctypes.ResultBlock
 	)
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
