@@ -17,6 +17,7 @@ bech32_acc_prefix=""
 chain_id=""
 chain_block_interval=5
 behind_block_num=0
+insert_batch_limit=100
 promethous_port=9090
 only_support_module=""
 is_json_rpc_protocol=true
