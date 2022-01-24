@@ -122,10 +122,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 			txHash := utils.BuildHex(v.Hash())
 			txResult, ok := txResultMap[txHash]
 			if !ok || txResult == nil {
-				logger.Warn("skip this tx for no found TxResult",
-					logger.Int64("height", block.Block.Height),
-					logger.String("txHash", txHash))
-				continue
+				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					fmt.Errorf("no found"))
 			}
 			txDoc, err := parseTx(v, txResult, block.Block, index)
 			if err != nil {

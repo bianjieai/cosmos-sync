@@ -13,6 +13,7 @@ import (
 type chanTxResult struct {
 	TxHash   string
 	TxResult *ctypes.ResultTx
+	Err      error
 }
 
 // parse tx with more goroutine concurrency
@@ -59,9 +60,14 @@ func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan 
 		}
 	}
 
+	if txResult == nil {
+		chanRes <- chanTxResult{Err: err}
+		return
+	}
 	ret := chanTxResult{
 		TxHash:   txResult.Hash.String(),
 		TxResult: txResult,
+		Err:      err,
 	}
 	chanRes <- ret
 
