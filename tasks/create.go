@@ -118,8 +118,10 @@ func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 	}
 
 	// bulk insert or remove use transaction
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	if _, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
+	if _, err := models.GetClient().DoTransaction(ctx, func(sessCtx context.Context) (interface{}, error) {
 		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
 
 		if len(syncIrisTasks) > 0 {

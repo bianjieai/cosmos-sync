@@ -315,7 +315,10 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 		return fmt.Errorf("invalid block, height equal 0")
 	}
 
-	_, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := models.GetClient().DoTransaction(ctx, func(sessCtx context.Context) (interface{}, error) {
 		blockCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Block{}.Name())
 		txCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Tx{}.Name())
 		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())

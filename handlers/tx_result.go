@@ -13,10 +13,11 @@ import (
 type chanTxResult struct {
 	TxHash   string
 	TxResult *ctypes.ResultTx
+	Err      error
 }
 
 // parse tx with more goroutine concurrency
-func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.ResultTx {
+func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxResult {
 	if _conf == nil {
 		logger.Fatal("InitRouter don't work")
 	}
@@ -31,10 +32,10 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.
 		// parse txReult with more goroutine concurrency
 		go getTxResult(client, v, block.Height, chanParseTxLimit, chanRes)
 	}
-	txRetMap := make(map[string]*ctypes.ResultTx, len(block.Txs))
+	txRetMap := make(map[string]chanTxResult, len(block.Txs))
 	for i := 0; i < len(block.Txs); i++ {
 		chanValue := <-chanRes
-		txRetMap[chanValue.TxHash] = chanValue.TxResult
+		txRetMap[chanValue.TxHash] = chanValue
 
 	}
 	return txRetMap
@@ -48,7 +49,8 @@ func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan 
 		<-chanLimit
 	}()
 	txHash := utils.BuildHex(txBytes.Hash())
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
 	if err != nil {
 		time.Sleep(1 * time.Second)
@@ -59,9 +61,14 @@ func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan 
 		}
 	}
 
+	if txResult == nil {
+		chanRes <- chanTxResult{Err: err}
+		return
+	}
 	ret := chanTxResult{
 		TxHash:   txResult.Hash.String(),
 		TxResult: txResult,
+		Err:      err,
 	}
 	chanRes <- ret
 
