@@ -122,11 +122,15 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		for index, v := range block.Block.Txs {
 			txHash := utils.BuildHex(v.Hash())
 			txResult, ok := txResultMap[txHash]
-			if !ok || txResult == nil {
+			if !ok || txResult.TxResult == nil {
 				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
 					fmt.Errorf("no found"))
 			}
-			txDoc, err := parseTx(v, txResult, block.Block, index)
+			if txResult.Err != nil {
+				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					txResult.Err)
+			}
+			txDoc, err := parseTx(v, txResult.TxResult, block.Block, index)
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}

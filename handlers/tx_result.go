@@ -17,7 +17,7 @@ type chanTxResult struct {
 }
 
 // parse tx with more goroutine concurrency
-func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.ResultTx {
+func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxResult {
 	if _conf == nil {
 		logger.Fatal("InitRouter don't work")
 	}
@@ -32,10 +32,10 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.
 		// parse txReult with more goroutine concurrency
 		go getTxResult(client, v, block.Height, chanParseTxLimit, chanRes)
 	}
-	txRetMap := make(map[string]*ctypes.ResultTx, len(block.Txs))
+	txRetMap := make(map[string]chanTxResult, len(block.Txs))
 	for i := 0; i < len(block.Txs); i++ {
 		chanValue := <-chanRes
-		txRetMap[chanValue.TxHash] = chanValue.TxResult
+		txRetMap[chanValue.TxHash] = chanValue
 
 	}
 	return txRetMap

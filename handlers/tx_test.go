@@ -37,7 +37,7 @@ func TestParseTxs(t *testing.T) {
 
 func Test_handleTxResult(t *testing.T) {
 	var block *types.Block
-	b := int64(2874954)
+	b := int64(9179568)
 	//block := int64(3705556) //sentinel
 	conf, err := config.ReadConfig()
 	if err != nil {
