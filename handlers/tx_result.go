@@ -23,6 +23,11 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.
 	if _conf.Server.ThreadNumParseTx <= 0 {
 		_conf.Server.ThreadNumParseTx = 1
 	}
+	txRetMap := make(map[string]*ctypes.ResultTx, len(block.Txs))
+
+	if len(block.Txs) == 0 {
+		return txRetMap
+	}
 
 	chanParseTxLimit := make(chan bool, _conf.Server.ThreadNumParseTx)
 	chanRes := make(chan chanTxResult, len(block.Txs))
@@ -31,7 +36,6 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]*ctypes.
 		// parse txReult with more goroutine concurrency
 		go getTxResult(client, v, block.Height, chanParseTxLimit, chanRes)
 	}
-	txRetMap := make(map[string]*ctypes.ResultTx, len(block.Txs))
 	for i := 0; i < len(block.Txs); i++ {
 		chanValue := <-chanRes
 		txRetMap[chanValue.TxHash] = chanValue.TxResult
