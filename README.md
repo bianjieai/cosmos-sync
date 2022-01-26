@@ -26,6 +26,7 @@ database= "bifrost-sync"
 
 [server]
 node_urls="tcp://192.168.150.40:26657"
+thread_num_parse_tx = 1
 worker_num_create_task=1
 worker_num_execute_task=30
 worker_max_sleep_time=120
@@ -51,6 +52,7 @@ is_json_rpc_protocol=false
 ### Server config
 
 - node_urls: `required` `string`  full node uri（example: `tcp://127.0.0.1:26657, tcp://127.0.0.2:26657, ...`）
+- thread_num_parse_tx: `required` `int` the thread num to parse tx with goroutine concurrency
 - worker_num_create_task: `required` `int` the maximum time (in seconds) that create task are allowed （default: `1`
   example: `1`）
 - worker_num_execute_task: `required` `int` the maximum time (in seconds) that synchronization TX threads are allowed
@@ -64,8 +66,7 @@ is_json_rpc_protocol=false
 - bech32_acc_prefix: `option` `string` block chain address prefix（default: `i` example: `i`）
 - chain_block_interval: `option` `int` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `int` wait block num to handle when retry failed; default `0` (example: `0`)
-- insert_batch_limit: `option` `int` insert batch data limit for support save large tx data in block in mongodb.
-- promethous_port: `option` `string` promethous metrics server port
+- promethous_port: `option` `int` promethous metrics server port
 - only_support_module: `option` `string` setting only support module tx sync,default
   support [all module](https://github.com/bianjieai/cosmos-sync/blob/opb-bsn/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)

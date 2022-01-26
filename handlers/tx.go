@@ -27,6 +27,7 @@ var (
 )
 
 func InitRouter(conf *config.Config) {
+	_conf = conf
 	initBech32Prefix(conf)
 	router := msgparser.RegisteRouter()
 	if conf.Server.OnlySupportModule != "" {
@@ -54,7 +55,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		block    *ctypes.ResultBlock
 		txnOps   []txn.Op
 	)
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
@@ -73,10 +75,22 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Proposer: block.Block.ProposerAddress.String(),
 	}
 
+	txResultMap := handleTxResult(client, block.Block)
+
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for _, v := range block.Block.Txs {
-			txDoc, ops, err := parseTx(client, v, block.Block)
+			txHash := utils.BuildHex(v.Hash())
+			txResult, ok := txResultMap[txHash]
+			if !ok || txResult.TxResult == nil {
+				return &blockDoc, txDocs, txnOps, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					fmt.Errorf("no found"))
+			}
+			if txResult.Err != nil {
+				return &blockDoc, txDocs, txnOps, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					txResult.Err)
+			}
+			txDoc, ops, err := parseTx(v, txResult.TxResult, block.Block)
 			if err != nil {
 				return &blockDoc, txDocs, txnOps, err
 			}
@@ -92,7 +106,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, txnOps, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, []txn.Op, error) {
+func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (models.Tx, []txn.Op, error) {
 	var (
 		docTx models.Tx
 
@@ -100,18 +114,9 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, [
 		txnOps    []txn.Op
 	)
 	txHash := utils.BuildHex(txBytes.Hash())
-	ctx := context.Background()
-	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
-	if err != nil {
-		time.Sleep(1 * time.Second)
-		if v, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			return docTx, txnOps, utils.ConvertErr(block.Height, txHash, "TxResult", err)
-		} else {
-			txResult = v
-		}
-	}
+
 	docTx.Time = block.Time.Unix()
-	docTx.Height = txResult.Height
+	docTx.Height = block.Height
 	docTx.TxHash = txHash
 	docTx.Status = parseTxStatus(txResult.TxResult.Code)
 	if docTx.Status == constant.TxStatusFail {
