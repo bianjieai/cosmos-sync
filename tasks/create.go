@@ -70,9 +70,13 @@ func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 		logger.Error("Query sync task failed", logger.String("err", err.Error()))
 		return
 	}
-	blockChainLatestHeight, err := getBlockChainLatestHeight()
+	catchingUp, blockChainLatestHeight, err := getBlockChainLatestHeight()
 	if err != nil {
 		logger.Error("Get current block height failed", logger.String("err", err.Error()))
+		return
+	}
+	if catchingUp {
+		logger.Warn("block chain node sync status is catching up, don't create task.")
 		return
 	}
 	if len(validFollowTasks) == 0 {
