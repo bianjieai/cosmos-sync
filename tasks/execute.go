@@ -246,6 +246,7 @@ func assertTaskValid(task models.SyncTask, blockNumPerWorkerHandle int64) (int64
 		flag                   = false
 		blockChainLatestHeight int64
 		err                    error
+		catchingUp             bool
 	)
 	if task.EndHeight != 0 {
 		taskType = models.SyncTaskTypeCatchUp
@@ -264,9 +265,13 @@ func assertTaskValid(task models.SyncTask, blockNumPerWorkerHandle int64) (int64
 		}
 		break
 	case models.SyncTaskTypeFollow:
-		blockChainLatestHeight, err = getBlockChainLatestHeight()
+		catchingUp, blockChainLatestHeight, err = getBlockChainLatestHeight()
 		if err != nil {
 			logger.Error("get blockChain latest height err", logger.String("err", err.Error()))
+			return blockChainLatestHeight, flag
+		}
+		if catchingUp {
+			logger.Warn("block chain node sync status is catching up, assert task valid don't work.")
 			return blockChainLatestHeight, flag
 		}
 		if currentHeight+blockNumPerWorkerHandle > blockChainLatestHeight {
@@ -295,18 +300,18 @@ func assertTaskWorkerUnchanged(taskId primitive.ObjectID, workerId string) (bool
 	}
 }
 
-// get current block height
-func getBlockChainLatestHeight() (int64, error) {
+// get current block height and node sync status
+func getBlockChainLatestHeight() (bool, int64, error) {
 	client := pool.GetClient()
 	defer func() {
 		client.Release()
 	}()
 	status, err := client.Status(context.Background())
 	if err != nil {
-		return 0, err
+		return false, 0, err
 	}
 
-	return status.SyncInfo.LatestBlockHeight, nil
+	return status.SyncInfo.CatchingUp, status.SyncInfo.LatestBlockHeight, nil
 }
 
 func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *models.SyncTask) error {
