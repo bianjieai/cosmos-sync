@@ -38,6 +38,8 @@ behind_block_num=0
 promethous_port=9090
 support_modules="" 
 deny_modules=""
+support_types=""
+ignore_events=false
 ```
 
 ### Db config
@@ -67,6 +69,10 @@ deny_modules=""
   support [all module](https://github.com/bianjieai/cosmos-sync/blob/irishub/1.1.0/libs/msgparser/types.go) (default: ``
   example: `bank,nft`)
 - deny_modules: `option` `string` disable support module tx sync
+- support_types: `option` `string` setting only support msgType tx sync,default support all types(default: ``
+  example: `transfer,recv_packet`)
+- ignore_events: `option` `boolean` setting ignore events data for tx collection ,default no ignore(default: `false`
+    example: `true`)
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:

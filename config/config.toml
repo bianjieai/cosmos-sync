@@ -19,3 +19,4 @@ promethous_port=9090
 support_modules=""
 deny_modules=""
 support_types=""
+ignore_events=false

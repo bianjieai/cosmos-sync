@@ -189,8 +189,14 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 			continue
 		}
 		if len(_filterMap) > 0 {
-			if _, ok := _filterMap[msgDocInfo.DocTxMsg.Type]; ok && !includeCfgType {
+			_, ok := _filterMap[msgDocInfo.DocTxMsg.Type]
+			if ok && !includeCfgType {
 				includeCfgType = true
+			}
+			if !ok {
+				docTx.EventsNew[i].Events = []models.Event{}
+				docTxMsgs = append(docTxMsgs, msgsdktypes.TxMsg{Type: msgDocInfo.DocTxMsg.Type})
+				continue
 			}
 		}
 		switch msgDocInfo.DocTxMsg.Type {
@@ -224,6 +230,9 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 
 		}
 		if i == 0 {
+			docTx.Type = msgDocInfo.DocTxMsg.Type
+		}
+		if docTx.Type == "" {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
 		}
 
@@ -335,7 +344,7 @@ func updateEvents(events []models.Event, fn func([]byte) string) []models.Event 
 
 func parseEvents(events []aTypes.Event) []models.Event {
 	var eventDocs []models.Event
-	if len(events) > 0 {
+	if len(events) > 0 && !_conf.Server.IgnoreEvents {
 		for _, e := range events {
 			var kvPairDocs []models.KvPair
 			if len(e.Attributes) > 0 {
