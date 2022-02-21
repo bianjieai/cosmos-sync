@@ -5,7 +5,7 @@ passwd= "irispassword"
 database= "bifrost-sync"
 
 [server]
-node_urls="http://47.100.192.234:26657"
+node_urls="https://opbningxia.bsngate.com:18602/api/9979c62195e54c43a7cfa4935a2c075e/rpc"
 thread_num_parse_tx = 1
 worker_num_create_task=1
 worker_num_execute_task=30
@@ -13,7 +13,7 @@ worker_max_sleep_time=120
 block_num_per_worker_handle=100
 max_connection_num=100
 init_connection_num=5
-bech32_acc_prefix=""
+bech32_acc_prefix="i"
 chain_id=""
 chain_block_interval=5
 behind_block_num=0
