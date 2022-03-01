@@ -187,7 +187,9 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 		msgDocInfo := _parser.HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
 			if len(_filterMap) > 0 {
-				docTx.EventsNew[i].Events = []models.Event{}
+				if len(docTx.EventsNew) > i {
+					docTx.EventsNew[i].Events = []models.Event{}
+				}
 				//add empty msg for msgIndex match
 				docTxMsgs = append(docTxMsgs, msgsdktypes.TxMsg{Type: "no setting type"})
 			}
@@ -199,7 +201,9 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 				includeCfgType = true
 			}
 			if !ok {
-				docTx.EventsNew[i].Events = []models.Event{}
+				if len(docTx.EventsNew) > i {
+					docTx.EventsNew[i].Events = []models.Event{}
+				}
 				docTxMsgs = append(docTxMsgs, msgsdktypes.TxMsg{Type: msgDocInfo.DocTxMsg.Type})
 				continue
 			}
