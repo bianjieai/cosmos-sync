@@ -10,6 +10,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
+	. "github.com/kaifei-bianjie/msg-parser/modules"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
@@ -148,6 +149,14 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 		if len(msgDocInfo.Addrs) == 0 {
 			continue
 		}
+		switch msgDocInfo.DocTxMsg.Type {
+		case MsgTypeTIBCRecvPacket:
+			for id, one := range docTx.EventsNew {
+				if one.MsgIndex == uint32(i) {
+					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalTibcAcknowledgement)
+				}
+			}
+		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
 		}
@@ -184,6 +193,33 @@ func parseTxStatus(code uint32) uint32 {
 	} else {
 		return constant.TxStatusFail
 	}
+}
+
+func updateEvents(events []models.Event, fn func([]byte) string) []models.Event {
+
+	for i, e := range events {
+		if e.Type != constant.IbcRecvPacketEventTypeWriteAcknowledge {
+			continue
+		}
+		if len(e.Attributes) > 0 {
+			for j, v := range e.Attributes {
+				if v.Key == constant.IbcRecvPacketEventAttriKeyPacketAck {
+					attr := models.KvPair{
+						Key:   string(v.Key),
+						Value: string(v.Value),
+					}
+					attr.Value = fn([]byte(v.Value))
+					e.Attributes[j] = attr
+				}
+			}
+		}
+		one := models.Event{
+			Type:       e.Type,
+			Attributes: e.Attributes,
+		}
+		events[i] = one
+	}
+	return events
 }
 
 func parseEvents(events []aTypes.Event) []models.Event {
