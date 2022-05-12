@@ -19,6 +19,7 @@ const (
 	IdentityRouteKey     string = "identity"
 	TIbcTransferRouteKey string = "NFT"
 	TIbcRouteKey         string = "tibc"
+	EvmRouteKey          string = "evm"
 )
 
 var RouteHandlerMap = map[string]Handler{
@@ -40,4 +41,5 @@ var RouteHandlerMap = map[string]Handler{
 	IdentityRouteKey:     handleIdentity,
 	TIbcTransferRouteKey: handleTIbc,
 	TIbcRouteKey:         handleTIbc,
+	EvmRouteKey:          handleEvm,
 }

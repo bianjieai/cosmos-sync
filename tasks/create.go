@@ -75,14 +75,21 @@ func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 		logger.Error("Get current block height failed", logger.String("err", err.Error()))
 		return
 	}
-	if len(validFollowTasks) == 0 {
-		// get max end_height from sync_task
-		maxEndHeight, err := s.syncTaskModel.GetMaxBlockHeight()
-		if err != nil {
-			logger.Error("Get max endBlock failed", logger.String("err", err.Error()))
-			return
-		}
+	// get max end_height from sync_task
+	maxEndHeight, err := s.syncTaskModel.GetMaxBlockHeight()
+	if err != nil {
+		logger.Error("Get max endBlock failed", logger.String("err", err.Error()))
+		return
+	}
 
+	// node rpc latest block height check if valid
+	if blockChainLatestHeight < maxEndHeight {
+		logger.Warn("create task invalid for Latest Height is lower than sync_task max endBlock.",
+			logger.Int64("sync task max endBlock", maxEndHeight),
+			logger.Int64("latest block height", blockChainLatestHeight))
+		return
+	}
+	if len(validFollowTasks) == 0 {
 		if maxEndHeight+blockNumPerWorkerHandle <= blockChainLatestHeight {
 			syncIrisTasks = createCatchUpTask(maxEndHeight, blockNumPerWorkerHandle, blockChainLatestHeight)
 			logMsg = fmt.Sprintf("Create catch up task during follow task not exist, from-to: %v-%v",

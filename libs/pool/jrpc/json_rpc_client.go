@@ -49,6 +49,9 @@ func (c *JsonRpcClient) Call(ctx context.Context, method string,
 	if rpcResponse.Error != nil {
 		return nil, fmt.Errorf("request failed, code: %d, message: %s, data: %s", rpcResponse.Error.Code, rpcResponse.Error.Message, rpcResponse.Error.Data)
 	}
+	if len(rpcResponse.Result) == 0 {
+		return nil, fmt.Errorf("result is empty")
+	}
 	if err = tmjson.Unmarshal(rpcResponse.Result, result); err != nil {
 		return nil, fmt.Errorf("error unmarshalling result: %w", err)
 	}

@@ -33,7 +33,7 @@ worker_max_sleep_time=120
 block_num_per_worker_handle=100
 max_connection_num=100
 init_connection_num=5
-bech32_acc_prefix=""
+bech32_acc_prefix="iaa"
 chain_id=""
 chain_block_interval=5
 behind_block_num=0
@@ -63,7 +63,7 @@ is_json_rpc_protocol=false
 - max_connection_num: `required` `int` client pool config total max connection
 - init_connection_num: `required` `int` client pool config idle connection
 
-- bech32_acc_prefix: `option` `string` block chain address prefix（default: `i` example: `i`）
+- bech32_acc_prefix: `option` `string` block chain address prefix（default: `` example: `iaa`）
 - chain_block_interval: `option` `int` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `int` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `int` promethous metrics server port
