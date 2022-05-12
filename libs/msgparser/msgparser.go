@@ -70,7 +70,7 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = OracleRouteKey
 	} else if strings.HasPrefix(data, "/iritamod.identity.") {
 		route = IdentityRouteKey
-	} else if strings.HasPrefix(data, "/ethermint.evm.v1.") {
+	} else if strings.HasPrefix(data, "/ethermint.evm.") {
 		route = EvmRouteKey
 	} else {
 		route = data
