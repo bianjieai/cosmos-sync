@@ -70,6 +70,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = OracleRouteKey
 	} else if strings.HasPrefix(data, "/iritamod.identity.") {
 		route = IdentityRouteKey
+	} else if strings.HasPrefix(data, "/ethermint.evm.") {
+		route = EvmRouteKey
 	} else {
 		route = data
 	}
@@ -168,5 +170,10 @@ func handleTIbc(v types.SdkMsg) MsgDocInfo {
 
 func handleIdentity(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Identity.HandleTxMsg(v)
+	return docInfo
+}
+
+func handleEvm(v types.SdkMsg) MsgDocInfo {
+	docInfo, _ := _client.Evm.HandleTxMsg(v)
 	return docInfo
 }
