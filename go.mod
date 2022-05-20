@@ -1,6 +1,6 @@
 module github.com/bianjieai/cosmos-sync
 
-go 1.15
+go 1.16
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
