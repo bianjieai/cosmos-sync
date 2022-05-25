@@ -10,6 +10,8 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
+	. "github.com/kaifei-bianjie/msg-parser/modules"
+	"github.com/kaifei-bianjie/msg-parser/modules/evm"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
@@ -152,6 +154,14 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 			docTx.Type = msgDocInfo.DocTxMsg.Type
 		}
 
+		if msgDocInfo.DocTxMsg.Type == MsgTypeEthereumTx {
+			var msgEtheumTx evm.DocMsgEthereumTx
+			var txData msgparser.LegacyTx
+			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
+			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
+			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
+		}
+
 		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
 		docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
 		docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
@@ -164,6 +174,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 	docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
 	docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
+	docTx.ContractAddrs = removeDuplicatesFromSlice(docTx.ContractAddrs)
 	docTx.DocTxMsgs = docTxMsgs
 
 	// don't save txs which have not parsed
