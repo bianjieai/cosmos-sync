@@ -160,6 +160,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
 			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
 			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
+			docTx.Fee.Gas = min(txResult.TxResult.GasUsed, docTx.Fee.Gas)
 		}
 
 		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
@@ -188,7 +189,12 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 
 	return docTx, txnOps, nil
 }
-
+func min(x, y int64) int64 {
+	if x < y {
+		return x
+	}
+	return y
+}
 func parseTxStatus(code uint32) uint32 {
 	if code == 0 {
 		return constant.TxStatusSuccess
