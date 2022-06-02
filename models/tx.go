@@ -13,16 +13,15 @@ const (
 
 type (
 	Tx struct {
-		Time   int64      `bson:"time"`
-		Height int64      `bson:"height"`
-		TxHash string     `bson:"tx_hash"`
-		Type   string     `bson:"type"` // parse from first msg
-		Memo   string     `bson:"memo"`
-		Status uint32     `bson:"status"`
-		Log    string     `bson:"log"`
-		Fee    *types.Fee `bson:"fee"`
-		Types  []string   `bson:"types"`
-		//Events        []Event       `bson:"events"`
+		Time          int64         `bson:"time"`
+		Height        int64         `bson:"height"`
+		TxHash        string        `bson:"tx_hash"`
+		Type          string        `bson:"type"` // parse from first msg
+		Memo          string        `bson:"memo"`
+		Status        uint32        `bson:"status"`
+		Log           string        `bson:"log"`
+		Fee           *types.Fee    `bson:"fee"`
+		Types         []string      `bson:"types"`
 		EventsNew     []EventNew    `bson:"events_new"`
 		Signers       []string      `bson:"signers"`
 		DocTxMsgs     []types.TxMsg `bson:"msgs"`

@@ -202,29 +202,6 @@ func parseTxStatus(code uint32) uint32 {
 	}
 }
 
-//func parseEvents(events []aTypes.Event) []models.Event {
-//	var eventDocs []models.Event
-//	if len(events) > 0 {
-//		for _, e := range events {
-//			var kvPairDocs []models.KvPair
-//			if len(e.Attributes) > 0 {
-//				for _, v := range e.Attributes {
-//					kvPairDocs = append(kvPairDocs, models.KvPair{
-//						Key:   string(v.Key),
-//						Value: string(v.Value),
-//					})
-//				}
-//			}
-//			eventDocs = append(eventDocs, models.Event{
-//				Type:       e.Type,
-//				Attributes: kvPairDocs,
-//			})
-//		}
-//	}
-//
-//	return eventDocs
-//}
-
 // parseABCILogs attempts to parse a stringified ABCI tx log into a slice of
 // EventNe types. It ignore error upon JSON decoding failure.
 func parseABCILogs(logs string) []models.EventNew {
@@ -301,7 +278,6 @@ func SaveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models
 		insertOps = append(insertOps, updateOp)
 	}
 
-	//ops = append(append(ops, blockOp), binanceTxsOps...)
 	insertOps = append(insertOps, blockOp)
 	if len(opsDoc) > 0 {
 		insertOps = append(insertOps, opsDoc...)
