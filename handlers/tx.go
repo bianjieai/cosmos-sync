@@ -13,7 +13,6 @@ import (
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/modules/evm"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
-	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
@@ -125,7 +124,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 		docTx.Log = txResult.TxResult.Log
 	}
 
-	docTx.Events = parseEvents(txResult.TxResult.Events)
+	//docTx.Events = parseEvents(txResult.TxResult.Events)
 	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
 	docTx.TxIndex = txResult.Index
 
@@ -203,28 +202,28 @@ func parseTxStatus(code uint32) uint32 {
 	}
 }
 
-func parseEvents(events []aTypes.Event) []models.Event {
-	var eventDocs []models.Event
-	if len(events) > 0 {
-		for _, e := range events {
-			var kvPairDocs []models.KvPair
-			if len(e.Attributes) > 0 {
-				for _, v := range e.Attributes {
-					kvPairDocs = append(kvPairDocs, models.KvPair{
-						Key:   string(v.Key),
-						Value: string(v.Value),
-					})
-				}
-			}
-			eventDocs = append(eventDocs, models.Event{
-				Type:       e.Type,
-				Attributes: kvPairDocs,
-			})
-		}
-	}
-
-	return eventDocs
-}
+//func parseEvents(events []aTypes.Event) []models.Event {
+//	var eventDocs []models.Event
+//	if len(events) > 0 {
+//		for _, e := range events {
+//			var kvPairDocs []models.KvPair
+//			if len(e.Attributes) > 0 {
+//				for _, v := range e.Attributes {
+//					kvPairDocs = append(kvPairDocs, models.KvPair{
+//						Key:   string(v.Key),
+//						Value: string(v.Value),
+//					})
+//				}
+//			}
+//			eventDocs = append(eventDocs, models.Event{
+//				Type:       e.Type,
+//				Attributes: kvPairDocs,
+//			})
+//		}
+//	}
+//
+//	return eventDocs
+//}
 
 // parseABCILogs attempts to parse a stringified ABCI tx log into a slice of
 // EventNe types. It ignore error upon JSON decoding failure.
