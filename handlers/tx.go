@@ -173,6 +173,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 			logger.Int64("height", block.Height))
 		return docTx, nil
 	}
+	docTx.GasUsed = txResult.TxResult.GasUsed
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
