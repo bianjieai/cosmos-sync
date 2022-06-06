@@ -10,8 +10,6 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
-	"github.com/kaifei-bianjie/msg-parser/modules/evm"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
@@ -136,6 +134,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 			logger.Int64("height", block.Height))
 		return docTx, txnOps, nil
 	}
+	docTx.GasUsed = txResult.TxResult.GasUsed
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
@@ -151,15 +150,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
-		}
-
-		if msgDocInfo.DocTxMsg.Type == MsgTypeEthereumTx {
-			var msgEtheumTx evm.DocMsgEthereumTx
-			var txData msgparser.LegacyTx
-			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
-			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
-			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
-			docTx.Fee.Gas = min(txResult.TxResult.GasUsed, docTx.Fee.Gas)
 		}
 
 		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
@@ -187,12 +177,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 	}
 
 	return docTx, txnOps, nil
-}
-func min(x, y int64) int64 {
-	if x < y {
-		return x
-	}
-	return y
 }
 func parseTxStatus(code uint32) uint32 {
 	if code == 0 {
