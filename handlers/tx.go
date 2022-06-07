@@ -10,10 +10,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
-	"github.com/kaifei-bianjie/msg-parser/modules/evm"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
-	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
@@ -125,7 +122,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 		docTx.Log = txResult.TxResult.Log
 	}
 
-	docTx.Events = parseEvents(txResult.TxResult.Events)
+	//docTx.Events = parseEvents(txResult.TxResult.Events)
 	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
 	docTx.TxIndex = txResult.Index
 
@@ -137,6 +134,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 			logger.Int64("height", block.Height))
 		return docTx, txnOps, nil
 	}
+	docTx.GasUsed = txResult.TxResult.GasUsed
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
@@ -152,15 +150,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
-		}
-
-		if msgDocInfo.DocTxMsg.Type == MsgTypeEthereumTx {
-			var msgEtheumTx evm.DocMsgEthereumTx
-			var txData msgparser.LegacyTx
-			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
-			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
-			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
-			docTx.Fee.Gas = min(txResult.TxResult.GasUsed, docTx.Fee.Gas)
 		}
 
 		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
@@ -189,41 +178,12 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (m
 
 	return docTx, txnOps, nil
 }
-func min(x, y int64) int64 {
-	if x < y {
-		return x
-	}
-	return y
-}
 func parseTxStatus(code uint32) uint32 {
 	if code == 0 {
 		return constant.TxStatusSuccess
 	} else {
 		return constant.TxStatusFail
 	}
-}
-
-func parseEvents(events []aTypes.Event) []models.Event {
-	var eventDocs []models.Event
-	if len(events) > 0 {
-		for _, e := range events {
-			var kvPairDocs []models.KvPair
-			if len(e.Attributes) > 0 {
-				for _, v := range e.Attributes {
-					kvPairDocs = append(kvPairDocs, models.KvPair{
-						Key:   string(v.Key),
-						Value: string(v.Value),
-					})
-				}
-			}
-			eventDocs = append(eventDocs, models.Event{
-				Type:       e.Type,
-				Attributes: kvPairDocs,
-			})
-		}
-	}
-
-	return eventDocs
 }
 
 // parseABCILogs attempts to parse a stringified ABCI tx log into a slice of
@@ -302,7 +262,6 @@ func SaveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models
 		insertOps = append(insertOps, updateOp)
 	}
 
-	//ops = append(append(ops, blockOp), binanceTxsOps...)
 	insertOps = append(insertOps, blockOp)
 	if len(opsDoc) > 0 {
 		insertOps = append(insertOps, opsDoc...)
