@@ -35,6 +35,7 @@ type (
 		WorkerId       string        `bson:"worker_id"`        // worker id
 		WorkerLogs     []WorkerLog   `bson:"worker_logs"`      // worker logs
 		LastUpdateTime int64         `bson:"last_update_time"` // unix timestamp
+		CreateTime     int64         `bson:"create_time"`
 	}
 
 	WorkerLog struct {
@@ -276,6 +277,9 @@ func (d SyncTask) QueryCatchUpingTasksNum() (int, error) {
 		"status": SyncTaskStatusUnderway,
 		"end_height": bson.M{
 			"$gt": 0,
+		},
+		"create_time": bson.M{
+			"$lt": time.Now().Unix() - 30*60,
 		},
 	}
 
