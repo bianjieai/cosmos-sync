@@ -130,6 +130,7 @@ func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 		for _, v := range syncIrisTasks {
 			objectId := bson.NewObjectId()
 			v.ID = objectId
+			v.CreateTime = time.Now().Unix()
 			op := txn.Op{
 				C:      models.SyncTaskModel.Name(),
 				Id:     objectId,

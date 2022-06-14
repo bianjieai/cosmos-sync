@@ -23,11 +23,12 @@ const (
 )
 
 type clientNode struct {
-	nodeStatus  metrics.Guage
-	nodeHeight  metrics.Guage
-	dbHeight    metrics.Guage
-	nodeTimeGap metrics.Guage
-	syncWorkWay metrics.Guage
+	nodeStatus          metrics.Guage
+	nodeHeight          metrics.Guage
+	dbHeight            metrics.Guage
+	nodeTimeGap         metrics.Guage
+	syncWorkWay         metrics.Guage
+	syncCatchingTaskNum metrics.Guage
 }
 
 func NewMetricNode(server metrics.Monitor) clientNode {
@@ -66,18 +67,27 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		"sync task working status(0:CatchingUp 1:Following)",
 		nil,
 	)
+	syncCatchingTaskNumMetric := metrics.NewGuage(
+		"sync",
+		"",
+		"task_catching_cnt",
+		"count of sync catchUping task",
+		nil,
+	)
 	server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
 	nodeHeight, _ := metrics.CovertGuage(nodeHeightMetric)
 	dbHeight, _ := metrics.CovertGuage(dbHeightMetric)
 	nodeStatus, _ := metrics.CovertGuage(nodeStatusMetric)
 	nodeTimeGap, _ := metrics.CovertGuage(nodeTimeGapMetric)
 	syncWorkway, _ := metrics.CovertGuage(syncWorkwayMetric)
+	catchingTaskNum, _ := metrics.CovertGuage(syncCatchingTaskNumMetric)
 	return clientNode{
-		nodeStatus:  nodeStatus,
-		nodeHeight:  nodeHeight,
-		dbHeight:    dbHeight,
-		nodeTimeGap: nodeTimeGap,
-		syncWorkWay: syncWorkway,
+		nodeStatus:          nodeStatus,
+		nodeHeight:          nodeHeight,
+		dbHeight:            dbHeight,
+		nodeTimeGap:         nodeTimeGap,
+		syncWorkWay:         syncWorkway,
+		syncCatchingTaskNum: catchingTaskNum,
 	}
 }
 
@@ -87,6 +97,7 @@ func (node *clientNode) Report() {
 		select {
 		case <-t.C:
 			node.nodeStatusReport()
+			node.syncCatchUpingReport()
 		}
 	}
 }
@@ -136,6 +147,14 @@ func (node *clientNode) nodeStatusReport() {
 		node.syncWorkWay.Set(float64(SyncTaskCatchingUp))
 	}
 	return
+}
+
+func (node *clientNode) syncCatchUpingReport() {
+	catchUpTasksNum, err := new(models.SyncTask).QueryCatchUpingTasksNum()
+	if err != nil {
+		logger.Error("query task exception", logger.String("error", err.Error()))
+	}
+	node.syncCatchingTaskNum.Set(float64(catchUpTasksNum))
 }
 
 func Start() {

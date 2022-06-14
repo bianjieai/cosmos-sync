@@ -1,10 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
-	"fmt"
 )
 
 const (
@@ -35,6 +35,7 @@ type (
 		WorkerId       string        `bson:"worker_id"`        // worker id
 		WorkerLogs     []WorkerLog   `bson:"worker_logs"`      // worker logs
 		LastUpdateTime int64         `bson:"last_update_time"` // unix timestamp
+		CreateTime     int64         `bson:"create_time"`
 	}
 
 	WorkerLog struct {
@@ -268,4 +269,26 @@ func (d SyncTask) QueryValidFollowTasks() (bool, error) {
 	}
 
 	return false, nil
+}
+
+// query catch_up task num
+func (d SyncTask) QueryCatchUpingTasksNum() (int, error) {
+	q := bson.M{
+		"status": SyncTaskStatusUnderway,
+		"end_height": bson.M{
+			"$gt": 0,
+		},
+		"create_time": bson.M{
+			"$lt": time.Now().Unix() - 30*60,
+		},
+	}
+
+	var num int
+	fn := func(c *mgo.Collection) error {
+		n, err := c.Find(q).Count()
+		num = n
+		return err
+	}
+
+	return num, ExecCollection(d.Name(), fn)
 }
