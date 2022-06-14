@@ -179,6 +179,7 @@ func createCatchUpTask(maxEndHeight, blockNumPerWorker, currentBlockHeight int64
 		}
 		syncTask := models.SyncTask{
 			ID:             primitive.NewObjectID(),
+			CreateTime:     time.Now().Unix(),
 			StartHeight:    maxEndHeight + 1,
 			EndHeight:      maxEndHeight + blockNumPerWorker,
 			Status:         models.SyncTaskStatusUnHandled,
