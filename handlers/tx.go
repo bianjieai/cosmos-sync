@@ -13,7 +13,6 @@ import (
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/modules/ibc"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
-	aTypes "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
@@ -159,7 +158,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 		docTx.Log = txResult.TxResult.Log
 	}
 
-	docTx.Events = parseEvents(txResult.TxResult.Events)
 	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
 	docTx.TxIndex = uint32(index)
 	eventsIndexMap := make(map[uint32]models.EventNew)
@@ -175,6 +173,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 			logger.Int64("height", block.Height))
 		return docTx, nil
 	}
+	docTx.GasUsed = txResult.TxResult.GasUsed
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
@@ -349,29 +348,6 @@ func updateEvents(events []models.Event, fn func([]byte) string) []models.Event 
 		events[i] = one
 	}
 	return events
-}
-
-func parseEvents(events []aTypes.Event) []models.Event {
-	var eventDocs []models.Event
-	if len(events) > 0 && !_conf.Server.IgnoreEvents {
-		for _, e := range events {
-			var kvPairDocs []models.KvPair
-			if len(e.Attributes) > 0 {
-				for _, v := range e.Attributes {
-					kvPairDocs = append(kvPairDocs, models.KvPair{
-						Key:   string(v.Key),
-						Value: string(v.Value),
-					})
-				}
-			}
-			eventDocs = append(eventDocs, models.Event{
-				Type:       e.Type,
-				Attributes: kvPairDocs,
-			})
-		}
-	}
-
-	return eventDocs
 }
 
 // parseABCILogs attempts to parse a stringified ABCI tx log into a slice of

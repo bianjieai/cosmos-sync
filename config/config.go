@@ -43,7 +43,6 @@ type (
 		SupportModules string `mapstructure:"support_modules"`
 		DenyModules    string `mapstructure:"deny_modules"`
 		SupportTypes   string `mapstructure:"support_types"`
-		IgnoreEvents   bool   `mapstructure:"ignore_events"`
 	}
 )
 

@@ -21,8 +21,8 @@ type (
 		Status    uint32        `bson:"status"`
 		Log       string        `bson:"log"`
 		Fee       *types.Fee    `bson:"fee"`
+		GasUsed   int64         `bson:"gas_used"`
 		Types     []string      `bson:"types"`
-		Events    []Event       `bson:"events"`
 		EventsNew []EventNew    `bson:"events_new"`
 		Signers   []string      `bson:"signers"`
 		DocTxMsgs []types.TxMsg `bson:"msgs"`
