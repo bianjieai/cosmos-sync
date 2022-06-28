@@ -4,9 +4,9 @@ go 1.16
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20220512064915-41a999151780
+	github.com/kaifei-bianjie/msg-parser v0.0.0-20220627101614-4294c5f39e52
 	github.com/spf13/viper v1.9.0
-	github.com/tendermint/tendermint v0.34.14
+	github.com/tendermint/tendermint v0.35.0
 	github.com/weichang-bianjie/metric-sdk v1.0.0
 	go.uber.org/zap v1.17.0
 	golang.org/x/net v0.0.0-20211111160137-58aab5ef257a

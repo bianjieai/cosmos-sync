@@ -80,6 +80,7 @@ func RegisteRouter() Router {
 		AddRoute(CrisisRouteKey, handleCrisis).
 		AddRoute(EvidenceRouteKey, handleEvidence).
 		AddRoute(GovRouteKey, handleGov).
+		AddRoute(FeegrantRouteKey, handleFeegrant).
 		AddRoute(SlashingRouteKey, handleSlashing).
 		AddRoute(NftRouteKey, handleNft).
 		AddRoute(ServiceRouteKey, handleService).
