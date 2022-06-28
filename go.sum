@@ -144,6 +144,8 @@ github.com/bianjieai/ethermint v0.8.2-0.20220211020007-9ec25dde74d4 h1:Bspsbwh/M
 github.com/bianjieai/ethermint v0.8.2-0.20220211020007-9ec25dde74d4/go.mod h1:GCVD9yUeShzqf+RY2SaN47C7DVSzgMBH1vekUuiRRA8=
 github.com/bianjieai/iritamod v1.0.1-0.20211026024119-806ffe494860 h1:X85DtWeDJs4MOACKlqXSfMLH+mcPEdhnXJyFIHvx/PA=
 github.com/bianjieai/iritamod v1.0.1-0.20211026024119-806ffe494860/go.mod h1:PetrZQFHKNt+bzhrw5ksSi6jjxz3BmfE5F3ahtr8iQQ=
+github.com/bianjieai/iritamod v1.2.1-0.20220222035322-99168809cf24 h1:nIoqKe2MqwuwjQ7aqYd8AzS1gSSEGe77mDoIDpSrJbI=
+github.com/bianjieai/iritamod v1.2.1-0.20220222035322-99168809cf24/go.mod h1:4mf6AkFFyTSATfsG3Z8MiwgaAnqubXdLv+XRzOS7XZA=
 github.com/bianjieai/tendermint v0.34.8-irita-210413.0.20211012090339-cee6e09e8ae3 h1:M4C+ilCPiP2c2yMdeYaZLwquEBfFa4Uvt1BDviSYD0E=
 github.com/bianjieai/tendermint v0.34.8-irita-210413.0.20211012090339-cee6e09e8ae3/go.mod h1:2u6xthTnwDYLhO38cDYp8CxzKq7hwJFvCXeK1pEErtM=
 github.com/bianjieai/tibc-go v0.2.0-alpha h1:Yr2tR2RXe/UWXtwa5LXn37C8o0so6PM8EMdi3GVJAOc=
@@ -608,6 +610,8 @@ github.com/jung-kurt/gofpdf v1.0.3-0.20190309125859-24315acbbda5/go.mod h1:7Id9E
 github.com/jwilder/encoding v0.0.0-20170811194829-b4e1701a28ef/go.mod h1:Ct9fl0F6iIOGgxJ5npU/IUOhOhqlVrGjyIZc8/MagT0=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220512064915-41a999151780 h1:CqKWkpVFoGsvaBWSICeiUCjmsCcb4ZPhaeCUN7P5its=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220512064915-41a999151780/go.mod h1:IGPTM4D+gn7FkkTL8F//XEgDfSq/UH5cze5zPQ5vbzw=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220627101614-4294c5f39e52 h1:Hd93UEvU/pOMuaJpjsv1w/8mrnKwvz4M5H8o6Ht1Uz8=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220627101614-4294c5f39e52/go.mod h1:tjYOle4T7zlofMUP5tmWCIGQEPoS3nMRvNV+CR8Wt10=
 github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/karalabe/usb v0.0.0-20211005121534-4c5740d64559/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d/go.mod h1:JJNrCn9otv/2QP4D7SMJBgaleKpOf66PnW6F5WGNRIc=
