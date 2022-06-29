@@ -1,6 +1,6 @@
 [database]
-node_uri= "mongodb://root:123456@10.1.4.157:27017/?connect=direct&authSource=temp"
-database= "temp"
+node_uri= "mongodb://ibc:ibcpassword@192.168.150.60:27018/?connect=direct&authSource=iobscan-ibc"
+database= "iobscan-ibc"
 
 [server]
 node_urls="https://irishub.stakesystems.io:2053"
@@ -19,3 +19,4 @@ promethous_port=9090
 support_modules=""
 deny_modules=""
 support_types=""
+ignore_ibc_header=false
