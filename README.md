@@ -39,7 +39,7 @@ promethous_port=9090
 support_modules="" 
 deny_modules=""
 support_types=""
-ibc_header_info=false
+ignore_ibc_header=false
 ```
 
 ### Db config
