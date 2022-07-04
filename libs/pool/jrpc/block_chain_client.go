@@ -47,6 +47,22 @@ func (c *BlockChainClient) Tx(ctx context.Context, hash []byte, prove bool) (*ct
 	return result, nil
 }
 
+func (c *BlockChainClient) BlockResults(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultBlockResults, error) {
+	result := new(ctypes.ResultBlockResults)
+	params := make(map[string]interface{})
+	if height != nil {
+		params["height"] = strconv.FormatInt(*height, 10)
+	}
+	_, err := c.client.Call(ctx, "block_results", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *BlockChainClient) HeartBeat(ctx context.Context) error {
 	result := new(ctypes.ResultStatus)
 	_, err := c.client.Call(ctx, "health", map[string]interface{}{}, result)

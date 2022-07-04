@@ -82,7 +82,7 @@ Note:
 
   ```
   db.sync_task.insert({
-      'start_height':NumberLong(17908),
+      'start_height':NumberLong(5000000),
       'end_height':NumberLong(0),
       'current_height':NumberLong(0),
       'status':'unhandled',
