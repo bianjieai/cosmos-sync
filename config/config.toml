@@ -3,7 +3,7 @@ node_uri= "mongodb://root:123456@localhost:27017/?connect=direct&authSource=test
 database= "test"
 
 [server]
-node_urls="tcp://10.0.4.4:32657"
+node_urls="tcp://10.0.0.36:26657"
 worker_num_create_task=1
 worker_num_execute_task=30
 worker_max_sleep_time=120
