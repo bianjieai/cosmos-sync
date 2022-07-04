@@ -13,7 +13,7 @@ import (
 )
 
 func TestParseTxs(t *testing.T) {
-	block := int64(4045249)
+	block := int64(4044833)
 	conf, err := config.ReadConfig()
 	if err != nil {
 		t.Fatal(err.Error())
