@@ -22,3 +22,11 @@ func (c *Client) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.Resul
 	return http.Tx(ctx, hash, prove)
 
 }
+
+func (c *Client) BlockResults(ctx context.Context, height *int64) (*ctypes.ResultBlockResults, error) {
+	if isJsonRpcProtocol {
+		return c.Jrpc.BlockResults(ctx, height)
+	}
+	http := c.HTTP
+	return http.BlockResults(ctx, height)
+}

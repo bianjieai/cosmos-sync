@@ -17,6 +17,7 @@ type chanTxResult struct {
 }
 
 // parse tx with more goroutine concurrency
+// Deprecated: use blockResults get all on one connect
 func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxResult {
 	if _conf == nil {
 		logger.Fatal("InitRouter don't work")
