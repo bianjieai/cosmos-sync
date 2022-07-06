@@ -1,4 +1,5 @@
 # cosmos-sync
+
 A server that synchronize cosmos chain data into a database
 
 # SetUp
@@ -77,7 +78,7 @@ ignore_ibc_header=false
 
 Note:
 > synchronizes cosmos data from specify block height(such as:17908 current time:1576208532)
-At first,stop the cosmos-sync and create the task. Run:
+> At first,stop the cosmos-sync and create the task. Run:
 
   ```
   db.sync_task.insert({
@@ -85,7 +86,7 @@ At first,stop the cosmos-sync and create the task. Run:
       'end_height':NumberLong(0),
       'current_height':NumberLong(0),
       'status':'unhandled',
-      ﻿'worker_id' : '',
+      'worker_id' : '',
        'worker_logs' : [],
       'last_update_time' : NumberLong(0)
   })

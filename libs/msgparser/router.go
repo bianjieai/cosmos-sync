@@ -94,6 +94,7 @@ func RegisteRouter() Router {
 		AddRoute(EvidenceRouteKey, handleEvidence).
 		AddRoute(HtlcRouteKey, handleHtlc).
 		AddRoute(StakingRouteKey, handleStaking).
+		AddRoute(FeegrantRouteKey, handleFeegrant).
 		AddRoute(GovRouteKey, handleGov).
 		AddRoute(RandomRouteKey, handleRandom).
 		AddRoute(OracleRouteKey, handleOracle).

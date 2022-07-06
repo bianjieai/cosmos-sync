@@ -13,6 +13,7 @@ import (
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/modules/ibc"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
+	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
@@ -114,22 +115,24 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Proposer: block.Block.ProposerAddress.String(),
 	}
 
-	txResultMap := handleTxResult(client, block.Block)
+	blockResults, err := client.BlockResults(context.Background(), &b)
+	if err != nil {
+		time.Sleep(1 * time.Second)
+		blockResults, err = client.BlockResults(context.Background(), &b)
+		if err != nil {
+			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
+		}
+	}
+
+	if len(block.Block.Txs) != len(blockResults.TxsResults) {
+		return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
+	}
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
-		for index, v := range block.Block.Txs {
-			txHash := utils.BuildHex(v.Hash())
-			txResult, ok := txResultMap[txHash]
-			if !ok || txResult.TxResult == nil {
-				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
-					fmt.Errorf("no found"))
-			}
-			if txResult.Err != nil {
-				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
-					txResult.Err)
-			}
-			txDoc, err := parseTx(v, txResult.TxResult, block.Block, index)
+		for i, v := range block.Block.Txs {
+			txResult := blockResults.TxsResults[i]
+			txDoc, err := parseTx(v, txResult, block.Block, i)
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}
@@ -142,7 +145,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, nil
 }
 
-func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, index int) (models.Tx, error) {
+func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.Block, index int) (models.Tx, error) {
 	var (
 		docTx          models.Tx
 		docTxMsgs      []msgsdktypes.TxMsg
@@ -153,16 +156,16 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 	docTx.Time = block.Time.Unix()
 	docTx.Height = block.Height
 	docTx.TxHash = txHash
-	docTx.Status = parseTxStatus(txResult.TxResult.Code)
+	docTx.Status = parseTxStatus(txResult.Code)
 	if docTx.Status == constant.TxStatusFail {
-		docTx.Log = txResult.TxResult.Log
+		docTx.Log = txResult.Log
 	}
 
-	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
+	docTx.EventsNew = parseABCILogs(txResult.Log)
 	docTx.TxIndex = uint32(index)
 	eventsIndexMap := make(map[uint32]models.EventNew)
-	if txResult.TxResult.Code == 0 {
-		eventsIndexMap = splitEvents(txResult.TxResult.Log)
+	if txResult.Code == 0 {
+		eventsIndexMap = splitEvents(txResult.Log)
 	}
 
 	authTx, err := codec.GetSigningTx(txBytes)
@@ -173,7 +176,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 			logger.Int64("height", block.Height))
 		return docTx, nil
 	}
-	docTx.GasUsed = txResult.TxResult.GasUsed
+	docTx.GasUsed = txResult.GasUsed
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 

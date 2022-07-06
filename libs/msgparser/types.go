@@ -14,6 +14,7 @@ const (
 	HtlcRouteKey         string = "htlc"
 	StakingRouteKey      string = "staking"
 	GovRouteKey          string = "gov"
+	FeegrantRouteKey     string = "feegrant"
 	RandomRouteKey       string = "random"
 	OracleRouteKey       string = "oracle"
 	FarmRouteKey         string = "farm"
@@ -37,6 +38,7 @@ var RouteHandlerMap = map[string]Handler{
 	HtlcRouteKey:         handleHtlc,
 	StakingRouteKey:      handleStaking,
 	GovRouteKey:          handleGov,
+	FeegrantRouteKey:     handleFeegrant,
 	RandomRouteKey:       handleRandom,
 	OracleRouteKey:       handleOracle,
 	IbcRouteKey:          handleIbc,

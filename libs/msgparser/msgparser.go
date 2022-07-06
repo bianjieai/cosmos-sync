@@ -51,6 +51,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = StakingRouteKey
 	} else if strings.HasPrefix(data, "/cosmos.gov.") {
 		route = GovRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.feegrant") {
+		route = FeegrantRouteKey
 	} else if strings.HasPrefix(data, "/tibc.core.") {
 		route = TIbcRouteKey
 	} else if strings.HasPrefix(data, "/tibc.apps.") {
@@ -143,6 +145,12 @@ func handleStaking(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Staking.HandleTxMsg(v)
 	return docInfo
 }
+
+func handleFeegrant(v types.SdkMsg) MsgDocInfo {
+	docInfo, _ := _client.Feegrant.HandleTxMsg(v)
+	return docInfo
+}
+
 func handleGov(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Gov.HandleTxMsg(v)
 	return docInfo
