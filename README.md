@@ -40,7 +40,7 @@ promethous_port=9090
 support_modules="" 
 deny_modules=""
 support_types=""
-ignore_events=false
+ignore_ibc_header=false
 ```
 
 ### Db config
@@ -72,8 +72,8 @@ ignore_events=false
 - deny_modules: `option` `string` disable support module tx sync
 - support_types: `option` `string` setting only support msgType tx sync,default support all types(default: ``
   example: `transfer,recv_packet`)
-- ignore_events: `option` `boolean` setting ignore events data for tx collection ,default no ignore(default: `false`
-    example: `true`)
+- ignore_ibc_header: `option` `boolean` setting update_client header info for tx collection ,default not ignore ibc header info(default: `false`
+    example: `false`)
 - chain_id: `option` `string` setting collection name by chain_id
 
 Note:

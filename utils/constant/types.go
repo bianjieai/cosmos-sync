@@ -20,4 +20,6 @@ const (
 	IbcTransferEventAttriKeyPacketDcChannels = "packet_dst_channel"
 	IbcRecvPacketEventTypeWriteAcknowledge   = "write_acknowledgement"
 	IbcRecvPacketEventAttriKeyPacketAck      = "packet_ack"
+	IbcUpdateClientEventTypeUpdateClient     = "update_client"
+	IbcUpdateClientEventAttriKeyHeader       = "header"
 )

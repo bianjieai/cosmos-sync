@@ -238,7 +238,19 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
 				}
 			}
-
+		case MsgTypeUpdateClient:
+			if _conf.Server.IgnoreIbcHeader {
+				updateClientMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgUpdateClient)
+				if ok {
+					updateClientMsg.Header = "ignore ibc header info"
+					msgDocInfo.DocTxMsg.Msg = updateClientMsg
+				}
+				for id, one := range docTx.EventsNew {
+					if one.MsgIndex == uint32(i) {
+						docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removeHeaderOfUpdateClientEvents)
+					}
+				}
+			}
 		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
