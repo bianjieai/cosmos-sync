@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20220118054403-07d57dfaa9ab
+	github.com/kaifei-bianjie/msg-parser v0.0.0-20220706101724-25d374f786a1
 	github.com/qiniu/qmgo v1.0.4
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1

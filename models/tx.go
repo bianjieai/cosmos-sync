@@ -22,7 +22,6 @@ type (
 		Log       string        `bson:"log"`
 		Fee       *types.Fee    `bson:"fee"`
 		Types     []string      `bson:"types"`
-		Events    []Event       `bson:"events"`
 		EventsNew []EventNew    `bson:"events_new"`
 		Signers   []string      `bson:"signers"`
 		DocTxMsgs []types.TxMsg `bson:"msgs"`

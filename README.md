@@ -78,7 +78,7 @@ At first,stop the cosmos-sync and create the task. Run:
 
   ```
   db.sync_task.insert({
-      'start_height':NumberLong(17908),
+      'start_height':NumberLong(39001501),
       'end_height':NumberLong(0),
       'current_height':NumberLong(0),
       'status':'unhandled',

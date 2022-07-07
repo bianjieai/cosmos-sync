@@ -11,7 +11,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/msg-parser/codec"
 	msgtypes "github.com/kaifei-bianjie/msg-parser/types"
-	aTypes "github.com/tendermint/tendermint/abci/types"
+	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"strings"
@@ -65,10 +65,24 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Proposer: block.Block.ProposerAddress.String(),
 	}
 
+	blockResults, err := client.BlockResults(context.Background(), &b)
+	if err != nil {
+		time.Sleep(1 * time.Second)
+		blockResults, err = client.BlockResults(context.Background(), &b)
+		if err != nil {
+			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
+		}
+	}
+
+	if len(block.Block.Txs) != len(blockResults.TxsResults) {
+		return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
+	}
+
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
-		for _, v := range block.Block.Txs {
-			txDoc, err := parseTx(client, v, block.Block)
+		for i, v := range block.Block.Txs {
+			txResult := blockResults.TxsResults[i]
+			txDoc, err := parseTx(v, txResult, block.Block, i)
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}
@@ -81,7 +95,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, nil
 }
 
-func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, error) {
+func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.Block, index int) (models.Tx, error) {
 	var (
 		docTx     models.Tx
 		docTxMsgs []msgtypes.TxMsg
@@ -100,21 +114,10 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, e
 	}
 	fee := msgtypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	memo := authTx.GetMemo()
-	ctx := context.Background()
-	txResult, err := c.Tx(ctx, txBytes.Hash(), false)
-	if err != nil {
-		time.Sleep(500 * time.Millisecond)
-		if ret, err := c.Tx(ctx, txBytes.Hash(), false); err != nil {
-			return docTx, utils.ConvertErr(height, txHash, "TxResult", err)
-		} else {
-			txResult = ret
-		}
-	}
-	status := parseTxStatus(txResult.TxResult.Code)
+	status := parseTxStatus(txResult.Code)
 	if status == constant.TxStatusFail {
-		log = txResult.TxResult.Log
+		log = txResult.Log
 	}
-	txIndex := txResult.Index
 	docTx = models.Tx{
 		Height:  height,
 		Time:    block.Time.Unix(),
@@ -123,10 +126,9 @@ func parseTx(c *pool.Client, txBytes types.Tx, block *types.Block) (models.Tx, e
 		Memo:    memo,
 		Status:  status,
 		Log:     log,
-		Events:  parseEvents(txResult.TxResult.Events),
-		TxIndex: txIndex,
+		TxIndex: uint32(index),
 	}
-	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
+	docTx.EventsNew = parseABCILogs(txResult.Log)
 	msgs := authTx.GetMsgs()
 	if len(msgs) == 0 {
 		return docTx, nil
@@ -172,29 +174,6 @@ func parseTxStatus(code uint32) uint32 {
 	} else {
 		return constant.TxStatusFail
 	}
-}
-
-func parseEvents(events []aTypes.Event) []models.Event {
-	var eventDocs []models.Event
-	if len(events) > 0 {
-		for _, e := range events {
-			var kvPairDocs []models.KvPair
-			if len(e.Attributes) > 0 {
-				for _, v := range e.Attributes {
-					kvPairDocs = append(kvPairDocs, models.KvPair{
-						Key:   string(v.Key),
-						Value: string(v.Value),
-					})
-				}
-			}
-			eventDocs = append(eventDocs, models.Event{
-				Type:       e.Type,
-				Attributes: kvPairDocs,
-			})
-		}
-	}
-
-	return eventDocs
 }
 
 // parseABCILogs attempts to parse a stringified ABCI tx log into a slice of

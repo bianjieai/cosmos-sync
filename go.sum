@@ -355,6 +355,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220118054403-07d57dfaa9ab h1:y/oOWQGGJl+O/FWypef9YjMZoYgH8nev+lIdlvmMmE0=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220118054403-07d57dfaa9ab/go.mod h1:4idi8sbqgwf7ukb/TUFED9Dnrv+cVfub4czdaa+Z/HY=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220706101724-25d374f786a1 h1:dSbFTf2A2rMCAri69KP0iQ2ZJrRlAOvokvdMfbHKoeU=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220706101724-25d374f786a1/go.mod h1:S6c1E82Ynh4oNi9ygueLYNz+wLteLVWlFC3+JNvGjXE=
 github.com/karrick/godirwalk v1.8.0/go.mod h1:H5KPZjojv4lE+QYImBI8xVtrBRgYrIVsaRPx4tDPEn4=
 github.com/karrick/godirwalk v1.10.3/go.mod h1:RoGL9dQei4vP9ilrpETWE8CLOZ1kiN0LhBygSwrAsHA=
 github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d/go.mod h1:JJNrCn9otv/2QP4D7SMJBgaleKpOf66PnW6F5WGNRIc=
@@ -650,6 +652,8 @@ github.com/zondax/hid v0.9.0 h1:eiT3P6vNxAEVxXMw66eZUAAnU2zD33JBkfG/EnfAKl8=
 github.com/zondax/hid v0.9.0/go.mod h1:l5wttcP0jwtdLjqjMMWFVEE7d1zO0jvSPA9OPZxWpEM=
 gitlab.bianjie.ai/cschain/cschain v1.1.1-0.20220112104127-6d72dd1c1b6a h1:tP1oAGFDi98e/wuaokOscFYuBJeRyukUwb7ilSyPgeA=
 gitlab.bianjie.ai/cschain/cschain v1.1.1-0.20220112104127-6d72dd1c1b6a/go.mod h1:MqFbVsmZ2r9Pf0CP923OzKjtSTtArVRtDAHrayGJEa4=
+gitlab.bianjie.ai/cschain/cschain v1.1.1-0.20220408091704-7cb27d0fe0f4 h1:TprJbRtzTceBgTPaMzjOwlbBdLZvHuptPCiLPoMn780=
+gitlab.bianjie.ai/cschain/cschain v1.1.1-0.20220408091704-7cb27d0fe0f4/go.mod h1:awSCU3Rp5EP2WuTl1J8LIFoz6vFdhG6N/kfU1i6dO7U=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5 h1:XAzx9gjCb0Rxj7EoqcClPD1d5ZBxZJk0jbuoPHenBt0=
