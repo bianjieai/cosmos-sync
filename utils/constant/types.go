@@ -22,4 +22,6 @@ const (
 	IbcRecvPacketEventAttriKeyPacketAck      = "packet_ack"
 	IbcUpdateClientEventTypeUpdateClient     = "update_client"
 	IbcUpdateClientEventAttriKeyHeader       = "header"
+	IbcRecvPacketEventTypeRecvPacket         = "recv_packet"
+	IbcRecvPacketEventAttriKeyPacketDataHex  = "packet_data_hex"
 )
