@@ -47,8 +47,8 @@ func removeHeaderOfUpdateClientEvents(e models.Event) (models.Event, bool) {
 	return e, true
 }
 
-//remove packet_data_hex  of recv_packet events
-func removePacketDataHexOfRecvPacketEvents(e models.Event) (models.Event, bool) {
+//remove packet_data_hex  of  events
+func removePacketDataHexOfIbcTxEvents(e models.Event) (models.Event, bool) {
 	var change bool
 	if e.Type != constant.IbcRecvPacketEventTypeRecvPacket &&
 		e.Type != constant.IbcRecvPacketEventTypeWriteAcknowledge &&

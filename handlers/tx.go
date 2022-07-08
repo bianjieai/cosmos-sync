@@ -220,7 +220,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 				if _conf.Server.IgnoreIbcHeader {
 					for id, one := range docTx.EventsNew {
 						if one.MsgIndex == uint32(i) {
-							docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removePacketDataHexOfRecvPacketEvents)
+							docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removePacketDataHexOfIbcTxEvents)
 						}
 					}
 				}
@@ -253,7 +253,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 				}
 				for id, one := range docTx.EventsNew {
 					if one.MsgIndex == uint32(i) {
-						docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removePacketDataHexOfRecvPacketEvents)
+						docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removePacketDataHexOfIbcTxEvents)
 					}
 				}
 			}
