@@ -217,6 +217,13 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 					ibcTranferMsg.PacketId = buildPacketId(val.Events)
 					msgDocInfo.DocTxMsg.Msg = ibcTranferMsg
 				}
+				if _conf.Server.IgnoreIbcHeader {
+					for id, one := range docTx.EventsNew {
+						if one.MsgIndex == uint32(i) {
+							docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removePacketDataHexOfRecvPacketEvents)
+						}
+					}
+				}
 
 			} else {
 				logger.Warn("ibc transfer handler packet_id failed", logger.String("errTag", "TxMsg"),
@@ -238,6 +245,18 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
 				}
 			}
+			if _conf.Server.IgnoreIbcHeader {
+				timeOutMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgRecvPacket)
+				if ok {
+					timeOutMsg.ProofCommitment = "ignore ibc ProofCommitment info"
+					msgDocInfo.DocTxMsg.Msg = timeOutMsg
+				}
+				for id, one := range docTx.EventsNew {
+					if one.MsgIndex == uint32(i) {
+						docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removePacketDataHexOfRecvPacketEvents)
+					}
+				}
+			}
 		case MsgTypeUpdateClient:
 			if _conf.Server.IgnoreIbcHeader {
 				updateClientMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgUpdateClient)
@@ -249,6 +268,14 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 					if one.MsgIndex == uint32(i) {
 						docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removeHeaderOfUpdateClientEvents)
 					}
+				}
+			}
+		case MsgTypeTimeout:
+			if _conf.Server.IgnoreIbcHeader {
+				timeOutMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgTimeout)
+				if ok {
+					timeOutMsg.ProofUnreceived = "ignore ibc ProofUnreceived info"
+					msgDocInfo.DocTxMsg.Msg = timeOutMsg
 				}
 			}
 		}
