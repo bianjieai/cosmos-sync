@@ -612,6 +612,8 @@ github.com/kaifei-bianjie/msg-parser v0.0.0-20220512064915-41a999151780 h1:CqKWk
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220512064915-41a999151780/go.mod h1:IGPTM4D+gn7FkkTL8F//XEgDfSq/UH5cze5zPQ5vbzw=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220627101614-4294c5f39e52 h1:Hd93UEvU/pOMuaJpjsv1w/8mrnKwvz4M5H8o6Ht1Uz8=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220627101614-4294c5f39e52/go.mod h1:tjYOle4T7zlofMUP5tmWCIGQEPoS3nMRvNV+CR8Wt10=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220712064513-48b640a151b6 h1:3eFT8rqiwuZguQ2JtCrtR53msqGG6v9CXg1Vv+3RwgI=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220712064513-48b640a151b6/go.mod h1:tjYOle4T7zlofMUP5tmWCIGQEPoS3nMRvNV+CR8Wt10=
 github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/karalabe/usb v0.0.0-20211005121534-4c5740d64559/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d/go.mod h1:JJNrCn9otv/2QP4D7SMJBgaleKpOf66PnW6F5WGNRIc=
