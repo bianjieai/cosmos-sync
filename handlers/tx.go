@@ -12,6 +12,7 @@ import (
 	"github.com/kaifei-bianjie/msg-parser/codec"
 	. "github.com/kaifei-bianjie/msg-parser/modules"
 	"github.com/kaifei-bianjie/msg-parser/modules/evm"
+	"github.com/kaifei-bianjie/msg-parser/modules/mt"
 	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
@@ -164,6 +165,22 @@ func parseTx(index uint32, txBytes types.Tx, txResult *types2.ResponseDeliverTx,
 			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
 		}
 
+		if msgDocInfo.DocTxMsg.Type == MsgTypeMTIssueDenom && docTx.Status == constant.TxStatusSuccess {
+			// get denom_id from events then set to msg, because this msg hasn't denom_id
+			denomId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeIssueDenom, AttrKeyDenomId)
+			msg := msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTIssueDenom)
+			msg.Id = denomId
+			msgDocInfo.DocTxMsg.Msg = msg
+		}
+
+		if msgDocInfo.DocTxMsg.Type == MsgTypeMintMT && docTx.Status == constant.TxStatusSuccess {
+			// get mt_id from events then set to msg, because this msg hasn't mt_id
+			mtId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMintMT, AttrKeyMTId)
+			msg := msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTMint)
+			msg.Id = mtId
+			msgDocInfo.DocTxMsg.Msg = msg
+		}
+
 		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
 		docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
 		docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
@@ -287,4 +304,24 @@ func SaveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models
 	}
 
 	return nil
+}
+
+const (
+	EventTypeIssueDenom = "issue_denom"
+	EventTypeMintMT     = "mint_mt"
+	AttrKeyDenomId      = "denom_id"
+	AttrKeyMTId         = "mt_id"
+)
+
+func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string {
+	for _, val := range events {
+		if val.Type == typ {
+			for _, attr := range val.Attributes {
+				if attr.Key == attrKey {
+					return attr.Value
+				}
+			}
+		}
+	}
+	return ""
 }
