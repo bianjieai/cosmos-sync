@@ -705,6 +705,8 @@ github.com/kaifei-bianjie/msg-parser v0.0.0-20220307085528-a74978899faa h1:1Xovc
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220307085528-a74978899faa/go.mod h1:27kp2oL+8HsIpnNM6V57XelO26CLKpLgZC4PfpVL2SE=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220705101139-6b85000a221f h1:rA5ypHKo5MCBDQ4541aA1iJDHX2sQINCzBtnJVV+fnU=
 github.com/kaifei-bianjie/msg-parser v0.0.0-20220705101139-6b85000a221f/go.mod h1:p15jRTa1z9JLCuhZbAE3gfVSm6b1LeBl8IT8HLwI92s=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220713060943-9280cf91e2df h1:M7R+iOXBNHpEo4VU/F+pgBUfDtugOCr/W9pW8BmqY30=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220713060943-9280cf91e2df/go.mod h1:p15jRTa1z9JLCuhZbAE3gfVSm6b1LeBl8IT8HLwI92s=
 github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/karalabe/usb v0.0.0-20211005121534-4c5740d64559/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/karrick/godirwalk v1.8.0/go.mod h1:H5KPZjojv4lE+QYImBI8xVtrBRgYrIVsaRPx4tDPEn4=

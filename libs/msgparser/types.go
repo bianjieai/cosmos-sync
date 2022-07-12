@@ -4,6 +4,7 @@ const (
 	BankRouteKey         string = "bank"
 	ServiceRouteKey      string = "service"
 	NftRouteKey          string = "nft"
+	MtRouteKey           string = "mt"
 	RecordRouteKey       string = "record"
 	TokenRouteKey        string = "token"
 	CoinswapRouteKey     string = "coinswap"
