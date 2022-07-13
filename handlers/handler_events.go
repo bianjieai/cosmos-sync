@@ -46,3 +46,26 @@ func removeHeaderOfUpdateClientEvents(e models.Event) (models.Event, bool) {
 	}
 	return e, true
 }
+
+//remove packet_data_hex  of  events
+func removePacketDataHexOfIbcTxEvents(e models.Event) (models.Event, bool) {
+	var change bool
+	if e.Type != constant.IbcRecvPacketEventTypeRecvPacket &&
+		e.Type != constant.IbcRecvPacketEventTypeWriteAcknowledge &&
+		e.Type != constant.IbcTransferEventTypeSendPacket {
+		return e, change
+	}
+	if len(e.Attributes) > 0 {
+		for j, v := range e.Attributes {
+			if v.Key == constant.IbcRecvPacketEventAttriKeyPacketDataHex {
+				change = true
+				attr := models.KvPair{
+					Key:   v.Key,
+					Value: "ignore ibc packet_data_hex info",
+				}
+				e.Attributes[j] = attr
+			}
+		}
+	}
+	return e, true
+}
