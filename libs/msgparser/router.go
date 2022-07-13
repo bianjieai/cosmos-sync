@@ -85,6 +85,7 @@ func RegisteRouter() Router {
 	msgRoute.AddRoute(BankRouteKey, handleBank).
 		AddRoute(ServiceRouteKey, handleService).
 		AddRoute(NftRouteKey, handleNft).
+		AddRoute(MtRouteKey, handleMt).
 		AddRoute(RecordRouteKey, handleRecord).
 		AddRoute(TokenRouteKey, handleToken).
 		AddRoute(CoinswapRouteKey, handleCoinswap).

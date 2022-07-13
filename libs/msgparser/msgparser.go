@@ -59,6 +59,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = TIbcTransferRouteKey
 	} else if strings.HasPrefix(data, "/irismod.nft.") {
 		route = NftRouteKey
+	} else if strings.HasPrefix(data, "/irismod.mt.") {
+		route = MtRouteKey
 	} else if strings.HasPrefix(data, "/irismod.farm.") {
 		route = FarmRouteKey
 	} else if strings.HasPrefix(data, "/irismod.coinswap.") {
@@ -107,6 +109,10 @@ func handleService(v types.SdkMsg) MsgDocInfo {
 }
 func handleNft(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Nft.HandleTxMsg(v)
+	return docInfo
+}
+func handleMt(v types.SdkMsg) MsgDocInfo {
+	docInfo, _ := _client.Mt.HandleTxMsg(v)
 	return docInfo
 }
 func handleRecord(v types.SdkMsg) MsgDocInfo {
