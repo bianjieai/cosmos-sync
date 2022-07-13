@@ -157,28 +157,29 @@ func parseTx(index uint32, txBytes types.Tx, txResult *types2.ResponseDeliverTx,
 			docTx.Type = msgDocInfo.DocTxMsg.Type
 		}
 
-		if msgDocInfo.DocTxMsg.Type == MsgTypeEthereumTx {
+		switch msgDocInfo.DocTxMsg.Type {
+		case MsgTypeEthereumTx:
 			var msgEtheumTx evm.DocMsgEthereumTx
 			var txData msgparser.LegacyTx
 			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
 			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
 			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
-		}
+		case MsgTypeMTIssueDenom:
+			if docTx.Status == constant.TxStatusFail {
+				break
+			}
 
-		if msgDocInfo.DocTxMsg.Type == MsgTypeMTIssueDenom && docTx.Status == constant.TxStatusSuccess {
 			// get denom_id from events then set to msg, because this msg hasn't denom_id
 			denomId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeIssueDenom, AttrKeyDenomId)
-			msg := msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTIssueDenom)
-			msg.Id = denomId
-			msgDocInfo.DocTxMsg.Msg = msg
-		}
+			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTIssueDenom).Id = denomId
+		case MsgTypeMintMT:
+			if docTx.Status == constant.TxStatusFail {
+				break
+			}
 
-		if msgDocInfo.DocTxMsg.Type == MsgTypeMintMT && docTx.Status == constant.TxStatusSuccess {
 			// get mt_id from events then set to msg, because this msg hasn't mt_id
 			mtId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMintMT, AttrKeyMTId)
-			msg := msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTMint)
-			msg.Id = mtId
-			msgDocInfo.DocTxMsg.Msg = msg
+			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTMint).Id = mtId
 		}
 
 		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
