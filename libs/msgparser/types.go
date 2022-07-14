@@ -7,6 +7,7 @@ const (
 	CrisisRouteKey       string = "crisis"
 	EvidenceRouteKey     string = "evidence"
 	GovRouteKey          string = "gov"
+	FeegrantRouteKey     string = "feegrant"
 	SlashingRouteKey     string = "slashing"
 	NftRouteKey          string = "nft"
 	ServiceRouteKey      string = "service"
@@ -28,6 +29,7 @@ var RouteHandlerMap = map[string]Handler{
 	CrisisRouteKey:       handleCrisis,
 	EvidenceRouteKey:     handleEvidence,
 	GovRouteKey:          handleGov,
+	FeegrantRouteKey:     handleFeegrant,
 	SlashingRouteKey:     handleSlashing,
 	NftRouteKey:          handleNft,
 	ServiceRouteKey:      handleService,
