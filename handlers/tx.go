@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
@@ -18,8 +17,6 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
-	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2/txn"
 	"strings"
 	"time"
 )
@@ -52,18 +49,17 @@ func InitRouter(conf *config.Config) {
 	_conf = conf
 }
 
-func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, []txn.Op, error) {
+func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
 	var (
 		blockDoc models.Block
 		block    *ctypes.ResultBlock
-		txnOps   []txn.Op
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
-			return &blockDoc, nil, txnOps, utils.ConvertErr(b, "", "ParseBlock", err)
+			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlock", err)
 		} else {
 			block = v2
 		}
@@ -83,40 +79,35 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		time.Sleep(1 * time.Second)
 		blockResults, err = client.BlockResults(context.Background(), &b)
 		if err != nil {
-			return &blockDoc, nil, txnOps, utils.ConvertErr(b, "", "ParseBlockResult", err)
+			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
 		}
 	}
 
 	if len(block.Block.Txs) != len(blockResults.TxsResults) {
-		return nil, nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
+		return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
 	}
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for i, v := range block.Block.Txs {
 			txResult := blockResults.TxsResults[i]
-			txDoc, ops, err := parseTx(uint32(i), v, txResult, block.Block)
+			txDoc, err := parseTx(v, txResult, block.Block, uint32(i))
 			if err != nil {
-				return &blockDoc, txDocs, txnOps, err
+				return &blockDoc, txDocs, err
 			}
 			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
 				txDocs = append(txDocs, &txDoc)
-				if len(ops) > 0 {
-					txnOps = append(txnOps, ops...)
-				}
 			}
 		}
 	}
 
-	return &blockDoc, txDocs, txnOps, nil
+	return &blockDoc, txDocs, nil
 }
 
-func parseTx(index uint32, txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.Block) (models.Tx, []txn.Op, error) {
+func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.Block, index uint32) (models.Tx, error) {
 	var (
-		docTx models.Tx
-
+		docTx     models.Tx
 		docTxMsgs []msgsdktypes.TxMsg
-		txnOps    []txn.Op
 	)
 	txHash := utils.BuildHex(txBytes.Hash())
 
@@ -137,7 +128,7 @@ func parseTx(index uint32, txBytes types.Tx, txResult *types2.ResponseDeliverTx,
 			logger.String("errTag", "TxDecoder"),
 			logger.String("txhash", txHash),
 			logger.Int64("height", block.Height))
-		return docTx, txnOps, nil
+		return docTx, nil
 	}
 	docTx.GasUsed = txResult.GasUsed
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
@@ -145,11 +136,11 @@ func parseTx(index uint32, txBytes types.Tx, txResult *types2.ResponseDeliverTx,
 
 	msgs := authTx.GetMsgs()
 	if len(msgs) == 0 {
-		return docTx, txnOps, nil
+		return docTx, nil
 	}
 
 	for i, v := range msgs {
-		msgDocInfo, ops := _parser.HandleTxMsg(v)
+		msgDocInfo := _parser.HandleTxMsg(v)
 		if len(msgDocInfo.Addrs) == 0 {
 			continue
 		}
@@ -186,9 +177,6 @@ func parseTx(index uint32, txBytes types.Tx, txResult *types2.ResponseDeliverTx,
 		docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
 		docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
 		docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
-		if len(ops) > 0 {
-			txnOps = append(txnOps, ops...)
-		}
 	}
 
 	docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
@@ -203,10 +191,10 @@ func parseTx(index uint32, txBytes types.Tx, txResult *types2.ResponseDeliverTx,
 			logger.String("errTag", "TxMsg"),
 			logger.String("txhash", txHash),
 			logger.Int64("height", block.Height))
-		return models.Tx{}, txnOps, nil
+		return models.Tx{}, nil
 	}
 
-	return docTx, txnOps, nil
+	return docTx, nil
 }
 func parseTxStatus(code uint32) uint32 {
 	if code == 0 {
@@ -236,75 +224,6 @@ func removeDuplicatesFromSlice(data []string) (result []string) {
 		result = append(result, one)
 	}
 	return
-}
-
-func SaveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc models.SyncTask, opsDoc []txn.Op) error {
-	var (
-		insertOps []txn.Op
-	)
-
-	if blockDoc.Height == 0 {
-		return fmt.Errorf("invalid block, height equal 0")
-	}
-
-	blockOp := txn.Op{
-		C:      models.BlockModel.Name(),
-		Id:     bson.NewObjectId(),
-		Insert: blockDoc,
-	}
-
-	dataLen := 0
-	if length := len(txDocs); length > 0 {
-
-		insertOps = make([]txn.Op, 0, _conf.Server.InsertBatchLimit)
-		for _, v := range txDocs {
-			op := txn.Op{
-				C:      models.TxModel.Name(),
-				Id:     bson.NewObjectId(),
-				Insert: v,
-			}
-			dataLen += 1
-			if dataLen >= _conf.Server.InsertBatchLimit {
-				if err := models.Txn(insertOps); err != nil {
-					return err
-				}
-				insertOps = make([]txn.Op, 0, _conf.Server.InsertBatchLimit)
-				insertOps = append(insertOps, op)
-				dataLen = 0
-			} else {
-				insertOps = append(insertOps, op)
-			}
-		}
-	}
-	if taskDoc.ID.Valid() {
-		updateOp := txn.Op{
-			C:      models.SyncTaskModel.Name(),
-			Id:     taskDoc.ID,
-			Assert: txn.DocExists,
-			Update: bson.M{
-				"$set": bson.M{
-					"current_height":   taskDoc.CurrentHeight,
-					"status":           taskDoc.Status,
-					"last_update_time": taskDoc.LastUpdateTime,
-				},
-			},
-		}
-		insertOps = append(insertOps, updateOp)
-	}
-
-	insertOps = append(insertOps, blockOp)
-	if len(opsDoc) > 0 {
-		insertOps = append(insertOps, opsDoc...)
-	}
-
-	if len(insertOps) > 0 {
-		err := models.Txn(insertOps)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 const (

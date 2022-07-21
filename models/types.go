@@ -2,10 +2,6 @@
 
 package models
 
-const (
-	CollectionNameTxn = "sync_txn"
-)
-
 var (
 	SyncTaskModel SyncTask
 	BlockModel    Block

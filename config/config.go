@@ -17,10 +17,9 @@ type (
 		DataBase DataBaseConf `mapstructure:"database"`
 		Server   ServerConf   `mapstructure:"server"`
 	}
+
 	DataBaseConf struct {
-		Addrs    string `mapstructure:"addrs"`
-		User     string `mapstructure:"user"`
-		Passwd   string `mapstructure:"passwd" json:"-"`
+		NodeUri  string `mapstructure:"node_uri"`
 		Database string `mapstructure:"database"`
 	}
 
@@ -42,9 +41,6 @@ type (
 		Bech32AccPrefix   string `mapstructure:"bech32_acc_prefix"`
 		PromethousPort    string `mapstructure:"promethous_port"`
 		OnlySupportModule string `mapstructure:"only_support_module"`
-		IsJsonRpcProtocol bool   `mapstructure:"is_json_rpc_protocol"`
-
-		InsertBatchLimit int `mapstructure:"insert_batch_limit"`
 	}
 )
 

@@ -6,7 +6,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/monitor/metrics"
-	"gopkg.in/mgo.v2"
+	"github.com/qiniu/qmgo"
 	"os"
 	"os/signal"
 	"syscall"
@@ -113,7 +113,7 @@ func (node *clientNode) nodeStatusReport() {
 	}()
 
 	block, err := new(models.Block).GetMaxBlockHeight()
-	if err != nil && err != mgo.ErrNotFound {
+	if err != nil && err != qmgo.ErrNoSuchDocuments {
 		logger.Error("query block exception", logger.String("error", err.Error()))
 	}
 	node.dbHeight.Set(float64(block.Height))
