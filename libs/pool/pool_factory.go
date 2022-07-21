@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	"github.com/bianjieai/cosmos-sync/libs/pool/jrpc"
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"math/rand"
@@ -22,7 +21,6 @@ type (
 	Client struct {
 		Id string
 		*rpcclient.HTTP
-		Jrpc *jrpc.BlockChainClient
 	}
 )
 
@@ -37,11 +35,9 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 }
 
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {
-	if !isJsonRpcProtocol {
-		c := object.Object.(*Client)
-		if c.IsRunning() {
-			c.Stop()
-		}
+	c := object.Object.(*Client)
+	if c.IsRunning() {
+		c.Stop()
 	}
 	return nil
 }
@@ -107,13 +103,6 @@ func (f *PoolFactory) GetEndPoint() EndPoint {
 }
 
 func newClient(nodeUrl string) (*Client, error) {
-	if isJsonRpcProtocol {
-		client, err := jrpc.NewBlockChainClient(nodeUrl)
-		return &Client{
-			Id:   generateId(nodeUrl),
-			Jrpc: client,
-		}, err
-	}
 	client, err := rpcclient.New(nodeUrl, "/websocket")
 	return &Client{
 		Id:   generateId(nodeUrl),

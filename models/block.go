@@ -1,9 +1,10 @@
 package models
 
 import (
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"fmt"
+	"github.com/qiniu/qmgo"
+	"github.com/qiniu/qmgo/options"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 const (
@@ -28,8 +29,8 @@ func (d Block) Name() string {
 }
 
 func (d Block) EnsureIndexes() {
-	var indexes []mgo.Index
-	indexes = append(indexes, mgo.Index{
+	var indexes []options.IndexModel
+	indexes = append(indexes, options.IndexModel{
 		Key:        []string{"-height"},
 		Unique:     true,
 		Background: true,
@@ -44,8 +45,8 @@ func (d Block) PkKvPair() map[string]interface{} {
 func (d Block) GetMaxBlockHeight() (Block, error) {
 	var result Block
 
-	getMaxBlockHeightFn := func(c *mgo.Collection) error {
-		return c.Find(nil).Select(bson.M{"height": 1, "time": 1}).Sort("-height").Limit(1).One(&result)
+	getMaxBlockHeightFn := func(c *qmgo.Collection) error {
+		return c.Find(_ctx, bson.M{}).Select(bson.M{"height": 1, "time": 1}).Sort("-height").Limit(1).One(&result)
 	}
 
 	if err := ExecCollection(d.Name(), getMaxBlockHeightFn); err != nil {

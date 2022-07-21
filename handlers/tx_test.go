@@ -22,7 +22,7 @@ func TestParseTxs(t *testing.T) {
 		c.Release()
 	}()
 
-	if blockDoc, txDocs, _, err := ParseBlockAndTxs(block, c); err != nil {
+	if blockDoc, txDocs, err := ParseBlockAndTxs(block, c); err != nil {
 		t.Fatal(err)
 	} else {
 		t.Log(utils.MarshalJsonIgnoreErr(blockDoc))

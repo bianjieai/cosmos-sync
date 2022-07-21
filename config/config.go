@@ -17,10 +17,9 @@ type (
 		DataBase DataBaseConf `mapstructure:"database"`
 		Server   ServerConf   `mapstructure:"server"`
 	}
+
 	DataBaseConf struct {
-		Addrs    string `mapstructure:"addrs"`
-		User     string `mapstructure:"user"`
-		Passwd   string `mapstructure:"passwd" json:"-"`
+		NodeUri  string `mapstructure:"node_uri"`
 		Database string `mapstructure:"database"`
 	}
 

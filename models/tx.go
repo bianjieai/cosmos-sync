@@ -3,8 +3,8 @@ package models
 import (
 	"fmt"
 	"github.com/kaifei-bianjie/msg-parser/types"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/qiniu/qmgo/options"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 const (
@@ -56,13 +56,13 @@ func (d Tx) Name() string {
 }
 
 func (d Tx) EnsureIndexes() {
-	var indexes []mgo.Index
-	indexes = append(indexes, mgo.Index{
+	var indexes []options.IndexModel
+	indexes = append(indexes, options.IndexModel{
 		Key:        []string{"-tx_hash"},
 		Background: true,
 	})
 
-	indexes = append(indexes, mgo.Index{
+	indexes = append(indexes, options.IndexModel{
 		Key:        []string{"-height", "-tx_hash"},
 		Unique:     true,
 		Background: true,
