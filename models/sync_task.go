@@ -290,13 +290,20 @@ func (d SyncTask) QueryValidFollowTasks() (bool, error) {
 
 // query catch_up task num
 func (d SyncTask) QueryCatchUpingTasksNum() (int64, error) {
+	var timeout int64
+	if _conf.Server.SyncTaskTimeout == 0 {
+		timeout = 30 * 60
+	} else {
+		timeout = _conf.Server.SyncTaskTimeout
+	}
+
 	q := bson.M{
 		"status": SyncTaskStatusUnderway,
 		"end_height": bson.M{
 			"$gt": 0,
 		},
 		"create_time": bson.M{
-			"$lt": time.Now().Unix() - 30*60,
+			"$lt": time.Now().Unix() - timeout,
 		},
 	}
 
