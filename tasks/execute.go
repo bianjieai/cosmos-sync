@@ -201,7 +201,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 		if workerUnchanged {
 			// save data and update sync task
-			taskDoc := &task
+			taskDoc := task
 			taskDoc.CurrentHeight = inProcessBlock
 			taskDoc.LastUpdateTime = time.Now().Unix()
 			taskDoc.Status = models.SyncTaskStatusUnderway
@@ -209,7 +209,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 				taskDoc.Status = models.SyncTaskStatusCompleted
 			}
 
-			err := saveDocsWithTxn(blockDoc, txDocs, taskDoc)
+			err := saveDocsWithTxn(blockDoc, txDocs, &taskDoc)
 			if err != nil {
 				if !strings.Contains(err.Error(), constant.ErrDbNotFindTransaction) {
 					logger.Error("save docs fail",
