@@ -10,6 +10,7 @@ const (
 	FeegrantRouteKey     string = "feegrant"
 	SlashingRouteKey     string = "slashing"
 	NftRouteKey          string = "nft"
+	MtRouteKey           string = "mt"
 	ServiceRouteKey      string = "service"
 	TokenRouteKey        string = "token"
 	HtlcRouteKey         string = "htlc"
@@ -32,6 +33,7 @@ var RouteHandlerMap = map[string]Handler{
 	FeegrantRouteKey:     handleFeegrant,
 	SlashingRouteKey:     handleSlashing,
 	NftRouteKey:          handleNft,
+	MtRouteKey:           handleMt,
 	ServiceRouteKey:      handleService,
 	TokenRouteKey:        handleToken,
 	HtlcRouteKey:         handleHtlc,
