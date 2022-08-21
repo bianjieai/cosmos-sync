@@ -28,6 +28,7 @@ type (
 		DocTxMsgs     []types.TxMsg `bson:"msgs"`
 		Addrs         []string      `bson:"addrs"`
 		ContractAddrs []string      `bson:"contract_addrs"`
+		ReceiptErr    string        `bson:"receipt_err"`
 		TxIndex       uint32        `bson:"tx_index"`
 		Ext           interface{}   `bson:"ext"`
 	}
