@@ -160,7 +160,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 			if len(txResult.Data) > 0 {
 				if txRespond, err := evmtypes.DecodeTxResponse(txResult.Data); err == nil {
 					if len(txRespond.Ret) > 0 {
-						docTx.ReceiptErr = hex.EncodeToString(txRespond.Ret)
+						docTx.EvmTxRespondRet = hex.EncodeToString(txRespond.Ret)
 					}
 				} else {
 					logger.Warn("DecodeTxResponse failed",
