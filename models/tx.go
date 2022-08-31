@@ -13,23 +13,24 @@ const (
 
 type (
 	Tx struct {
-		Time          int64         `bson:"time"`
-		Height        int64         `bson:"height"`
-		TxHash        string        `bson:"tx_hash"`
-		Type          string        `bson:"type"` // parse from first msg
-		Memo          string        `bson:"memo"`
-		Status        uint32        `bson:"status"`
-		Log           string        `bson:"log"`
-		Fee           *types.Fee    `bson:"fee"`
-		GasUsed       int64         `bson:"gas_used"`
-		Types         []string      `bson:"types"`
-		EventsNew     []EventNew    `bson:"events_new"`
-		Signers       []string      `bson:"signers"`
-		DocTxMsgs     []types.TxMsg `bson:"msgs"`
-		Addrs         []string      `bson:"addrs"`
-		ContractAddrs []string      `bson:"contract_addrs"`
-		TxIndex       uint32        `bson:"tx_index"`
-		Ext           interface{}   `bson:"ext"`
+		Time            int64         `bson:"time"`
+		Height          int64         `bson:"height"`
+		TxHash          string        `bson:"tx_hash"`
+		Type            string        `bson:"type"` // parse from first msg
+		Memo            string        `bson:"memo"`
+		Status          uint32        `bson:"status"`
+		Log             string        `bson:"log"`
+		Fee             *types.Fee    `bson:"fee"`
+		GasUsed         int64         `bson:"gas_used"`
+		Types           []string      `bson:"types"`
+		EventsNew       []EventNew    `bson:"events_new"`
+		Signers         []string      `bson:"signers"`
+		DocTxMsgs       []types.TxMsg `bson:"msgs"`
+		Addrs           []string      `bson:"addrs"`
+		ContractAddrs   []string      `bson:"contract_addrs"`
+		EvmTxRespondRet string        `bson:"evm_tx_respond_ret"`
+		TxIndex         uint32        `bson:"tx_index"`
+		Ext             interface{}   `bson:"ext"`
 	}
 
 	Event struct {

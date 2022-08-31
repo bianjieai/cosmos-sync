@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/hex"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
@@ -16,6 +17,7 @@ import (
 	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	"golang.org/x/net/context"
 	"strings"
 	"time"
@@ -155,6 +157,18 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
 			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
 			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
+			if len(txResult.Data) > 0 {
+				if txRespond, err := evmtypes.DecodeTxResponse(txResult.Data); err == nil {
+					if len(txRespond.Ret) > 0 {
+						docTx.EvmTxRespondRet = hex.EncodeToString(txRespond.Ret)
+					}
+				} else {
+					logger.Warn("DecodeTxResponse failed",
+						logger.String("err", err.Error()),
+						logger.String("txhash", txHash),
+						logger.Int64("height", block.Height))
+				}
+			}
 		case MsgTypeMTIssueDenom:
 			if docTx.Status == constant.TxStatusFail {
 				break
