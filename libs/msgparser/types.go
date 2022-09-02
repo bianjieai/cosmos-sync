@@ -22,6 +22,7 @@ const (
 	TIbcTransferRouteKey string = "NFT"
 	TIbcRouteKey         string = "tibc"
 	EvmRouteKey          string = "evm"
+	PermRouteKey         string = "perm"
 )
 
 var RouteHandlerMap = map[string]Handler{

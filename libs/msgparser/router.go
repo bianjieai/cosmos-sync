@@ -94,6 +94,7 @@ func RegisteRouter() Router {
 		AddRoute(IdentityRouteKey, handleIdentity).
 		AddRoute(EvmRouteKey, handleEvm).
 		AddRoute(TIbcRouteKey, handleTIbc).
-		AddRoute(TIbcTransferRouteKey, handleTIbc)
+		AddRoute(TIbcTransferRouteKey, handleTIbc).
+		AddRoute(PermRouteKey, handlePerm)
 	return msgRoute
 }

@@ -75,6 +75,10 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = IdentityRouteKey
 	} else if strings.HasPrefix(data, "/ethermint.evm.") {
 		route = EvmRouteKey
+	} else if strings.HasPrefix(data, "/iritamod.slashing") {
+		route = SlashingRouteKey
+	} else if strings.HasPrefix(data, "/iritamod.perm") {
+		route = PermRouteKey
 	} else {
 		route = data
 	}
@@ -189,5 +193,10 @@ func handleIdentity(v types.SdkMsg) MsgDocInfo {
 
 func handleEvm(v types.SdkMsg) MsgDocInfo {
 	docInfo, _ := _client.Evm.HandleTxMsg(v)
+	return docInfo
+}
+
+func handlePerm(v types.SdkMsg) MsgDocInfo {
+	docInfo, _ := _client.Perm.HandleTxMsg(v)
 	return docInfo
 }
