@@ -123,6 +123,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 
 	docTx.EventsNew = parseABCILogs(txResult.Log)
 	docTx.TxIndex = index
+	docTx.TxId = block.Height*10000000 + int64(index)
 
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
