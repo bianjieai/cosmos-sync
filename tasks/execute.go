@@ -56,7 +56,7 @@ func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 
 	healthCheckQuit := make(chan bool)
 	//workerId = genWorkerId()
-	client := pool.GetClient()
+	//client := pool.GetClient()
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -64,7 +64,7 @@ func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 		}
 		close(healthCheckQuit)
 		<-chanLimit
-		client.Release()
+		//client.Release()
 	}()
 
 	// check whether exist executable task
@@ -83,9 +83,9 @@ func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 	// take over sync task
 	// attempt to update status, worker_id and worker_logs
 	task := tasks[utils.RandInt(len(tasks))]
-	s.TakeOverTaskAndExecute(task, client, healthCheckQuit, blockNumPerWorkerHandle)
+	s.TakeOverTaskAndExecute(task, healthCheckQuit, blockNumPerWorkerHandle)
 }
-func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *pool.Client, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
+func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
 	var taskType string
 	workerId := fmt.Sprintf("%v@%v", s.hostname, primitive.NewObjectID().Hex())
 	err := s.syncTaskModel.TakeOverTask(task, workerId)
@@ -183,7 +183,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		}
 
 		// parse data from block
-		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
+		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock)
 		if err != nil {
 			logger.Error("Parse block fail",
 				logger.Int64("height", inProcessBlock),

@@ -10,7 +10,7 @@ import (
 )
 
 func TestParseTxs(t *testing.T) {
-	block := int64(3744282)
+	block := int64(255301)
 	conf, err := config.ReadConfig()
 	if err != nil {
 		t.Fatal(err.Error())
@@ -18,12 +18,7 @@ func TestParseTxs(t *testing.T) {
 	models.Init(conf)
 	InitRouter(conf)
 	pool.Init(conf)
-	c := pool.GetClient()
-	defer func() {
-		c.Release()
-	}()
-
-	if blockDoc, txDocs, err := ParseBlockAndTxs(block, c); err != nil {
+	if blockDoc, txDocs, err := ParseBlockAndTxs(block); err != nil {
 		t.Fatal(err)
 	} else {
 		t.Log(utils.MarshalJsonIgnoreErr(blockDoc))

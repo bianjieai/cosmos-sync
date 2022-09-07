@@ -77,6 +77,13 @@ func (c *Client) HeartBeat() error {
 	return err
 }
 
+func (c *Client) InvalidateObject() {
+	err := poolObject.InvalidateObject(ctx, c)
+	if err != nil {
+		logger.Error(err.Error())
+	}
+}
+
 func ClosePool() {
 	poolObject.Close(ctx)
 }
