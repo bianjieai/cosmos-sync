@@ -1,8 +1,6 @@
 package config
 
 import (
-	"github.com/bianjieai/cosmos-sync/libs/logger"
-	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/spf13/viper"
 	"os"
@@ -82,7 +80,7 @@ func ReadConfig() (*Config, error) {
 	}
 	cfg.Server.SleepTimeCreateTaskWorker = sleepTimeCreateTaskWorker
 
-	logger.Debug("config: " + utils.MarshalJsonIgnoreErr(cfg))
+	//logger.Debug("config: " + utils.MarshalJsonIgnoreErr(cfg))
 
 	return &cfg, nil
 }
