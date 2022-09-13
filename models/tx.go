@@ -13,6 +13,7 @@ const (
 
 type (
 	Tx struct {
+		TxId      int64         `bson:"tx_id"`
 		Time      int64         `bson:"time"`
 		Height    int64         `bson:"height"`
 		TxHash    string        `bson:"tx_hash"`

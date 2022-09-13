@@ -164,6 +164,8 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 
 	docTx.EventsNew = parseABCILogs(txResult.Log)
 	docTx.TxIndex = uint32(index)
+	docTx.TxId = block.Height*100000 + int64(index)
+
 	eventsIndexMap := make(map[uint32]models.EventNew)
 	if txResult.Code == 0 {
 		eventsIndexMap = splitEvents(txResult.Log)
