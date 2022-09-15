@@ -28,8 +28,11 @@ func Init(conf *config.Config) {
 	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(conf.Server.ChainId)
 	if err != nil {
 		//从github获取失败退出
-		logger.Fatal(err.Error())
+		logger.Fatal("GetRpcNodesFromGithubRepo fail " + err.Error())
 		return
+	}
+	if len(nodeRpcs) == 0 {
+		logger.Fatal("no found Rpc Nodes From GithubRepo")
 	}
 	nodeUrls := strings.Split(nodeRpcs, ",")
 	for _, url := range nodeUrls {
