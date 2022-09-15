@@ -189,6 +189,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 				logger.Int64("height", inProcessBlock),
 				logger.String("errTag", utils.GetErrTag(err)),
 				logger.String("err", err.Error()))
+			time.Sleep(2 * time.Second)
 			//continue to assert task is valid
 			blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 			continue

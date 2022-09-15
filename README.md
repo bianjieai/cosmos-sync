@@ -25,7 +25,6 @@ database= "bifrost-sync"
 
 [server]
 node_urls="tcp://192.168.150.40:26657"
-thread_num_parse_tx = 1
 worker_num_create_task=1
 worker_num_execute_task=30
 worker_max_sleep_time=120
@@ -51,7 +50,6 @@ ignore_ibc_header=false
 ### Server config
 
 - node_urls: `required` `string`  full node uri（example: `tcp://127.0.0.1:26657, tcp://127.0.0.2:26657, ...`）
-- thread_num_parse_tx: `required` `int` the thread num to parse tx with goroutine concurrency
 - worker_num_create_task: `required` `int` the maximum time (in seconds) that create task are allowed （default: `1`
   example: `1`）
 - worker_num_execute_task: `required` `int` the maximum time (in seconds) that synchronization TX threads are allowed

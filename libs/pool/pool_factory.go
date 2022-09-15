@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/resource"
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"math/rand"
@@ -26,12 +27,15 @@ type (
 
 func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject, error) {
 	endpoint := f.GetEndPoint()
-	c, err := newClient(endpoint.Address)
-	if err != nil {
-		return nil, err
-	} else {
-		return commonPool.NewPooledObject(c), nil
+	if resource.ValidNode(endpoint.Address) {
+		c, err := newClient(endpoint.Address)
+		if err != nil {
+			return nil, err
+		} else {
+			return commonPool.NewPooledObject(c), nil
+		}
 	}
+	return nil, fmt.Errorf("no found valid node")
 }
 
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {
@@ -42,6 +46,7 @@ func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.Pool
 		endPoint := value.(EndPoint)
 		endPoint.Available = false
 		f.peersMap.Store(c.Id, endPoint)
+		resource.SetInvalidNode(endPoint.Address)
 	}
 	if c.IsRunning() {
 		c.Stop()
@@ -66,6 +71,11 @@ func (f *PoolFactory) ValidateObject(ctx context.Context, object *commonPool.Poo
 		return false
 	}
 	if stat.SyncInfo.CatchingUp {
+		value, ok := f.peersMap.Load(c.Id)
+		if ok {
+			endPoint := value.(EndPoint)
+			resource.SetInvalidNode(endPoint.Address)
+		}
 		return false
 	}
 	return true

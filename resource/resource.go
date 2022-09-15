@@ -1,0 +1,150 @@
+package resource
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/models"
+	"github.com/pkg/errors"
+	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"sync"
+	"time"
+)
+
+var (
+	nodeUrlMap = map[string]bool{}
+	mutex      sync.Mutex
+)
+
+func GetValidNodeUrl() string {
+	for nodeUri, val := range nodeUrlMap {
+		if val {
+			return nodeUri
+		}
+	}
+	logger.Info("GetValidNodeUrl:", logger.Any("nodeUrlMap<nodeurl,valid>:", nodeUrlMap))
+	return ""
+}
+
+func ValidNode(nodeUri string) bool {
+	return nodeUrlMap[nodeUri]
+}
+
+func SetInvalidNode(nodeUri string) {
+	if _, ok := nodeUrlMap[nodeUri]; ok {
+		mutex.Lock()
+		nodeUrlMap[nodeUri] = false
+		mutex.Unlock()
+	}
+}
+
+func getData(chainId string) (string, error) {
+	chainRegistry, err := new(models.ChainRegistry).FindOne(chainId)
+	if err != nil {
+		//logger.Error("loadRpcResource error: " + err.Error())
+		return "", err
+	}
+
+	bz, err := HttpGet(chainRegistry.ChainJsonUrl)
+	if err != nil {
+		//logger.Error("rpc resource get chain json error: " + err.Error())
+		return "", err
+	}
+
+	return string(bz), nil
+
+}
+
+func checkRpcValid(nodeUrl string) error {
+	client, err := rpcclient.New(nodeUrl, "/websocket")
+	if err != nil {
+		return err
+	}
+	defer client.Quit()
+	height := int64(1)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10)*time.Second)
+	defer cancel()
+	_, err = client.Block(ctx, &height)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadRpcResource(bz string) (string, error) {
+	var chainRegisterResp ChainRegisterResp
+	err := json.Unmarshal([]byte(bz), &chainRegisterResp)
+	if err != nil {
+		//logger.Error("rpc resource get chain json error: " + err.Error())
+		return "", err
+	}
+	var rpcAddrs []string
+	for _, v := range chainRegisterResp.Apis.Rpc {
+		nodehttp := strings.Split(v.Address, "://")[0]
+		nodeuri := strings.Split(v.Address, "://")[1]
+		if strings.Count(nodeuri, "/") <= 1 {
+			if strings.Contains(nodeuri, ":") {
+				nodeuri = strings.ReplaceAll(nodeuri, "/", "")
+			} else {
+				if strings.Contains(nodeuri, "/") {
+					nodeuri = strings.ReplaceAll(nodeuri, "/", ":443")
+				} else {
+					nodeuri = nodeuri + ":443"
+				}
+			}
+			nodeUrl := nodehttp + "://" + nodeuri
+			if err := checkRpcValid(nodeUrl); err == nil {
+				rpcAddrs = append(rpcAddrs, nodeUrl)
+			} else {
+				if strings.Contains(err.Error(), "lowest height") {
+					rpcAddrs = append(rpcAddrs, nodeUrl)
+				}
+			}
+
+		} else {
+			logger.Debug("no support nodeurl:" + v.Address)
+		}
+	}
+	nodeUrlMap = make(map[string]bool, len(rpcAddrs))
+	for _, val := range rpcAddrs {
+		nodeUrlMap[val] = true
+	}
+
+	return strings.Join(rpcAddrs, ","), nil
+}
+
+func HttpGet(url string) (bz []byte, err error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("StatusCode(%s) != 200, url: %s", resp.Status, url)
+	}
+
+	bz, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func GetRpcNodesFromGithubRepo(chainId string) (string, error) {
+	data, err := getData(chainId)
+	if err != nil {
+		return "", errors.Wrap(err, "GetRpcNodesFromGithubRepo fail")
+	}
+	nodeurl, err := LoadRpcResource(data)
+	if err != nil {
+		return "", errors.Wrap(err, "LoadRpcResource fail")
+	}
+	logger.Info("valid Rpc Nodes From Github Repo: " + nodeurl)
+	return nodeurl, nil
+}

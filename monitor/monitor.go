@@ -1,11 +1,10 @@
 package monitor
 
 import (
-	"context"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/monitor/metrics"
+	"github.com/bianjieai/cosmos-sync/resource"
 	"github.com/qiniu/qmgo"
 	"os"
 	"os/signal"
@@ -102,34 +101,19 @@ func (node *clientNode) Report() {
 	}
 }
 func (node *clientNode) nodeStatusReport() {
-	client, err := pool.GetClientWithTimeout(10 * time.Second)
-	if err != nil {
-		logger.Error("rpc node connection exception", logger.String("error", err.Error()))
+
+	nodeurl := resource.GetValidNodeUrl()
+	if len(nodeurl) == 0 {
 		node.nodeStatus.Set(float64(NodeStatusNotReachable))
-		return
+	} else {
+		node.nodeStatus.Set(float64(NodeStatusSyncing))
 	}
-	defer func() {
-		client.Release()
-	}()
 
 	block, err := new(models.Block).GetMaxBlockHeight()
 	if err != nil && err != qmgo.ErrNoSuchDocuments {
 		logger.Error("query block exception", logger.String("error", err.Error()))
 	}
 	node.dbHeight.Set(float64(block.Height))
-	status, err := client.Status(context.Background())
-	if err != nil {
-		logger.Error("rpc node connection exception", logger.String("error", err.Error()))
-		node.nodeStatus.Set(float64(NodeStatusNotReachable))
-		//return
-	} else {
-		if status.SyncInfo.CatchingUp {
-			node.nodeStatus.Set(float64(NodeStatusCatchingUp))
-		} else {
-			node.nodeStatus.Set(float64(NodeStatusSyncing))
-		}
-		node.nodeHeight.Set(float64(status.SyncInfo.LatestBlockHeight))
-	}
 
 	follow, err := new(models.SyncTask).QueryValidFollowTasks()
 	if err != nil {

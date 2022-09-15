@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/resource"
 	commonPool "github.com/jolestar/go-commons-pool"
 	"strings"
 	"sync"
@@ -24,7 +25,13 @@ func Init(conf *config.Config) {
 	var (
 		syncMap sync.Map
 	)
-	nodeUrls := strings.Split(conf.Server.NodeUrls, ",")
+	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(conf.Server.ChainId)
+	if err != nil {
+		//从github获取失败退出
+		logger.Fatal(err.Error())
+		return
+	}
+	nodeUrls := strings.Split(nodeRpcs, ",")
 	for _, url := range nodeUrls {
 		key := generateId(url)
 		endPoint := EndPoint{
