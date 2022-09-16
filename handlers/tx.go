@@ -99,7 +99,9 @@ func ParseBlockAndTxs(b int64) (*models.Block, []*models.Tx, error) {
 	)
 	client := pool.GetClient()
 	defer func() {
-		if !clientInvalid {
+		if clientInvalid {
+			client.InvalidateObject()
+		} else {
 			client.Release()
 		}
 	}()
@@ -110,11 +112,9 @@ func ParseBlockAndTxs(b int64) (*models.Block, []*models.Tx, error) {
 		if v2, err := client.Block(ctx, &b); err != nil {
 			if strings.Contains(err.Error(), "lowest height") {
 				//task height is less than the current blockchain lowest height
-				client.InvalidateObject()
 				clientInvalid = true
 			} else if strings.Contains(err.Error(), "less than or equal") {
 				//task height not less than or equal to the current blockchain latest height
-				client.InvalidateObject()
 				clientInvalid = true
 			}
 			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlock", err)
