@@ -8,11 +8,14 @@ import (
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"math/rand"
+	"strings"
 	"sync"
 )
 
 type (
 	PoolFactory struct {
+		chainId  string
+		once     sync.Once
 		peersMap sync.Map
 	}
 	EndPoint struct {
@@ -34,8 +37,46 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 		} else {
 			return commonPool.NewPooledObject(c), nil
 		}
+	} else {
+		//get valid nodeurl
+		address, _ := resource.GetValidNodeUrl()
+		if len(address) == 0 {
+			//if no found valid node, auto update rpc nodes from githubRepo only Once
+			f.once.Do(func() {
+				logger.Debug("auto update rpc nodes from githubRepo only Once", logger.String("chainId", f.chainId))
+				nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
+				if err != nil {
+					logger.Error(err.Error())
+					return
+				}
+				if len(nodeRpcs) > 0 {
+					nodeUrls := strings.Split(nodeRpcs, ",")
+					for _, url := range nodeUrls {
+						key := generateId(url)
+						endPoint := EndPoint{
+							Address:   url,
+							Available: true,
+						}
+						f.peersMap.Store(key, endPoint)
+					}
+				}
+			})
+			return nil, fmt.Errorf("no found valid node")
+		} else {
+			key := generateId(address)
+			endPoint := EndPoint{
+				Address:   address,
+				Available: true,
+			}
+			f.peersMap.Store(key, endPoint)
+			c, err := newClient(address)
+			if err != nil {
+				return nil, err
+			} else {
+				return commonPool.NewPooledObject(c), nil
+			}
+		}
 	}
-	return nil, fmt.Errorf("no found valid node")
 }
 
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {

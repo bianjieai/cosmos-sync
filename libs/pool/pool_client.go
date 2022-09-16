@@ -46,6 +46,7 @@ func Init(conf *config.Config) {
 	}
 
 	poolFactory = PoolFactory{
+		chainId:  conf.Server.ChainId,
 		peersMap: syncMap,
 	}
 

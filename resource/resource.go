@@ -16,18 +16,19 @@ import (
 )
 
 var (
-	nodeUrlMap = map[string]bool{}
-	mutex      sync.Mutex
+	nodeUrlMap            = map[string]bool{}
+	nodeEarliestHeightMap = map[string]int64{}
+	mutex                 sync.Mutex
 )
 
-func GetValidNodeUrl() string {
+func GetValidNodeUrl() (string, int64) {
 	for nodeUri, val := range nodeUrlMap {
 		if val {
-			return nodeUri
+			return nodeUri, nodeEarliestHeightMap[nodeUri]
 		}
 	}
-	logger.Info("GetValidNodeUrl:", logger.Any("nodeUrlMap<nodeurl,valid>:", nodeUrlMap))
-	return ""
+	//logger.Debug("GetValidNodeUrl:", logger.Any("nodeUrlMap<nodeurl,valid>:", nodeUrlMap))
+	return "", 0
 }
 
 func ValidNode(nodeUri string) bool {
@@ -59,23 +60,35 @@ func getData(chainId string) (string, error) {
 
 }
 
-func checkRpcValid(nodeUrl string) error {
+func checkRpcValid(nodeUrl string, chainId string) error {
 	client, err := rpcclient.New(nodeUrl, "/websocket")
 	if err != nil {
 		return err
 	}
 	defer client.Quit()
-	height := int64(1)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10)*time.Second)
 	defer cancel()
-	_, err = client.Block(ctx, &height)
+	retStatus, err := client.Status(ctx)
 	if err != nil {
 		return err
+	}
+	//node if catching up
+	if retStatus.SyncInfo.CatchingUp {
+		return fmt.Errorf("node is catchingUp")
+	}
+
+	//network no match
+	network := strings.ReplaceAll(retStatus.NodeInfo.Network, "-", "_")
+	if network != chainId {
+		return fmt.Errorf("network(%s) not match config network:%s", network, chainId)
+	}
+	if _, ok := nodeEarliestHeightMap[nodeUrl]; !ok {
+		nodeEarliestHeightMap[nodeUrl] = retStatus.SyncInfo.EarliestBlockHeight
 	}
 	return nil
 }
 
-func LoadRpcResource(bz string) (string, error) {
+func LoadRpcResource(bz string, chainId string) (string, error) {
 	var chainRegisterResp ChainRegisterResp
 	err := json.Unmarshal([]byte(bz), &chainRegisterResp)
 	if err != nil {
@@ -97,18 +110,17 @@ func LoadRpcResource(bz string) (string, error) {
 				}
 			}
 			nodeUrl := nodehttp + "://" + nodeuri
-			if err := checkRpcValid(nodeUrl); err == nil {
+			if err := checkRpcValid(nodeUrl, chainId); err == nil {
 				rpcAddrs = append(rpcAddrs, nodeUrl)
 			} else {
-				if strings.Contains(err.Error(), "lowest height") {
-					rpcAddrs = append(rpcAddrs, nodeUrl)
-				}
+				logger.Debug("invalid nodeurl:"+nodeUrl, logger.String("err", err.Error()))
 			}
 
 		} else {
 			logger.Debug("no support nodeurl:" + v.Address)
 		}
 	}
+	nodeEarliestHeightMap = make(map[string]int64, len(rpcAddrs))
 	nodeUrlMap = make(map[string]bool, len(rpcAddrs))
 	for _, val := range rpcAddrs {
 		nodeUrlMap[val] = true
@@ -141,7 +153,7 @@ func GetRpcNodesFromGithubRepo(chainId string) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "GetRpcNodesFromGithubRepo fail")
 	}
-	nodeurl, err := LoadRpcResource(data)
+	nodeurl, err := LoadRpcResource(data, chainId)
 	if err != nil {
 		return "", errors.Wrap(err, "LoadRpcResource fail")
 	}

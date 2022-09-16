@@ -15,7 +15,7 @@ func TestLoadRpcResource(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	nodeurl, err := LoadRpcResource(string(data))
+	nodeurl, err := LoadRpcResource(string(data), "sentinelhub_1")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
