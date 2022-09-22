@@ -15,6 +15,7 @@ import (
 type (
 	PoolFactory struct {
 		chainId  string
+		local    bool
 		once     sync.Once
 		peersMap sync.Map
 	}
@@ -31,7 +32,7 @@ type (
 func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject, error) {
 	endpoint := f.GetEndPoint()
 	if f.ValidNode(endpoint.Address) {
-		logger.Debug("current use node rpc info",logger.String("node_rpc",endpoint.Address))
+		logger.Debug("current use node rpc info", logger.String("node_rpc", endpoint.Address))
 		c, err := newClient(endpoint.Address)
 		if err != nil {
 			return nil, err
@@ -39,6 +40,9 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 			return commonPool.NewPooledObject(c), nil
 		}
 	} else {
+		if f.local {
+			return nil, fmt.Errorf("no found valid node")
+		}
 		//get valid nodeurl
 		address, _ := resource.GetValidNodeUrl()
 		if len(address) == 0 {
@@ -52,6 +56,7 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 				}
 				if len(nodeRpcs) > 0 {
 					nodeUrls := strings.Split(nodeRpcs, ",")
+					resource.ReloadRpcResourceMap(nodeUrls)
 					for _, url := range nodeUrls {
 						key := generateId(url)
 						endPoint := EndPoint{
