@@ -91,32 +91,16 @@ func InitRouter(conf *config.Config) {
 	}
 }
 
-func ParseBlockAndTxs(b int64) (*models.Block, []*models.Tx, error) {
+func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
 	var (
-		blockDoc      models.Block
-		block         *ctypes.ResultBlock
-		clientInvalid bool
+		blockDoc models.Block
+		block    *ctypes.ResultBlock
 	)
-	client := pool.GetClient()
-	defer func() {
-		if clientInvalid {
-			client.InvalidateObject()
-		} else {
-			client.Release()
-		}
-	}()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(1 * time.Second)
 		if v2, err := client.Block(ctx, &b); err != nil {
-			if strings.Contains(err.Error(), "lowest height") {
-				//task height is less than the current blockchain lowest height
-				clientInvalid = true
-			} else if strings.Contains(err.Error(), "less than or equal") {
-				//task height not less than or equal to the current blockchain latest height
-				clientInvalid = true
-			}
 			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlock", err)
 		} else {
 			block = v2

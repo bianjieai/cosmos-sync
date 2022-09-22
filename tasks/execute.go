@@ -56,7 +56,7 @@ func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 
 	healthCheckQuit := make(chan bool)
 	//workerId = genWorkerId()
-	//client := pool.GetClient()
+	client := pool.GetClient()
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -64,7 +64,7 @@ func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 		}
 		close(healthCheckQuit)
 		<-chanLimit
-		//client.Release()
+		client.Release()
 	}()
 
 	// check whether exist executable task
@@ -83,9 +83,9 @@ func (s *syncTaskService) executeTask(blockNumPerWorkerHandle, maxWorkerSleepTim
 	// take over sync task
 	// attempt to update status, worker_id and worker_logs
 	task := tasks[utils.RandInt(len(tasks))]
-	s.TakeOverTaskAndExecute(task, healthCheckQuit, blockNumPerWorkerHandle)
+	s.TakeOverTaskAndExecute(task, client, healthCheckQuit, blockNumPerWorkerHandle)
 }
-func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
+func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *pool.Client, healthCheckQuit chan bool, blockNumPerWorkerHandle int64) {
 	var taskType string
 	workerId := fmt.Sprintf("%v@%v", s.hostname, primitive.NewObjectID().Hex())
 	err := s.syncTaskModel.TakeOverTask(task, workerId)
@@ -183,8 +183,11 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 		}
 
 		// parse data from block
-		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock)
+		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
+			if rpcInvalid(err) {
+				client = switchRpc(client)
+			}
 			logger.Error("Parse block fail",
 				logger.Int64("height", inProcessBlock),
 				logger.String("errTag", utils.GetErrTag(err)),
@@ -352,4 +355,24 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	})
 
 	return err
+}
+
+func rpcInvalid(err error) bool{
+	var clientInvalid bool
+	if strings.Contains(err.Error(), "lowest height") {
+		//task height is less than the current blockchain lowest height
+		clientInvalid = true
+	} else if strings.Contains(err.Error(), "less than or equal") {
+		//task height not less than or equal to the current blockchain latest height
+		clientInvalid = true
+	}
+	return clientInvalid
+}
+
+func switchRpc(client *pool.Client) *pool.Client{
+	newclient := pool.GetClient()
+	defer func() {
+		client.InvalidateObject()
+	}()
+	return newclient
 }
