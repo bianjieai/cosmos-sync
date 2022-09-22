@@ -192,7 +192,6 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 				logger.Int64("height", inProcessBlock),
 				logger.String("errTag", utils.GetErrTag(err)),
 				logger.String("err", err.Error()))
-			time.Sleep(2 * time.Second)
 			//continue to assert task is valid
 			blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 			continue
@@ -357,7 +356,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	return err
 }
 
-func rpcInvalid(err error) bool{
+func rpcInvalid(err error) bool {
 	var clientInvalid bool
 	if strings.Contains(err.Error(), "lowest height") {
 		//task height is less than the current blockchain lowest height
@@ -369,7 +368,7 @@ func rpcInvalid(err error) bool{
 	return clientInvalid
 }
 
-func switchRpc(client *pool.Client) *pool.Client{
+func switchRpc(client *pool.Client) *pool.Client {
 	newclient := pool.GetClient()
 	defer func() {
 		client.InvalidateObject()

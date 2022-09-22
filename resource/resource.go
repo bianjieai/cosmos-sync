@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/models"
-	"github.com/pkg/errors"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"io/ioutil"
 	"net/http"
@@ -32,8 +31,8 @@ func GetValidNodeUrl() (string, int64) {
 }
 
 func SetInvalidNode(nodeUri string) {
-	if valid, ok := nodeUrlMap[nodeUri]; ok && valid{
-		logger.Debug("set node rpc invalid",logger.String("node_rpc",nodeUri))
+	if valid, ok := nodeUrlMap[nodeUri]; ok && valid {
+		logger.Debug("set node rpc invalid", logger.String("node_rpc", nodeUri))
 		mutex.Lock()
 		nodeUrlMap[nodeUri] = false
 		mutex.Unlock()
@@ -148,11 +147,11 @@ func HttpGet(url string) (bz []byte, err error) {
 func GetRpcNodesFromGithubRepo(chainId string) (string, error) {
 	data, err := getData(chainId)
 	if err != nil {
-		return "", errors.Wrap(err, "GetRpcNodesFromGithubRepo fail")
+		return "", fmt.Errorf("%v %s", err, "GetRpcNodesFromGithubRepo fail")
 	}
 	nodeurl, err := LoadRpcResource(data, chainId)
 	if err != nil {
-		return "", errors.Wrap(err, "LoadRpcResource fail")
+		return "", fmt.Errorf("%v %s", err, "LoadRpcResource fail")
 	}
 	logger.Info("valid Rpc Nodes From Github Repo: " + nodeurl)
 	return nodeurl, nil
