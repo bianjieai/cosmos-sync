@@ -31,7 +31,7 @@ type (
 
 func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject, error) {
 	endpoint := f.GetEndPoint()
-	if f.ValidNode(endpoint.Address) {
+	if endpoint.Available {
 		logger.Debug("current use node rpc info", logger.String("node_rpc", endpoint.Address))
 		c, err := newClient(endpoint.Address)
 		if err != nil {
@@ -176,14 +176,4 @@ func newClient(nodeUrl string) (*Client, error) {
 
 func generateId(address string) string {
 	return fmt.Sprintf("peer[%s]", address)
-}
-
-func (f *PoolFactory) ValidNode(nodeUri string) bool {
-	key := generateId(nodeUri)
-	value, ok := f.peersMap.Load(key)
-	if ok {
-		endPoint := value.(EndPoint)
-		return endPoint.Available
-	}
-	return false
 }
