@@ -23,19 +23,26 @@ var (
 
 func Init(conf *config.Config) {
 	var (
-		syncMap sync.Map
+		syncMap  sync.Map
+		rpcAddrs string
 	)
-	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(conf.Server.ChainId)
-	if err != nil {
-		//exist when get rcp node from github repo fail
-		logger.Fatal("GetRpcNodesFromGithubRepo fail " + err.Error())
-		return
+	if conf.Server.UseNodeUrls {
+		rpcAddrs = conf.Server.NodeUrls
+	} else {
+		nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(conf.Server.ChainId)
+		if err != nil {
+			//exist when get rcp node from github repo fail
+			logger.Fatal("GetRpcNodesFromGithubRepo fail " + err.Error())
+			return
+		}
+		if len(nodeRpcs) == 0 {
+			//exist when no found rpc node
+			logger.Fatal("no found Rpc Nodes From GithubRepo")
+		}
+		rpcAddrs = nodeRpcs
 	}
-	if len(nodeRpcs) == 0 {
-		//exist when no found rpc node
-		logger.Fatal("no found Rpc Nodes From GithubRepo")
-	}
-	nodeUrls := strings.Split(nodeRpcs, ",")
+	nodeUrls := strings.Split(rpcAddrs, ",")
+	resource.ReloadRpcResourceMap(nodeUrls)
 	for _, url := range nodeUrls {
 		key := generateId(url)
 		endPoint := EndPoint{
@@ -49,6 +56,7 @@ func Init(conf *config.Config) {
 	poolFactory = PoolFactory{
 		chainId:  conf.Server.ChainId,
 		peersMap: syncMap,
+		local:    conf.Server.UseNodeUrls,
 	}
 
 	config := commonPool.NewDefaultPoolConfig()

@@ -117,12 +117,15 @@ func LoadRpcResource(bz string, chainId string) (string, error) {
 		}
 	}
 	nodeEarliestHeightMap = make(map[string]int64, len(rpcAddrs))
+
+	return strings.Join(rpcAddrs, ","), nil
+}
+
+func ReloadRpcResourceMap(rpcAddrs []string) {
 	nodeUrlMap = make(map[string]bool, len(rpcAddrs))
 	for _, val := range rpcAddrs {
 		nodeUrlMap[val] = true
 	}
-
-	return strings.Join(rpcAddrs, ","), nil
 }
 
 func HttpGet(url string) (bz []byte, err error) {

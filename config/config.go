@@ -41,6 +41,7 @@ type (
 		DenyModules     string `mapstructure:"deny_modules"`
 		SupportTypes    string `mapstructure:"support_types"`
 		IgnoreIbcHeader bool   `mapstructure:"ignore_ibc_header"`
+		UseNodeUrls     bool   `mapstructure:"use_node_urls"`
 	}
 )
 
