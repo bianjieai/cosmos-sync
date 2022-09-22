@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/resource"
 	commonPool "github.com/jolestar/go-commons-pool"
 	"strings"
 	"sync"
@@ -24,7 +25,17 @@ func Init(conf *config.Config) {
 	var (
 		syncMap sync.Map
 	)
-	nodeUrls := strings.Split(conf.Server.NodeUrls, ",")
+	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(conf.Server.ChainId)
+	if err != nil {
+		//exist when get rcp node from github repo fail
+		logger.Fatal("GetRpcNodesFromGithubRepo fail " + err.Error())
+		return
+	}
+	if len(nodeRpcs) == 0 {
+		//exist when no found rpc node
+		logger.Fatal("no found Rpc Nodes From GithubRepo")
+	}
+	nodeUrls := strings.Split(nodeRpcs, ",")
 	for _, url := range nodeUrls {
 		key := generateId(url)
 		endPoint := EndPoint{
@@ -36,6 +47,7 @@ func Init(conf *config.Config) {
 	}
 
 	poolFactory = PoolFactory{
+		chainId:  conf.Server.ChainId,
 		peersMap: syncMap,
 	}
 
@@ -75,6 +87,13 @@ func (c *Client) HeartBeat() error {
 	http := c.HTTP
 	_, err := http.Health(context.Background())
 	return err
+}
+
+func (c *Client) InvalidateObject() {
+	err := poolObject.InvalidateObject(ctx, c)
+	if err != nil {
+		logger.Error(err.Error())
+	}
 }
 
 func ClosePool() {

@@ -4,14 +4,18 @@ import (
 	"context"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/resource"
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"math/rand"
+	"strings"
 	"sync"
 )
 
 type (
 	PoolFactory struct {
+		chainId  string
+		once     sync.Once
 		peersMap sync.Map
 	}
 	EndPoint struct {
@@ -26,16 +30,66 @@ type (
 
 func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject, error) {
 	endpoint := f.GetEndPoint()
-	c, err := newClient(endpoint.Address)
-	if err != nil {
-		return nil, err
+	if f.ValidNode(endpoint.Address) {
+		logger.Debug("current use node rpc info",logger.String("node_rpc",endpoint.Address))
+		c, err := newClient(endpoint.Address)
+		if err != nil {
+			return nil, err
+		} else {
+			return commonPool.NewPooledObject(c), nil
+		}
 	} else {
-		return commonPool.NewPooledObject(c), nil
+		//get valid nodeurl
+		address, _ := resource.GetValidNodeUrl()
+		if len(address) == 0 {
+			//if no found valid node, auto update rpc nodes from githubRepo only Once
+			f.once.Do(func() {
+				logger.Debug("auto update rpc nodes from githubRepo only Once", logger.String("chainId", f.chainId))
+				nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
+				if err != nil {
+					logger.Error(err.Error())
+					return
+				}
+				if len(nodeRpcs) > 0 {
+					nodeUrls := strings.Split(nodeRpcs, ",")
+					for _, url := range nodeUrls {
+						key := generateId(url)
+						endPoint := EndPoint{
+							Address:   url,
+							Available: true,
+						}
+						f.peersMap.Store(key, endPoint)
+					}
+				}
+			})
+			return nil, fmt.Errorf("no found valid node")
+		} else {
+			key := generateId(address)
+			endPoint := EndPoint{
+				Address:   address,
+				Available: true,
+			}
+			f.peersMap.Store(key, endPoint)
+			c, err := newClient(address)
+			if err != nil {
+				return nil, err
+			} else {
+				return commonPool.NewPooledObject(c), nil
+			}
+		}
 	}
 }
 
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {
 	c := object.Object.(*Client)
+	value, ok := f.peersMap.Load(c.Id)
+	//set endpoint invalid
+	if ok {
+		endPoint := value.(EndPoint)
+		endPoint.Available = false
+		f.peersMap.Store(c.Id, endPoint)
+		resource.SetInvalidNode(endPoint.Address)
+	}
 	if c.IsRunning() {
 		c.Stop()
 	}
@@ -59,6 +113,11 @@ func (f *PoolFactory) ValidateObject(ctx context.Context, object *commonPool.Poo
 		return false
 	}
 	if stat.SyncInfo.CatchingUp {
+		value, ok := f.peersMap.Load(c.Id)
+		if ok {
+			endPoint := value.(EndPoint)
+			resource.SetInvalidNode(endPoint.Address)
+		}
 		return false
 	}
 	return true
@@ -112,4 +171,14 @@ func newClient(nodeUrl string) (*Client, error) {
 
 func generateId(address string) string {
 	return fmt.Sprintf("peer[%s]", address)
+}
+
+func (f *PoolFactory) ValidNode(nodeUri string) bool {
+	key := generateId(nodeUri)
+	value, ok := f.peersMap.Load(key)
+	if ok {
+		endPoint := value.(EndPoint)
+		return endPoint.Available
+	}
+	return false
 }

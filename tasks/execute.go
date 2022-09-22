@@ -185,6 +185,9 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, client *p
 		// parse data from block
 		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
+			if rpcInvalid(err) {
+				client = switchRpc(client)
+			}
 			logger.Error("Parse block fail",
 				logger.Int64("height", inProcessBlock),
 				logger.String("errTag", utils.GetErrTag(err)),
@@ -351,4 +354,24 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	})
 
 	return err
+}
+
+func rpcInvalid(err error) bool {
+	var clientInvalid bool
+	if strings.Contains(err.Error(), "lowest height") {
+		//task height is less than the current blockchain lowest height
+		clientInvalid = true
+	} else if strings.Contains(err.Error(), "less than or equal") {
+		//task height not less than or equal to the current blockchain latest height
+		clientInvalid = true
+	}
+	return clientInvalid
+}
+
+func switchRpc(client *pool.Client) *pool.Client {
+	newclient := pool.GetClient()
+	defer func() {
+		client.InvalidateObject()
+	}()
+	return newclient
 }
