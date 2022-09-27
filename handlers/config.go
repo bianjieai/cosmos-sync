@@ -1,6 +1,6 @@
 package handlers
 
-import "github.com/kaifei-bianjie/msg-parser/codec"
+import "github.com/kaifei-bianjie/common-parser/codec"
 
 var (
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address

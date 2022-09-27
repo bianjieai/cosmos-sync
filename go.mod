@@ -4,14 +4,17 @@ go 1.15
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20220824110209-cb9d84214f8f
+	github.com/kaifei-bianjie/common-parser v0.0.0-20220923023138-65dfc81a8ff5
+	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20220927055038-b4022b663f59
+	github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0
+	github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20220927054648-1e71af64d126
 	github.com/qiniu/qmgo v1.0.4
-	github.com/spf13/viper v1.8.1
-	github.com/tendermint/tendermint v0.34.13
+	github.com/spf13/viper v1.10.1
+	github.com/tendermint/tendermint v0.35.0
 	github.com/weichang-bianjie/metric-sdk v1.0.0
 	go.mongodb.org/mongo-driver v1.7.2
-	go.uber.org/zap v1.17.0
-	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
+	go.uber.org/zap v1.19.1
+	golang.org/x/net v0.0.0-20211208012354-db4efeb81f4b
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 
