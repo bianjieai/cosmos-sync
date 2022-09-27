@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/kaifei-bianjie/msg-parser/types"
+	"github.com/kaifei-bianjie/common-parser/types"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
 )

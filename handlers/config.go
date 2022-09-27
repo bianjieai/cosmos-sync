@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/bianjieai/cosmos-sync/config"
-	"github.com/kaifei-bianjie/msg-parser/codec"
+	"github.com/kaifei-bianjie/common-parser/codec"
 )
 
 const (

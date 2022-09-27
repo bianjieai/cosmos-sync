@@ -9,11 +9,13 @@ import (
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
-	"github.com/kaifei-bianjie/msg-parser/codec"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
-	"github.com/kaifei-bianjie/msg-parser/modules/evm"
-	"github.com/kaifei-bianjie/msg-parser/modules/mt"
-	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
+	common_parser "github.com/kaifei-bianjie/common-parser"
+	"github.com/kaifei-bianjie/common-parser/codec"
+	msgsdktypes "github.com/kaifei-bianjie/common-parser/types"
+	. "github.com/kaifei-bianjie/irismod-parser/modules"
+	"github.com/kaifei-bianjie/irismod-parser/modules/mt"
+	. "github.com/kaifei-bianjie/iritachain-mod-parser/modules"
+	"github.com/kaifei-bianjie/iritachain-mod-parser/modules/evm"
 	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
@@ -25,30 +27,26 @@ import (
 
 var (
 	_parser msgparser.MsgParser
-	_conf   *config.Config
 )
 
 func InitRouter(conf *config.Config) {
-	_conf = conf
 	initBech32Prefix(conf)
-	router := msgparser.RegisteRouter()
+
 	if conf.Server.OnlySupportModule != "" {
+		resRouteClient := make(map[string]common_parser.Client, 0)
 		modules := strings.Split(conf.Server.OnlySupportModule, ",")
-		msgRoute := msgparser.NewRouter()
 		for _, one := range modules {
-			fn, exist := msgparser.RouteHandlerMap[one]
+			fn, exist := msgparser.RouteClientMap[one]
 			if !exist {
 				logger.Fatal("no support module: " + one)
 			}
-			msgRoute = msgRoute.AddRoute(one, fn)
+			resRouteClient[one] = fn
 		}
-		if msgRoute.GetRoutesLen() > 0 {
-			router = msgRoute
+		if len(resRouteClient) > 0 {
+			msgparser.RouteClientMap = resRouteClient
 		}
-
 	}
-	_parser = msgparser.NewMsgParser(router)
-	_conf = conf
+	_parser = msgparser.NewMsgParser()
 }
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
