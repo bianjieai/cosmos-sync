@@ -4,14 +4,18 @@ go 1.16
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20220824110243-de8513db1976
+	github.com/kaifei-bianjie/common-parser v0.0.0-20220923023138-65dfc81a8ff5
+	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20220923075813-81e7e2b17c67
+	github.com/kaifei-bianjie/cschain-mod-parser v0.0.0-20220923071309-f893c540979b
+	github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0
+	github.com/kaifei-bianjie/iritamod-parser v0.0.0-20220923075745-50a7044003db
 	github.com/qiniu/qmgo v1.0.4
 	github.com/spf13/viper v1.10.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.5
 	github.com/tendermint/tendermint v0.35.0
 	github.com/weichang-bianjie/metric-sdk v1.0.0
 	go.mongodb.org/mongo-driver v1.7.4
-	go.uber.org/zap v1.17.0
+	go.uber.org/zap v1.19.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 

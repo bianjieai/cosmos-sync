@@ -22,26 +22,3 @@ const (
 	IbcRouteKey          string = "ibc"
 	IbcTransferRouteKey  string = "transfer"
 )
-
-var RouteHandlerMap = map[string]Handler{
-	BankRouteKey:         handleBank,
-	StakingRouteKey:      handleStaking,
-	DistributionRouteKey: handleDistribution,
-	CrisisRouteKey:       handleCrisis,
-	EvidenceRouteKey:     handleEvidence,
-	GovRouteKey:          handleGov,
-	FeegrantRouteKey:     handleFeegrant,
-	SlashingRouteKey:     handleSlashing,
-	NftRouteKey:          handleNft,
-	MtRouteKey:           handleMt,
-	ServiceRouteKey:      handleService,
-	TokenRouteKey:        handleToken,
-	HtlcRouteKey:         handleHtlc,
-	CoinswapRouteKey:     handleCoinswap,
-	RandomRouteKey:       handleRandom,
-	OracleRouteKey:       handleOracle,
-	IdentityRouteKey:     handleIdentity,
-	RecordRouteKey:       handleRecord,
-	IbcRouteKey:          handleIbc,
-	IbcTransferRouteKey:  handleIbc,
-}
