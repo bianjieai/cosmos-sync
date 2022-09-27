@@ -24,27 +24,3 @@ const (
 	TIbcTransferRouteKey string = "NFT"
 	TIbcRouteKey         string = "tibc"
 )
-
-var RouteHandlerMap = map[string]Handler{
-	BankRouteKey:         handleBank,
-	ServiceRouteKey:      handleService,
-	NftRouteKey:          handleNft,
-	RecordRouteKey:       handleRecord,
-	TokenRouteKey:        handleToken,
-	CoinswapRouteKey:     handleCoinswap,
-	CrisisRouteKey:       handleCrisis,
-	DistributionRouteKey: handleDistribution,
-	SlashingRouteKey:     handleSlashing,
-	EvidenceRouteKey:     handleEvidence,
-	HtlcRouteKey:         handleHtlc,
-	StakingRouteKey:      handleStaking,
-	GovRouteKey:          handleGov,
-	FeegrantRouteKey:     handleFeegrant,
-	RandomRouteKey:       handleRandom,
-	OracleRouteKey:       handleOracle,
-	IbcRouteKey:          handleIbc,
-	IbcTransferRouteKey:  handleIbc,
-	FarmRouteKey:         handleFarm,
-	TIbcTransferRouteKey: handleTIbc,
-	TIbcRouteKey:         handleTIbc,
-}

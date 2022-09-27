@@ -9,11 +9,15 @@ import (
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
-	"github.com/kaifei-bianjie/msg-parser/codec"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
-	"github.com/kaifei-bianjie/msg-parser/modules/ibc"
-	"github.com/kaifei-bianjie/msg-parser/modules/mt"
-	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
+	commonparser "github.com/kaifei-bianjie/common-parser"
+	"github.com/kaifei-bianjie/common-parser/codec"
+	msgsdktypes "github.com/kaifei-bianjie/common-parser/types"
+	. "github.com/kaifei-bianjie/cosmosmod-parser/modules"
+	"github.com/kaifei-bianjie/cosmosmod-parser/modules/ibc"
+	cosmosmod "github.com/kaifei-bianjie/cosmosmod-parser/modules/ibc"
+	. "github.com/kaifei-bianjie/irismod-parser/modules"
+	"github.com/kaifei-bianjie/irismod-parser/modules/mt"
+	. "github.com/kaifei-bianjie/tibc-mod-parser/modules"
 	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
@@ -30,53 +34,48 @@ var (
 
 func InitRouter(conf *config.Config) {
 	_conf = conf
-	var router msgparser.Router
 	if conf.Server.SupportModules != "" {
+		resRouteClient := make(map[string]commonparser.Client, 0)
 		modules := strings.Split(conf.Server.SupportModules, ",")
-		msgRoute := msgparser.NewRouter()
 		for _, one := range modules {
-			fn, exist := msgparser.RouteHandlerMap[one]
+			fn, exist := msgparser.RouteClientMap[one]
 			if !exist {
 				logger.Fatal("no support module: " + one)
 			}
-			msgRoute = msgRoute.AddRoute(one, fn)
+			resRouteClient[one] = fn
 			switch one {
 			case msgparser.IbcRouteKey:
-				msgRoute = msgRoute.AddRoute(msgparser.IbcTransferRouteKey, msgparser.RouteHandlerMap[one])
+				resRouteClient[msgparser.IbcTransferRouteKey] = msgparser.RouteClientMap[one]
 			case msgparser.TIbcRouteKey:
-				msgRoute = msgRoute.AddRoute(msgparser.TIbcTransferRouteKey, msgparser.RouteHandlerMap[one])
+				resRouteClient[msgparser.TIbcTransferRouteKey] = msgparser.RouteClientMap[one]
 			}
 		}
-		if msgRoute.GetRoutesLen() > 0 {
-			router = msgRoute
+		if len(resRouteClient) > 0 {
+			msgparser.RouteClientMap = resRouteClient
 		}
-	} else {
-		router = msgparser.RegisteRouter()
 	}
 
 	// check and remove disable support module route path
 	if conf.Server.DenyModules != "" {
 		modules := strings.Split(conf.Server.DenyModules, ",")
 		for _, one := range modules {
-			_, exist := msgparser.RouteHandlerMap[one]
+			_, exist := msgparser.RouteClientMap[one]
 			if !exist {
 				logger.Fatal("disable no exist module: " + one)
 			}
-			if router.HasRoute(one) {
-				switch one {
-				case msgparser.IbcRouteKey:
-					router.RemoveRoute(msgparser.IbcRouteKey)
-					router.RemoveRoute(msgparser.IbcTransferRouteKey)
-				case msgparser.TIbcRouteKey:
-					router.RemoveRoute(msgparser.TIbcRouteKey)
-					router.RemoveRoute(msgparser.TIbcTransferRouteKey)
-				default:
-					router.RemoveRoute(one)
-				}
+			switch one {
+			case msgparser.IbcRouteKey:
+				delete(msgparser.RouteClientMap, msgparser.IbcRouteKey)
+				delete(msgparser.RouteClientMap, msgparser.IbcTransferRouteKey)
+			case msgparser.TIbcRouteKey:
+				delete(msgparser.RouteClientMap, msgparser.IbcRouteKey)
+				delete(msgparser.RouteClientMap, msgparser.IbcTransferRouteKey)
+			default:
+				delete(msgparser.RouteClientMap, one)
 			}
 		}
 	}
-	_parser = msgparser.NewMsgParser(router)
+	_parser = msgparser.NewMsgParser()
 
 	if conf.Server.Bech32AccPrefix != "" {
 		initBech32Prefix(conf.Server.Bech32AccPrefix)
@@ -262,7 +261,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 			//docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
 			for id, one := range docTx.EventsNew {
 				if one.MsgIndex == uint32(i) {
-					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
+					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, cosmosmod.UnmarshalAcknowledgement)
 				}
 			}
 			if _conf.Server.IgnoreIbcHeader {

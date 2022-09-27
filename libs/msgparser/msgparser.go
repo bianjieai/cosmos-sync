@@ -2,9 +2,13 @@ package msgparser
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	msg_parser "github.com/kaifei-bianjie/msg-parser"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
-	"github.com/kaifei-bianjie/msg-parser/types"
+	_ "github.com/bianjieai/cosmos-sync/libs/logger"
+	commonparser "github.com/kaifei-bianjie/common-parser"
+	. "github.com/kaifei-bianjie/common-parser/modules"
+	"github.com/kaifei-bianjie/common-parser/types"
+	cosmosmod "github.com/kaifei-bianjie/cosmosmod-parser"
+	irismod "github.com/kaifei-bianjie/irismod-parser"
+	tibcmod "github.com/kaifei-bianjie/tibc-mod-parser"
 	"strings"
 )
 
@@ -13,17 +17,18 @@ type MsgParser interface {
 }
 
 var (
-	_client msg_parser.MsgClient
+	cosmosModClient cosmosmod.MsgClient
+	irisModClient   irismod.MsgClient
+	tibcModClient   tibcmod.MsgClient
+
+	RouteClientMap map[string]commonparser.Client
 )
 
-func NewMsgParser(router Router) MsgParser {
-	return &msgParser{
-		rh: router,
-	}
+func NewMsgParser() MsgParser {
+	return &msgParser{}
 }
 
 type msgParser struct {
-	rh Router
 }
 
 // Handler returns the MsgServiceHandler for a given msg or nil if not found.
@@ -85,101 +90,44 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 
 func (parser msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
 	module := parser.getModule(v)
-	handleFunc, err := parser.rh.GetRoute(module)
-	if err != nil {
-		logger.Warn(err.Error(),
+	client, ok := RouteClientMap[module]
+	if !ok {
+		logger.Warn("not support module",
 			logger.String("route", module),
 			logger.String("type", module))
 		return MsgDocInfo{}
 	}
-	return handleFunc(v)
+	msg, _ := client.HandleTxMsg(v)
+	return msg
+
 }
 
 func init() {
-	_client = msg_parser.NewMsgClient()
-}
+	cosmosModClient = cosmosmod.NewMsgClient()
+	irisModClient = irismod.NewMsgClient()
+	tibcModClient = tibcmod.NewMsgClient()
 
-func handleBank(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Bank.HandleTxMsg(v)
-	return docInfo
-}
-func handleService(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Service.HandleTxMsg(v)
-	return docInfo
-}
-func handleNft(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Nft.HandleTxMsg(v)
-	return docInfo
-}
-func handleMt(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Mt.HandleTxMsg(v)
-	return docInfo
-}
-func handleRecord(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Record.HandleTxMsg(v)
-	return docInfo
-}
-func handleToken(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Token.HandleTxMsg(v)
-	return docInfo
-}
-func handleCoinswap(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Coinswap.HandleTxMsg(v)
-	return docInfo
-}
-func handleCrisis(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Crisis.HandleTxMsg(v)
-	return docInfo
-}
-func handleDistribution(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Distribution.HandleTxMsg(v)
-	return docInfo
-}
-func handleSlashing(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Slashing.HandleTxMsg(v)
-	return docInfo
-}
-func handleEvidence(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Evidence.HandleTxMsg(v)
-	return docInfo
-}
-func handleHtlc(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Htlc.HandleTxMsg(v)
-	return docInfo
-}
-func handleStaking(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Staking.HandleTxMsg(v)
-	return docInfo
-}
-
-func handleFeegrant(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Feegrant.HandleTxMsg(v)
-	return docInfo
-}
-
-func handleGov(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Gov.HandleTxMsg(v)
-	return docInfo
-}
-func handleRandom(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Random.HandleTxMsg(v)
-	return docInfo
-}
-func handleOracle(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Oracle.HandleTxMsg(v)
-	return docInfo
-}
-func handleIbc(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Ibc.HandleTxMsg(v)
-	return docInfo
-}
-
-func handleTIbc(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Tibc.HandleTxMsg(v)
-	return docInfo
-}
-
-func handleFarm(v types.SdkMsg) MsgDocInfo {
-	docInfo, _ := _client.Farm.HandleTxMsg(v)
-	return docInfo
+	RouteClientMap = map[string]commonparser.Client{
+		BankRouteKey:         cosmosModClient.Bank,
+		ServiceRouteKey:      irisModClient.Service,
+		NftRouteKey:          irisModClient.Nft,
+		RecordRouteKey:       irisModClient.Record,
+		TokenRouteKey:        irisModClient.Token,
+		CoinswapRouteKey:     irisModClient.Coinswap,
+		CrisisRouteKey:       cosmosModClient.Crisis,
+		DistributionRouteKey: cosmosModClient.Distribution,
+		SlashingRouteKey:     cosmosModClient.Slashing,
+		EvidenceRouteKey:     cosmosModClient.Evidence,
+		HtlcRouteKey:         irisModClient.Htlc,
+		StakingRouteKey:      cosmosModClient.Staking,
+		GovRouteKey:          cosmosModClient.Gov,
+		FeegrantRouteKey:     cosmosModClient.Feegrant,
+		RandomRouteKey:       irisModClient.Random,
+		OracleRouteKey:       irisModClient.Oracle,
+		IbcRouteKey:          cosmosModClient.Ibc,
+		IbcTransferRouteKey:  cosmosModClient.Ibc,
+		FarmRouteKey:         irisModClient.Farm,
+		TIbcTransferRouteKey: tibcModClient.Tibc,
+		TIbcRouteKey:         tibcModClient.Tibc,
+	}
 }
