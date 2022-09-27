@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/kaifei-bianjie/msg-parser/codec"
+	"github.com/kaifei-bianjie/common-parser/codec"
 )
 
 const (
