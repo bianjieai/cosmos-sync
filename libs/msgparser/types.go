@@ -1,53 +1,30 @@
 package msgparser
 
 const (
-	BankRouteKey         string = "bank"
-	StakingRouteKey      string = "staking"
-	DistributionRouteKey string = "distribution"
-	CrisisRouteKey       string = "crisis"
-	EvidenceRouteKey     string = "evidence"
-	GovRouteKey          string = "gov"
-	FeegrantRouteKey     string = "feegrant"
-	SlashingRouteKey     string = "slashing"
-	NftRouteKey          string = "nft"
-	MtRouteKey           string = "mt"
-	ServiceRouteKey      string = "service"
-	TokenRouteKey        string = "token"
-	HtlcRouteKey         string = "htlc"
-	CoinswapRouteKey     string = "coinswap"
-	RandomRouteKey       string = "random"
-	OracleRouteKey       string = "oracle"
-	RecordRouteKey       string = "record"
-	IdentityRouteKey     string = "identity"
-	TIbcTransferRouteKey string = "NFT"
-	TIbcRouteKey         string = "tibc"
-	EvmRouteKey          string = "evm"
-	PermRouteKey         string = "perm"
+	BankRouteKey           string = "bank"
+	StakingRouteKey        string = "staking"
+	DistributionRouteKey   string = "distribution"
+	CrisisRouteKey         string = "crisis"
+	EvidenceRouteKey       string = "evidence"
+	GovRouteKey            string = "gov"
+	FeegrantRouteKey       string = "feegrant"
+	CosmosSlashingRouteKey string = "cosmos_slashing"
+	IritaSlashingRouteKey  string = "irita_slashing"
+	NftRouteKey            string = "nft"
+	MtRouteKey             string = "mt"
+	ServiceRouteKey        string = "service"
+	TokenRouteKey          string = "token"
+	HtlcRouteKey           string = "htlc"
+	CoinswapRouteKey       string = "coinswap"
+	RandomRouteKey         string = "random"
+	OracleRouteKey         string = "oracle"
+	RecordRouteKey         string = "record"
+	IdentityRouteKey       string = "identity"
+	TIbcTransferRouteKey   string = "NFT"
+	TIbcRouteKey           string = "tibc"
+	EvmRouteKey            string = "evm"
+	PermRouteKey           string = "perm"
 )
-
-var RouteHandlerMap = map[string]Handler{
-	BankRouteKey:         handleBank,
-	StakingRouteKey:      handleStaking,
-	DistributionRouteKey: handleDistribution,
-	CrisisRouteKey:       handleCrisis,
-	EvidenceRouteKey:     handleEvidence,
-	GovRouteKey:          handleGov,
-	FeegrantRouteKey:     handleFeegrant,
-	SlashingRouteKey:     handleSlashing,
-	NftRouteKey:          handleNft,
-	MtRouteKey:           handleMt,
-	ServiceRouteKey:      handleService,
-	TokenRouteKey:        handleToken,
-	HtlcRouteKey:         handleHtlc,
-	CoinswapRouteKey:     handleCoinswap,
-	RandomRouteKey:       handleRandom,
-	OracleRouteKey:       handleOracle,
-	RecordRouteKey:       handleRecord,
-	IdentityRouteKey:     handleIdentity,
-	TIbcTransferRouteKey: handleTIbc,
-	TIbcRouteKey:         handleTIbc,
-	EvmRouteKey:          handleEvm,
-}
 
 type LegacyTx struct {
 	// nonce corresponds to the account nonce (transaction sequence).
