@@ -327,7 +327,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 		blockCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Block{}.Name())
 		txCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Tx{}.Name())
 		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
-		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil {
+		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil && !qmgo.IsDup(err) {
 			return nil, err
 		}
 		sizeTxDocs := len(txDocs)
