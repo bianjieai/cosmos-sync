@@ -5,7 +5,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
+	. "github.com/kaifei-bianjie/tibc-mod-parser/modules"
 	"testing"
 )
 
