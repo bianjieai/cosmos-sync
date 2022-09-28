@@ -147,12 +147,20 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 }
 
 func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.Block, index int) (models.Tx, error) {
+	txHash := utils.BuildHex(txBytes.Hash())
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Error("execute parseTx fail",
+				logger.Any("err", r),
+				logger.String("tx_hash", txHash),
+				logger.Int64("height", block.Height))
+		}
+	}()
 	var (
 		docTx          models.Tx
 		docTxMsgs      []msgsdktypes.TxMsg
 		includeCfgType bool
 	)
-	txHash := utils.BuildHex(txBytes.Hash())
 
 	docTx.Time = block.Time.Unix()
 	docTx.Height = block.Height

@@ -10,13 +10,14 @@ import (
 	"math/rand"
 	"strings"
 	"sync"
+	"time"
 )
 
 type (
 	PoolFactory struct {
 		chainId  string
 		local    bool
-		once     sync.Once
+		retryMax int
 		peersMap sync.Map
 	}
 	EndPoint struct {
@@ -32,7 +33,7 @@ type (
 func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject, error) {
 	endpoint := f.GetEndPoint()
 	if endpoint.Available {
-		logger.Debug("current use node rpc info", logger.String("node_rpc", endpoint.Address))
+		logger.Info("current use node rpc info", logger.String("node_rpc", endpoint.Address))
 		c, err := newClient(endpoint.Address)
 		if err != nil {
 			return nil, err
@@ -46,9 +47,9 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 		//get valid nodeurl
 		address, _ := resource.GetValidNodeUrl()
 		if len(address) == 0 {
-			//if no found valid node, auto update rpc nodes from githubRepo only Once
-			f.once.Do(func() {
-				logger.Debug("auto update rpc nodes from githubRepo only Once", logger.String("chainId", f.chainId))
+			//if no found valid node, auto update rpc nodes from githubRepo
+			timerFunc := time.AfterFunc(time.Duration(1)*time.Minute, func() {
+				logger.Info("auto update rpc nodes from githubRepo", logger.String("chainId", f.chainId))
 				nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
 				if err != nil {
 					logger.Error(err.Error())
@@ -67,6 +68,11 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 					}
 				}
 			})
+			if f.retryMax > 5 {
+				f.retryMax = 0
+				timerFunc.Stop()
+				time.Sleep(5 * time.Minute)
+			}
 			return nil, fmt.Errorf("no found valid node")
 		} else {
 			key := generateId(address)
@@ -176,4 +182,22 @@ func newClient(nodeUrl string) (*Client, error) {
 
 func generateId(address string) string {
 	return fmt.Sprintf("peer[%s]", address)
+}
+func (f *PoolFactory) PoolValidNodes() []string {
+	var (
+		nodes []string
+	)
+
+	f.peersMap.Range(func(k, value interface{}) bool {
+		endPoint := value.(EndPoint)
+		if endPoint.Available {
+			nodes = append(nodes, endPoint.Address)
+		}
+		return true
+	})
+	return nodes
+}
+
+func PoolValidNodes() []string {
+	return poolFactory.PoolValidNodes()
 }
