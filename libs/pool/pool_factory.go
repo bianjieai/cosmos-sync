@@ -15,10 +15,11 @@ import (
 
 type (
 	PoolFactory struct {
-		chainId  string
-		local    bool
-		retryMax int
-		peersMap sync.Map
+		chainId     string
+		local       bool
+		retryMax    int
+		autoRpcFunc *time.Timer
+		peersMap    sync.Map
 	}
 	EndPoint struct {
 		Address   string
@@ -46,32 +47,35 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 		}
 		//get valid nodeurl
 		address, _ := resource.GetValidNodeUrl()
+		var closeTimer bool
 		if len(address) == 0 {
 			//if no found valid node, auto update rpc nodes from githubRepo
-			timerFunc := time.AfterFunc(time.Duration(1)*time.Minute, func() {
-				f.retryMax++
-				logger.Info("auto update rpc nodes from githubRepo", logger.String("chainId", f.chainId))
-				nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
-				if err != nil {
-					logger.Error(err.Error())
-					return
-				}
-				if len(nodeRpcs) > 0 {
-					nodeUrls := strings.Split(nodeRpcs, ",")
-					resource.ReloadRpcResourceMap(nodeUrls)
-					for _, url := range nodeUrls {
-						key := generateId(url)
-						endPoint := EndPoint{
-							Address:   url,
-							Available: true,
-						}
-						f.peersMap.Store(key, endPoint)
+			if f.autoRpcFunc == nil {
+				f.autoRpcFunc = time.AfterFunc(time.Duration(1)*time.Minute, func() {
+					f.retryMax++
+					logger.Info("auto update rpc nodes from githubRepo", logger.String("chainId", f.chainId))
+					nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
+					if err != nil {
+						logger.Error(err.Error())
+						return
 					}
-				}
-			})
-			if f.retryMax > 5 {
-				f.retryMax = 0
-				timerFunc.Stop()
+					if len(nodeRpcs) > 0 {
+						closeTimer = true
+						nodeUrls := strings.Split(nodeRpcs, ",")
+						resource.ReloadRpcResourceMap(nodeUrls)
+						for _, url := range nodeUrls {
+							key := generateId(url)
+							endPoint := EndPoint{
+								Address:   url,
+								Available: true,
+							}
+							f.peersMap.Store(key, endPoint)
+						}
+					}
+				})
+			}
+			if f.retryMax > 5 || closeTimer {
+				f.StopAutoRpcTimer()
 				time.Sleep(5 * time.Minute)
 			}
 			return nil, fmt.Errorf("no found valid node")
@@ -89,6 +93,14 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 				return commonPool.NewPooledObject(c), nil
 			}
 		}
+	}
+}
+
+func (f *PoolFactory) StopAutoRpcTimer() {
+	f.retryMax = 0
+	if f.autoRpcFunc != nil {
+		f.autoRpcFunc.Stop()
+		f.autoRpcFunc = nil
 	}
 }
 
