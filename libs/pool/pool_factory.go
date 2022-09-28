@@ -49,6 +49,7 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 		if len(address) == 0 {
 			//if no found valid node, auto update rpc nodes from githubRepo
 			timerFunc := time.AfterFunc(time.Duration(1)*time.Minute, func() {
+				f.retryMax++
 				logger.Info("auto update rpc nodes from githubRepo", logger.String("chainId", f.chainId))
 				nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
 				if err != nil {

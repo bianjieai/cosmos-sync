@@ -32,7 +32,7 @@ func GetValidNodeUrl() (string, int64) {
 
 func SetInvalidNode(nodeUri string) {
 	if valid, ok := nodeUrlMap[nodeUri]; ok && valid {
-		logger.Info("set node rpc invalid", logger.String("node_rpc", nodeUri))
+		logger.Debug("set node rpc invalid", logger.String("node_rpc", nodeUri))
 		mutex.Lock()
 		nodeUrlMap[nodeUri] = false
 		mutex.Unlock()
