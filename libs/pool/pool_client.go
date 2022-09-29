@@ -10,6 +10,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/resource"
 	commonPool "github.com/jolestar/go-commons-pool"
+	"golang.org/x/time/rate"
 	"strings"
 	"sync"
 	"time"
@@ -54,9 +55,10 @@ func Init(conf *config.Config) {
 	}
 
 	poolFactory = PoolFactory{
-		chainId:  conf.Server.ChainId,
-		peersMap: syncMap,
-		local:    conf.Server.UseNodeUrls,
+		chainId:    conf.Server.ChainId,
+		peersMap:   syncMap,
+		local:      conf.Server.UseNodeUrls,
+		retryLimit: rate.NewLimiter(rate.Every(5*time.Minute), 1),
 	}
 
 	config := commonPool.NewDefaultPoolConfig()
