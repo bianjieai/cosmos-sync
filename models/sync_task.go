@@ -217,6 +217,10 @@ func (d SyncTask) TakeOverTask(task SyncTask, workerId string) error {
 			"last_update_time": task.LastUpdateTime,
 		}
 
+		if len(task.WorkerLogs) > 10 {
+			task.WorkerLogs = []WorkerLog{}
+		}
+
 		task.Status = SyncTaskStatusUnderway
 		task.WorkerId = workerId
 		task.LastUpdateTime = time.Now().Unix()

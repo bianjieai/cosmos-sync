@@ -7,6 +7,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/resource"
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
+	"golang.org/x/time/rate"
 	"math/rand"
 	"strings"
 	"sync"
@@ -14,10 +15,10 @@ import (
 
 type (
 	PoolFactory struct {
-		chainId  string
-		local    bool
-		once     sync.Once
-		peersMap sync.Map
+		chainId    string
+		local      bool
+		retryLimit *rate.Limiter
+		peersMap   sync.Map
 	}
 	EndPoint struct {
 		Address   string
@@ -32,7 +33,6 @@ type (
 func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject, error) {
 	endpoint := f.GetEndPoint()
 	if endpoint.Available {
-		logger.Debug("current use node rpc info", logger.String("node_rpc", endpoint.Address))
 		c, err := newClient(endpoint.Address)
 		if err != nil {
 			return nil, err
@@ -41,32 +41,18 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 		}
 	} else {
 		if f.local {
+			if f.retryLimit.Allow() {
+				f.autoLoadRpc()
+			}
 			return nil, fmt.Errorf("no found valid node")
 		}
 		//get valid nodeurl
 		address, _ := resource.GetValidNodeUrl()
 		if len(address) == 0 {
-			//if no found valid node, auto update rpc nodes from githubRepo only Once
-			f.once.Do(func() {
-				logger.Debug("auto update rpc nodes from githubRepo only Once", logger.String("chainId", f.chainId))
-				nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
-				if err != nil {
-					logger.Error(err.Error())
-					return
-				}
-				if len(nodeRpcs) > 0 {
-					nodeUrls := strings.Split(nodeRpcs, ",")
-					resource.ReloadRpcResourceMap(nodeUrls)
-					for _, url := range nodeUrls {
-						key := generateId(url)
-						endPoint := EndPoint{
-							Address:   url,
-							Available: true,
-						}
-						f.peersMap.Store(key, endPoint)
-					}
-				}
-			})
+			//if no found valid node, auto update rpc nodes from githubRepo
+			if f.retryLimit.Allow() {
+				f.autoLoadRpc()
+			}
 			return nil, fmt.Errorf("no found valid node")
 		} else {
 			key := generateId(address)
@@ -82,6 +68,46 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 				return commonPool.NewPooledObject(c), nil
 			}
 		}
+	}
+}
+
+func (f *PoolFactory) autoLoadRpc() {
+	if f.local {
+		var nodes []string
+		f.peersMap.Range(func(k, value interface{}) bool {
+			key := k.(string)
+			endPoint := value.(EndPoint)
+			if !endPoint.Available {
+				nodes = append(nodes, endPoint.Address)
+				endPoint.Available = true
+			}
+			f.peersMap.Store(key, endPoint)
+			return true
+		})
+		logger.Info("auto reload local rpc nodes",
+			logger.String("nodes", strings.Join(nodes, ",")),
+			logger.String("chainId", f.chainId))
+		return
+	}
+	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
+	if err != nil {
+		logger.Error("GetRpcNodesFromGithubRepo fail,err:"+err.Error(), logger.String("chain_id", f.chainId))
+		return
+	}
+	if len(nodeRpcs) > 0 {
+		nodeUrls := strings.Split(nodeRpcs, ",")
+		resource.ReloadRpcResourceMap(nodeUrls)
+		for _, url := range nodeUrls {
+			key := generateId(url)
+			endPoint := EndPoint{
+				Address:   url,
+				Available: true,
+			}
+			f.peersMap.Store(key, endPoint)
+		}
+		logger.Info("auto reload rpc nodes from githubRepo",
+			logger.String("nodes", strings.Join(nodeUrls, ",")),
+			logger.String("chainId", f.chainId))
 	}
 }
 
@@ -176,4 +202,36 @@ func newClient(nodeUrl string) (*Client, error) {
 
 func generateId(address string) string {
 	return fmt.Sprintf("peer[%s]", address)
+}
+func (f *PoolFactory) PoolValidNodes() []string {
+	var (
+		nodes []string
+	)
+
+	f.peersMap.Range(func(k, value interface{}) bool {
+		endPoint := value.(EndPoint)
+		if endPoint.Available {
+			nodes = append(nodes, endPoint.Address)
+		}
+		return true
+	})
+	logger.Info("current use node rpc info", logger.String("node_rpc", strings.Join(nodes, ",")))
+	return nodes
+}
+
+func PoolValidNodes() []string {
+	return poolFactory.PoolValidNodes()
+}
+
+func (f *PoolFactory) GetClientInfo(id string) string {
+	value, ok := f.peersMap.Load(id)
+	if ok {
+		endPoint := value.(EndPoint)
+		return endPoint.Address
+	}
+	return ""
+}
+
+func GetClientNodeInfo(id string) string {
+	return poolFactory.GetClientInfo(id)
 }

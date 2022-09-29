@@ -187,9 +187,14 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 		// parse data from block
 		blockDoc, txDocs, err := handlers.ParseBlockAndTxs(inProcessBlock, client)
 		if err != nil {
-			if rpcInvalid(err) {
-				client = switchRpc(client)
+			if taskInvalidClient(err) {
+				logger.Warn("no execute task for this invalid client, reason:"+err.Error(),
+					logger.String("node_url", pool.GetClientNodeInfo(client.Id)),
+					logger.Int64("height", inProcessBlock),
+					logger.String("task", fmt.Sprintf("%d-%d", task.StartHeight, task.EndHeight)))
+				return
 			}
+			client = switchRpc(client)
 			logger.Error("Parse block fail",
 				logger.Int64("height", inProcessBlock),
 				logger.String("errTag", utils.GetErrTag(err)),
@@ -327,7 +332,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 		blockCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Block{}.Name())
 		txCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Tx{}.Name())
 		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
-		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil && !qmgo.IsDup(err) {
+		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil {
 			return nil, err
 		}
 		sizeTxDocs := len(txDocs)
@@ -358,16 +363,16 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	return err
 }
 
-func rpcInvalid(err error) bool {
-	var clientInvalid bool
+func taskInvalidClient(err error) bool {
+	var nodeInvalid bool
 	if strings.Contains(err.Error(), "lowest height") {
 		//task height is less than the current blockchain lowest height
-		clientInvalid = true
+		nodeInvalid = true
 	} else if strings.Contains(err.Error(), "less than or equal") {
 		//task height not less than or equal to the current blockchain latest height
-		clientInvalid = true
+		nodeInvalid = true
 	}
-	return clientInvalid
+	return nodeInvalid
 }
 
 func switchRpc(client *pool.Client) *pool.Client {

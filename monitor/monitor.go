@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/monitor/metrics"
 	"github.com/bianjieai/cosmos-sync/resource"
@@ -102,9 +103,15 @@ func (node *clientNode) Report() {
 }
 func (node *clientNode) nodeStatusReport() {
 
-	nodeurl, earlyHeight := resource.GetValidNodeUrl()
+	nodeurl, _ := resource.GetValidNodeUrl()
 	if len(nodeurl) == 0 {
-		node.nodeStatus.Set(float64(NodeStatusNotReachable))
+		nodes := pool.PoolValidNodes()
+		if len(nodes) > 0 {
+			resource.ReloadRpcResourceMap(nodes)
+			node.nodeStatus.Set(float64(NodeStatusSyncing))
+		} else {
+			node.nodeStatus.Set(float64(NodeStatusNotReachable))
+		}
 	} else {
 		node.nodeStatus.Set(float64(NodeStatusSyncing))
 	}
@@ -123,11 +130,6 @@ func (node *clientNode) nodeStatusReport() {
 	if follow && block.Time > 0 {
 		timeGap := time.Now().Unix() - block.Time
 		node.nodeTimeGap.Set(float64(timeGap))
-
-		//"follow" way check node is valid
-		if block.Height < earlyHeight {
-			resource.SetInvalidNode(nodeurl)
-		}
 	}
 
 	if follow {
