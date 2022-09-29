@@ -222,3 +222,16 @@ func (f *PoolFactory) PoolValidNodes() []string {
 func PoolValidNodes() []string {
 	return poolFactory.PoolValidNodes()
 }
+
+func (f *PoolFactory) GetClientInfo(id string) string {
+	value, ok := f.peersMap.Load(id)
+	if ok {
+		endPoint := value.(EndPoint)
+		return endPoint.Address
+	}
+	return ""
+}
+
+func GetClientNodeInfo(id string) string {
+	return poolFactory.GetClientInfo(id)
+}
