@@ -58,7 +58,7 @@ func Init(conf *config.Config) {
 		chainId:    conf.Server.ChainId,
 		peersMap:   syncMap,
 		local:      conf.Server.UseNodeUrls,
-		retryLimit: rate.NewLimiter(rate.Every(5*time.Minute), 1),
+		retryLimit: rate.NewLimiter(rate.Every(3*time.Minute), 1),
 	}
 
 	config := commonPool.NewDefaultPoolConfig()

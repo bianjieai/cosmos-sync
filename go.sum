@@ -682,6 +682,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/jung-kurt/gofpdf v1.0.3-0.20190309125859-24315acbbda5/go.mod h1:7Id9E/uU8ce6rXgefFLlgrJj/GYY22cpxn+r32jIOes=
 github.com/jwilder/encoding v0.0.0-20170811194829-b4e1701a28ef/go.mod h1:Ct9fl0F6iIOGgxJ5npU/IUOhOhqlVrGjyIZc8/MagT0=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220929054643-f148bc3491d6 h1:DdwIBzZ8gkq5F5E4GJ12hXrTTSUuFRlxylGDXIFYnvs=
+github.com/kaifei-bianjie/msg-parser v0.0.0-20220929054643-f148bc3491d6/go.mod h1:5hjqRXx7a42t31XI9GA7RhDoG4H1aOUh5dVqF1cDDxQ=
 github.com/karalabe/usb v0.0.0-20190919080040-51dc0efba356/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/karalabe/usb v0.0.0-20211005121534-4c5740d64559/go.mod h1:Od972xHfMJowv7NGVDiWVxk2zxnWgjLlJzE+F4F7AGU=
 github.com/karrick/godirwalk v1.8.0/go.mod h1:H5KPZjojv4lE+QYImBI8xVtrBRgYrIVsaRPx4tDPEn4=
@@ -1130,8 +1132,6 @@ github.com/vmihailenco/msgpack/v5 v5.1.4/go.mod h1:C5gboKD0TJPqWDTVTtrQNfRbiBwHZ
 github.com/vmihailenco/tagparser v0.1.2/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
 github.com/weichang-bianjie/metric-sdk v1.0.0 h1:3dw3WSY6NoyeZf90QXXbAZnsJQWt1Yk62iV93zZOvw8=
 github.com/weichang-bianjie/metric-sdk v1.0.0/go.mod h1:PoA1fYFtSGn1PR89gWjDqyoMrVJ3CZL32Wd0LEgXjrw=
-github.com/weichang-bianjie/msg-parser v0.0.0-20220929030837-e9397a02b2e7 h1:NPgletKCGEeuREUgWyr4o+Vpsxc8/cflVKRRaiYQMcY=
-github.com/weichang-bianjie/msg-parser v0.0.0-20220929030837-e9397a02b2e7/go.mod h1:5hjqRXx7a42t31XI9GA7RhDoG4H1aOUh5dVqF1cDDxQ=
 github.com/willf/bitset v1.1.3/go.mod h1:RjeCKbqT1RxIR/KWY6phxZiaY1IyutSBfGjNPySAYV4=
 github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208/go.mod h1:IotVbo4F+mw0EzQ08zFqg7pK3FebNXpaMsRy2RT+Ees=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=

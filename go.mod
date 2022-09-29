@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
-	github.com/kaifei-bianjie/msg-parser v0.0.0-20220824110209-cb9d84214f8f
+	github.com/kaifei-bianjie/msg-parser v0.0.0-20220929054643-f148bc3491d6
 	github.com/qiniu/qmgo v1.0.4
 	github.com/spf13/viper v1.10.1
 	github.com/tendermint/tendermint v0.34.19
@@ -151,6 +151,5 @@ require (
 replace (
 	github.com/cosmos/cosmos-sdk => github.com/likecoin/cosmos-sdk v0.45.6-dual-prefix
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	github.com/kaifei-bianjie/msg-parser => github.com/weichang-bianjie/msg-parser v0.0.0-20220929030837-e9397a02b2e7
 	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.34.8-irita-210413.0.20211012090339-cee6e09e8ae3
 )

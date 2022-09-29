@@ -41,34 +41,17 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 		}
 	} else {
 		if f.local {
+			if f.retryLimit.Allow() {
+				f.autoLoadRpc()
+			}
 			return nil, fmt.Errorf("no found valid node")
 		}
 		//get valid nodeurl
 		address, _ := resource.GetValidNodeUrl()
 		if len(address) == 0 {
-			//if no found valid node, auto update rpc nodes from githubRepo only Once
-			autoLoadRpc := func() {
-				logger.Info("auto update rpc nodes from githubRepo with limiter", logger.String("chainId", f.chainId))
-				nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
-				if err != nil {
-					logger.Error(err.Error())
-					return
-				}
-				if len(nodeRpcs) > 0 {
-					nodeUrls := strings.Split(nodeRpcs, ",")
-					resource.ReloadRpcResourceMap(nodeUrls)
-					for _, url := range nodeUrls {
-						key := generateId(url)
-						endPoint := EndPoint{
-							Address:   url,
-							Available: true,
-						}
-						f.peersMap.Store(key, endPoint)
-					}
-				}
-			}
+			//if no found valid node, auto update rpc nodes from githubRepo
 			if f.retryLimit.Allow() {
-				autoLoadRpc()
+				f.autoLoadRpc()
 			}
 			return nil, fmt.Errorf("no found valid node")
 		} else {
@@ -85,6 +68,46 @@ func (f *PoolFactory) MakeObject(ctx context.Context) (*commonPool.PooledObject,
 				return commonPool.NewPooledObject(c), nil
 			}
 		}
+	}
+}
+
+func (f *PoolFactory) autoLoadRpc() {
+	if f.local {
+		var nodes []string
+		f.peersMap.Range(func(k, value interface{}) bool {
+			key := k.(string)
+			endPoint := value.(EndPoint)
+			if !endPoint.Available {
+				nodes = append(nodes, endPoint.Address)
+				endPoint.Available = true
+			}
+			f.peersMap.Store(key, endPoint)
+			return true
+		})
+		logger.Info("auto reload local rpc nodes",
+			logger.String("nodes", strings.Join(nodes, ",")),
+			logger.String("chainId", f.chainId))
+		return
+	}
+	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
+	if err != nil {
+		logger.Error("GetRpcNodesFromGithubRepo fail,err:"+err.Error(), logger.String("chain_id", f.chainId))
+		return
+	}
+	if len(nodeRpcs) > 0 {
+		nodeUrls := strings.Split(nodeRpcs, ",")
+		resource.ReloadRpcResourceMap(nodeUrls)
+		for _, url := range nodeUrls {
+			key := generateId(url)
+			endPoint := EndPoint{
+				Address:   url,
+				Available: true,
+			}
+			f.peersMap.Store(key, endPoint)
+		}
+		logger.Info("auto reload rpc nodes from githubRepo",
+			logger.String("nodes", strings.Join(nodeUrls, ",")),
+			logger.String("chainId", f.chainId))
 	}
 }
 

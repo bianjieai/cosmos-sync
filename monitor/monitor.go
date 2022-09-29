@@ -103,7 +103,7 @@ func (node *clientNode) Report() {
 }
 func (node *clientNode) nodeStatusReport() {
 
-	nodeurl, earlyHeight := resource.GetValidNodeUrl()
+	nodeurl, _ := resource.GetValidNodeUrl()
 	if len(nodeurl) == 0 {
 		nodes := pool.PoolValidNodes()
 		if len(nodes) > 0 {
@@ -130,11 +130,6 @@ func (node *clientNode) nodeStatusReport() {
 	if follow && block.Time > 0 {
 		timeGap := time.Now().Unix() - block.Time
 		node.nodeTimeGap.Set(float64(timeGap))
-
-		//"follow" way check node is valid
-		if block.Height < earlyHeight {
-			resource.SetInvalidNode(nodeurl)
-		}
 	}
 
 	if follow {
