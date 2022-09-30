@@ -1,0 +1,26 @@
+package msgparser
+
+const (
+	BankRouteKey         string = "bank"
+	ServiceRouteKey      string = "service"
+	NftRouteKey          string = "nft"
+	MtRouteKey           string = "mt"
+	RecordRouteKey       string = "record"
+	TokenRouteKey        string = "token"
+	CoinswapRouteKey     string = "coinswap"
+	CrisisRouteKey       string = "crisis"
+	DistributionRouteKey string = "distribution"
+	SlashingRouteKey     string = "slashing"
+	EvidenceRouteKey     string = "evidence"
+	HtlcRouteKey         string = "htlc"
+	StakingRouteKey      string = "staking"
+	GovRouteKey          string = "gov"
+	FeegrantRouteKey     string = "feegrant"
+	RandomRouteKey       string = "random"
+	OracleRouteKey       string = "oracle"
+	FarmRouteKey         string = "farm"
+	IbcRouteKey          string = "ibc"
+	IbcTransferRouteKey  string = "transfer"
+	TIbcTransferRouteKey string = "NFT"
+	TIbcRouteKey         string = "tibc"
+)
