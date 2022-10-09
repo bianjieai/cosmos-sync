@@ -65,9 +65,10 @@ func Init(conf *config.Config) {
 	config.MaxTotal = conf.Server.MaxConnectionNum
 	config.MaxIdle = conf.Server.InitConnectionNum
 	config.MinIdle = conf.Server.InitConnectionNum
-	config.TestOnBorrow = true
+	//config.TestOnBorrow = true
 	config.TestOnCreate = true
 	config.TestWhileIdle = true
+	config.LIFO = false
 
 	poolObject = commonPool.NewObjectPool(ctx, &poolFactory, config)
 	poolObject.PreparePool(ctx)
