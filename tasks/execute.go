@@ -194,11 +194,14 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 					logger.String("task", fmt.Sprintf("%d-%d", task.StartHeight, task.EndHeight)))
 				return
 			}
-			client = switchRpc(client)
+
 			logger.Error("Parse block fail",
 				logger.Int64("height", inProcessBlock),
 				logger.String("errTag", utils.GetErrTag(err)),
-				logger.String("err", err.Error()))
+				logger.String("err", err.Error()),
+				logger.String("node_url", pool.GetClientNodeInfo(client.Id)))
+
+			client = switchRpc(client)
 			//continue to assert task is valid
 			blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 			continue
