@@ -381,7 +381,7 @@ func taskInvalidClient(err error) bool {
 func switchRpc(client *pool.Client) *pool.Client {
 	newclient := pool.GetClient()
 	defer func() {
-		client.InvalidateObject()
+		client.Release()
 	}()
 	return newclient
 }
