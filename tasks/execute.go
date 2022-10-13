@@ -163,6 +163,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 	// valid catch up task: current_height < end_height
 	// valid follow task: current_height + blockNumPerWorkerHandle > blockChainLatestHeight
 	blockChainLatestHeight, isValid := assertTaskValid(task, blockNumPerWorkerHandle)
+	maxSwitchTimes := 3
 	for isValid {
 		var inProcessBlock int64
 		if task.CurrentHeight == 0 {
@@ -200,8 +201,16 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 				logger.String("errTag", utils.GetErrTag(err)),
 				logger.String("err", err.Error()),
 				logger.String("node_url", pool.GetClientNodeInfo(client.Id)))
-
-			client = switchRpc(client)
+			if maxSwitchTimes > 0 {
+				client = switchRpc(client)
+			} else {
+				logger.Warn("no execute task for not switch valid client, reason:"+err.Error(),
+					logger.String("node_url", pool.GetClientNodeInfo(client.Id)),
+					logger.Int64("height", inProcessBlock),
+					logger.String("task", fmt.Sprintf("%d-%d", task.StartHeight, task.EndHeight)))
+				return
+			}
+			maxSwitchTimes--
 			//continue to assert task is valid
 			blockChainLatestHeight, isValid = assertTaskValid(task, blockNumPerWorkerHandle)
 			continue
@@ -381,7 +390,7 @@ func taskInvalidClient(err error) bool {
 func switchRpc(client *pool.Client) *pool.Client {
 	newclient := pool.GetClient()
 	defer func() {
-		client.InvalidateObject()
+		client.Release()
 	}()
 	return newclient
 }

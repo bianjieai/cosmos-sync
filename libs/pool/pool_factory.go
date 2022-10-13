@@ -8,7 +8,6 @@ import (
 	commonPool "github.com/jolestar/go-commons-pool"
 	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
 	"golang.org/x/time/rate"
-	"math/rand"
 	"strings"
 	"sync"
 )
@@ -164,32 +163,34 @@ func (f *PoolFactory) PassivateObject(ctx context.Context, object *commonPool.Po
 
 func (f *PoolFactory) GetEndPoint() EndPoint {
 	var (
-		keys        []string
-		selectedKey string
+		//keys        []string
+		//selectedKey string
+		endPoint EndPoint
 	)
 
 	f.peersMap.Range(func(k, value interface{}) bool {
-		key := k.(string)
-		endPoint := value.(EndPoint)
+		//key := k.(string)
+		endPoint = value.(EndPoint)
 		if endPoint.Available {
-			keys = append(keys, key)
+			return false
+			//keys = append(keys, key)
 		}
-		selectedKey = key
+		//selectedKey = key
 
 		return true
 	})
 
-	if len(keys) > 0 {
-		index := rand.Intn(len(keys))
-		selectedKey = keys[index]
-	}
-	value, ok := f.peersMap.Load(selectedKey)
-	if ok {
-		return value.(EndPoint)
-	} else {
-		logger.Error("Can't get selected end point", logger.String("selectedKey", selectedKey))
-	}
-	return EndPoint{}
+	//if len(keys) > 0 {
+	//	index := rand.Intn(len(keys))
+	//	selectedKey = keys[index]
+	//}
+	//value, ok := f.peersMap.Load(selectedKey)
+	//if ok {
+	//	return value.(EndPoint)
+	//} else {
+	//	logger.Error("Can't get selected end point", logger.String("selectedKey", selectedKey))
+	//}
+	return endPoint
 }
 
 func newClient(nodeUrl string) (*Client, error) {
