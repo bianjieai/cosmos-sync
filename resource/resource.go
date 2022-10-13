@@ -17,7 +17,7 @@ import (
 var (
 	nodeUrlMap            = map[string]bool{}
 	nodeEarliestHeightMap = map[string]int64{}
-	mutex                 sync.Mutex
+	mutex                 sync.RWMutex
 )
 
 func GetValidNodeUrl() (string, int64) {
@@ -78,9 +78,11 @@ func checkRpcValid(nodeUrl string, chainId string) error {
 	if network != chainId {
 		return fmt.Errorf("network(%s) not match config network:%s", network, chainId)
 	}
+	mutex.Lock()
 	if _, ok := nodeEarliestHeightMap[nodeUrl]; !ok {
 		nodeEarliestHeightMap[nodeUrl] = retStatus.SyncInfo.EarliestBlockHeight
 	}
+	mutex.Unlock()
 	return nil
 }
 
@@ -122,10 +124,12 @@ func LoadRpcResource(bz string, chainId string) (string, error) {
 }
 
 func ReloadRpcResourceMap(rpcAddrs []string) {
+	mutex.Lock()
 	nodeUrlMap = make(map[string]bool, len(rpcAddrs))
 	for _, val := range rpcAddrs {
 		nodeUrlMap[val] = true
 	}
+	mutex.Unlock()
 }
 
 func HttpGet(url string) (bz []byte, err error) {
