@@ -19,7 +19,7 @@ get_deps:
 	$(GO_MOD) vendor
 
 build:
-	$(GOBUILD) -o $(BINARY_NAME) .
+	$(GOBUILD) -buildvcs=false -o $(BINARY_NAME) .
 
 clean:
 	$(GOCLEAN)
