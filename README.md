@@ -60,7 +60,7 @@ ignore_ibc_header=false
 - max_connection_num: `required` `int` client pool config total max connection
 - init_connection_num: `required` `int` client pool config idle connection
 
-- bech32_acc_prefix: `option` `string` block chain address prefix（default(cosmoshub): `` example(irishub): `iaa`）
+- bech32_acc_prefix: `option` `string` block chain address multiple prefix（default(cosmoshub): `` example(irishub): `iaa` example(likecoin): `like,cosmos`）
 - chain_block_interval: `option` `int` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `int` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `int` promethous metrics server port
