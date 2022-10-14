@@ -1,8 +1,8 @@
 package ibc
 
 import (
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
-	"github.com/cosmos/cosmos-sdk/types"
+	exchainTypes "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	"github.com/okex/exchain/libs/cosmos-sdk/types"
 )
 
 type ibcClient struct {
@@ -12,69 +12,69 @@ func NewClient() Client {
 	return ibcClient{}
 }
 
-func (ibc ibcClient) HandleTxMsg(v types.Msg) (MsgDocInfo, bool) {
+func (ibc ibcClient) HandleTxMsg(v types.Msg) (exchainTypes.MsgDocInfo, bool) {
 	var (
-		msgDocInfo MsgDocInfo
+		msgDocInfo exchainTypes.MsgDocInfo
 	)
 	ok := true
 	switch msg := v.(type) {
-	case *MsgRecvPacket:
+	case *exchainTypes.MsgRecvPacket:
 		docMsg := DocMsgRecvPacket{}
 		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgTransfer:
+	case *exchainTypes.MsgTransfer:
 		docMsg := DocMsgTransfer{}
 		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgCreateClient:
-		docMsg := DocMsgCreateClient{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgUpdateClient:
+	//case *exchainTypes.MsgCreateClient:
+	//	docMsg := DocMsgCreateClient{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	case *exchainTypes.MsgUpdateClient:
 		docMsg := DocMsgUpdateClient{}
 		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgUpgradeClient:
-		docMsg := DocMsgUpgradeClient{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgSubmitMisbehaviour:
-		docMsg := DocMsgSubmitMisbehaviour{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgUpgradeClient:
+	//	docMsg := DocMsgUpgradeClient{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgSubmitMisbehaviour:
+	//	docMsg := DocMsgSubmitMisbehaviour{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
 
-	case *MsgConnectionOpenInit:
-		docMsg := DocMsgConnectionOpenInit{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgConnectionOpenTry:
-		docMsg := DocMsgConnectionOpenTry{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgConnectionOpenAck:
-		docMsg := DocMsgConnectionOpenAck{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgConnectionOpenConfirm:
-		docMsg := DocMsgConnectionOpenConfirm{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgConnectionOpenInit:
+	//	docMsg := DocMsgConnectionOpenInit{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgConnectionOpenTry:
+	//	docMsg := DocMsgConnectionOpenTry{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgConnectionOpenAck:
+	//	docMsg := DocMsgConnectionOpenAck{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgConnectionOpenConfirm:
+	//	docMsg := DocMsgConnectionOpenConfirm{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
 
-	case *MsgChannelOpenInit:
-		docMsg := DocMsgChannelOpenInit{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgChannelOpenTry:
-		docMsg := DocMsgChannelOpenTry{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgChannelOpenAck:
-		docMsg := DocMsgChannelOpenAck{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgChannelOpenConfirm:
+	//case *exchainTypes.MsgChannelOpenInit:
+	//	docMsg := DocMsgChannelOpenInit{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgChannelOpenTry:
+	//	docMsg := DocMsgChannelOpenTry{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgChannelOpenAck:
+	//	docMsg := DocMsgChannelOpenAck{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	case *exchainTypes.MsgChannelOpenConfirm:
 		docMsg := DocMsgChannelOpenConfirm{}
 		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgChannelCloseInit:
-		docMsg := DocMsgChannelCloseInit{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgChannelCloseConfirm:
-		docMsg := DocMsgChannelCloseConfirm{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgTimeout:
+	//case *exchainTypes.MsgChannelCloseInit:
+	//	docMsg := DocMsgChannelCloseInit{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	//case *exchainTypes.MsgChannelCloseConfirm:
+	//	docMsg := DocMsgChannelCloseConfirm{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	case *exchainTypes.MsgTimeout:
 		docMsg := DocMsgTimeout{}
 		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgTimeoutOnClose:
-		docMsg := DocMsgTimeoutOnClose{}
-		msgDocInfo = docMsg.HandleTxMsg(msg)
-	case *MsgAcknowledgement:
+	//case *exchainTypes.MsgTimeoutOnClose:
+	//	docMsg := DocMsgTimeoutOnClose{}
+	//	msgDocInfo = docMsg.HandleTxMsg(msg)
+	case *exchainTypes.MsgAcknowledgement:
 		docMsg := DocMsgAcknowledgement{}
 		msgDocInfo = docMsg.HandleTxMsg(msg)
 	default:

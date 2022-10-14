@@ -1,7 +1,7 @@
 package ibc
 
 import (
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
 	models "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
 )
@@ -43,4 +43,29 @@ func (m *DocMsgTransfer) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		return m, addrs
 	}
 	return CreateMsgDocInfo(v, handler)
+}
+
+type Height struct {
+	RevisionNumber int64 `bson:"revision_number"`
+	RevisionHeight int64 `bson:"revision_height"`
+}
+
+// Packet defines a type that carries data across different chains through IBC
+type Packet struct {
+	Sequence           int64      `bson:"sequence"`
+	SourcePort         string     `bson:"source_port"`
+	SourceChannel      string     `bson:"source_channel"`
+	DestinationPort    string     `bson:"destination_port"`
+	DestinationChannel string     `bson:"destination_channel"`
+	Data               PacketData `bson:"data"`
+	TimeoutHeight      Height     `bson:"timeout_height"`
+	TimeoutTimestamp   int64      `bson:"timeout_timestamp"`
+}
+
+//FungibleTokenPacketData
+type PacketData struct {
+	Denom    string `bson:"denom" json:"denom"`
+	Amount   string `bson:"amount" json:"amount"`
+	Sender   string `bson:"sender" json:"sender"`
+	Receiver string `bson:"receiver" json:"receiver"`
 }

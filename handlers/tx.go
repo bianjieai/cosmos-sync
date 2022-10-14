@@ -5,18 +5,17 @@ import (
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
-	//"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/okchain-codec"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	ibc "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	types2 "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
 	msgsdktypes "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	"github.com/tendermint/tendermint/types"
-	"golang.org/x/net/context"
+	ctypes "github.com/okex/exchain/libs/tendermint/rpc/core/types"
+	"github.com/okex/exchain/libs/tendermint/types"
 	"strings"
 	"time"
 )
@@ -32,9 +31,7 @@ func InitRouter(conf *config.Config) {
 	router := msgparser.RegisteRouter()
 	_parser = msgparser.NewMsgParser(router)
 
-	if conf.Server.Bech32AccPrefix != "" {
-		initBech32Prefix(conf.Server.Bech32AccPrefix)
-	}
+	codec.SetBech32Prefix()
 	//ibc-zone
 	if filterMsgType := models.GetSrvConf().SupportTypes; filterMsgType != "" {
 		msgTypes := strings.Split(filterMsgType, ",")
@@ -50,11 +47,9 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		blockDoc models.Block
 		block    *ctypes.ResultBlock
 	)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if v, err := client.Block(ctx, &b); err != nil {
+	if v, err := client.Block(&b); err != nil {
 		time.Sleep(1 * time.Second)
-		if v2, err := client.Block(ctx, &b); err != nil {
+		if v2, err := client.Block(&b); err != nil {
 			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlock", err)
 		} else {
 			block = v2
@@ -78,7 +73,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 			if !includeIbcTxs(v) {
 				continue
 			}
-			txHash := utils.BuildHex(v.Hash())
+			txHash := utils.BuildHex(v)
 			txResult, ok := txResultMap[txHash]
 			if !ok {
 				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
@@ -107,7 +102,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 		docTxMsgs      []msgsdktypes.TxMsg
 		includeCfgType bool
 	)
-	txHash := utils.BuildHex(txBytes.Hash())
+	txHash := utils.BuildHex(txBytes)
 
 	docTx.Time = block.Time.Unix()
 	docTx.Height = block.Height
@@ -126,7 +121,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 		eventsIndexMap = splitEvents(txResult.TxResult.Log)
 	}
 
-	authTx, err := codec.GetSigningTx(txBytes)
+	stdTx, err := codec.GetStdTx(txBytes)
 	if err != nil {
 		logger.Warn(err.Error(),
 			logger.String("errTag", "TxDecoder"),
@@ -135,10 +130,10 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 		return docTx, nil
 	}
 	docTx.GasUsed = txResult.TxResult.GasUsed
-	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
-	docTx.Memo = authTx.GetMemo()
+	docTx.Fee = msgsdktypes.BuildFee(stdTx.GetFee(), stdTx.GetGas())
+	docTx.Memo = stdTx.GetMemo()
 
-	msgs := authTx.GetMsgs()
+	msgs := stdTx.GetMsgs()
 	if len(msgs) == 0 {
 		return docTx, nil
 	}
@@ -194,7 +189,7 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 			//docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
 			for id, one := range docTx.EventsNew {
 				if one.MsgIndex == uint32(i) {
-					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
+					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, types2.UnmarshalAcknowledgement)
 				}
 			}
 			if _conf.Server.IgnoreIbcHeader {

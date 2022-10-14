@@ -1,60 +1,74 @@
 package codec
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
-	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/cosmos/cosmos-sdk/std"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
-	"github.com/tendermint/tendermint/types"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
+	cryptocodec "github.com/okex/exchain/app/crypto/ethsecp256k1"
+	ethermint "github.com/okex/exchain/app/types"
+	"github.com/okex/exchain/libs/cosmos-sdk/codec"
+	"github.com/okex/exchain/libs/cosmos-sdk/codec/types"
+	_ "github.com/okex/exchain/libs/cosmos-sdk/crypto"
+	"github.com/okex/exchain/libs/cosmos-sdk/crypto/keys"
+	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
+	"github.com/okex/exchain/libs/cosmos-sdk/types/module"
+	okmodule "github.com/okex/exchain/libs/cosmos-sdk/types/module"
+	"github.com/okex/exchain/libs/cosmos-sdk/x/auth"
+	cosmoscryptocodec "github.com/okex/exchain/libs/cosmos-sdk/x/auth/ibc-tx"
+	authTypes "github.com/okex/exchain/libs/cosmos-sdk/x/auth/types"
+	"github.com/okex/exchain/libs/cosmos-sdk/x/auth/vesting"
 )
 
 var (
-	appModules []module.AppModuleBasic
-	encodecfg  params.EncodingConfig
+	appOkModules = []okmodule.AppModuleBasic{auth.AppModuleBasic{}}
+	codecProxy   *codec.CodecProxy
 )
 
-// 初始化账户地址前缀
-func MakeEncodingConfig() {
-	var cdc = codec.NewLegacyAmino()
-	cryptocodec.RegisterCrypto(cdc)
+func InitTxDecoder() {
+	moduleBasics := module.NewBasicManager(appOkModules...)
+	codecProxy, _ = MakeCodecSuit(moduleBasics)
+}
+func MakeCodec(bm module.BasicManager) *codec.Codec {
+	cdc := codec.New()
+	bm.RegisterCodec(cdc)
+	vesting.RegisterCodec(cdc)
+	sdk.RegisterCodec(cdc)
+	cryptocodec.RegisterCodec(cdc)
+	codec.RegisterCrypto(cdc)
+	ethermint.RegisterCodec(cdc)
+	keys.RegisterCodec(cdc) // temporary. Used to register keyring.Info
 
-	interfaceRegistry := ctypes.NewInterfaceRegistry()
-	moduleBasics := module.NewBasicManager(appModules...)
-	moduleBasics.RegisterInterfaces(interfaceRegistry)
-	std.RegisterInterfaces(interfaceRegistry)
-	marshaler := codec.NewProtoCodec(interfaceRegistry)
-	txCfg := tx.NewTxConfig(marshaler, tx.DefaultSignModes)
+	return cdc
+}
 
-	encodecfg = params.EncodingConfig{
-		InterfaceRegistry: interfaceRegistry,
-		Marshaler:         marshaler,
-		TxConfig:          txCfg,
-		Amino:             cdc,
+func GetCodec() *codec.ProtoCodec {
+	return codecProxy.GetProtocMarshal()
+}
+
+func MakeIBC(bm module.BasicManager) types.InterfaceRegistry {
+	interfaceReg := types.NewInterfaceRegistry()
+	bm.RegisterInterfaces(interfaceReg)
+	cosmoscryptocodec.PubKeyRegisterInterfaces(interfaceReg)
+	return interfaceReg
+}
+
+func MakeCodecSuit(bm module.BasicManager) (*codec.CodecProxy, types.InterfaceRegistry) {
+	aminoCodec := MakeCodec(bm)
+	interfaceReg := MakeIBC(bm)
+	protoCdc := codec.NewProtoCodec(interfaceReg)
+	return codec.NewCodecProxy(protoCdc, aminoCodec), interfaceReg
+}
+
+func GetStdTx(txBytes []byte) (*authTypes.StdTx, error) {
+	if codecProxy == nil {
+		logger.Fatal("InitTxDecoder not work")
 	}
-}
-
-func GetTxDecoder() sdk.TxDecoder {
-	return encodecfg.TxConfig.TxDecoder()
-}
-
-func GetMarshaler() codec.Codec {
-	return encodecfg.Marshaler
-}
-
-func GetSigningTx(txBytes types.Tx) (signing.Tx, error) {
-	Tx, err := GetTxDecoder()(txBytes)
+	var tx authTypes.StdTx
+	err := codecProxy.UnmarshalBinaryLengthPrefixed(txBytes, &tx)
 	if err != nil {
 		return nil, err
 	}
-	signingTx := Tx.(signing.Tx)
-	return signingTx, nil
+	return &tx, nil
 }
 
-func RegisterAppModules(module ...module.AppModuleBasic) {
-	appModules = append(appModules, module...)
+func RegisterAppOkModules(module ...okmodule.AppModuleBasic) {
+	appOkModules = append(appOkModules, module...)
 }

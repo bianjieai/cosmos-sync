@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
@@ -21,8 +20,8 @@ func Test_handleTxResult(t *testing.T) {
 	defer func() {
 		c.Release()
 	}()
-	b := int64(6340723)
-	block, err := c.Block(context.Background(), &b)
+	b := int64(14121638)
+	block, err := c.Block(&b)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

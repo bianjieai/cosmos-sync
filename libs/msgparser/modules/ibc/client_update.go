@@ -1,8 +1,7 @@
 package ibc
 
 import (
-	cdc "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
 )
 
 // MsgUpdateClient defines a message to update an IBC client
@@ -27,11 +26,11 @@ func (m *DocMsgUpdateClient) BuildMsg(v interface{}) {
 func (m *DocMsgUpdateClient) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
-		msg   MsgUpdateClient
 	)
-	data, _ := cdc.GetMarshaler().MarshalJSON(v)
-	cdc.GetMarshaler().UnmarshalJSON(data, &msg)
-	addrs = append(addrs, msg.Signer)
+	signers := v.GetSigners()
+	for _, val := range signers {
+		addrs = append(addrs, val.String())
+	}
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

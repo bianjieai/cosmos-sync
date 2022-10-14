@@ -2,7 +2,6 @@ package client
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	_ "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/auth"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
 )
 
@@ -11,7 +10,7 @@ type MsgClient struct {
 }
 
 func NewMsgClient() MsgClient {
-	codec.MakeEncodingConfig()
+	codec.InitTxDecoder()
 	return MsgClient{
 		Ibc: ibc.NewClient(),
 	}

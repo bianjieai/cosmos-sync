@@ -96,7 +96,7 @@ func (c *Client) Release() {
 
 func (c *Client) HeartBeat() error {
 	http := c.HTTP
-	_, err := http.Health(context.Background())
+	_, err := http.Health()
 	return err
 }
 

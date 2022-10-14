@@ -6,7 +6,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/resource"
 	commonPool "github.com/jolestar/go-commons-pool"
-	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
+	rpcclient "github.com/okex/exchain/libs/tendermint/rpc/client/http"
 	"golang.org/x/time/rate"
 	"strings"
 	"sync"
@@ -138,7 +138,7 @@ func (f *PoolFactory) ValidateObject(ctx context.Context, object *commonPool.Poo
 		}
 		return false
 	}
-	stat, err := c.Status(ctx)
+	stat, err := c.Status()
 	if err != nil {
 		return false
 	}

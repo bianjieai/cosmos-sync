@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	"github.com/tendermint/tendermint/types"
+	ctypes "github.com/okex/exchain/libs/tendermint/rpc/core/types"
+	"github.com/okex/exchain/libs/tendermint/types"
 	"time"
 )
 
@@ -37,7 +36,7 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxRe
 }
 func includeIbcTxs(txBytes types.Tx) bool {
 	var inclueIbcTx bool
-	authTx, err := codec.GetSigningTx(txBytes)
+	authTx, err := codec.GetStdTx(txBytes)
 	if err != nil {
 		logger.Warn(err.Error())
 		return inclueIbcTx
@@ -68,12 +67,10 @@ func getTxResult(c *pool.Client, txBytes types.Tx, chanLimit chan bool, chanRes 
 		err      error
 	)
 	if includeIbcTxs(txBytes) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		txResult, err = c.Tx(ctx, txBytes.Hash(), false)
+		txResult, err = c.Tx(txBytes, false)
 		if err != nil {
 			time.Sleep(1 * time.Second)
-			if v, err1 := c.Tx(ctx, txBytes.Hash(), false); err1 != nil {
+			if v, err1 := c.Tx(txBytes, false); err1 != nil {
 				err = err1
 			} else {
 				txResult = v

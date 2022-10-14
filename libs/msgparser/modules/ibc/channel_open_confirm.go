@@ -1,7 +1,7 @@
 package ibc
 
 import (
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
 )
 

@@ -3,8 +3,8 @@ package msgparser
 import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/client"
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	codec "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"strings"
 )
@@ -33,7 +33,7 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route string
 	)
 
-	data := types.MsgTypeURL(v)
+	data := v.Type()
 	if strings.HasPrefix(data, "/ibc.core.") {
 		route = IbcRouteKey
 	} else if strings.HasPrefix(data, "/ibc.applications.") {
@@ -57,7 +57,7 @@ func (parser msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
 }
 
 func init() {
-	codec.MakeEncodingConfig()
+	codec.InitTxDecoder()
 	_client = client.NewMsgClient()
 }
 func handleIbc(v types.SdkMsg) MsgDocInfo {

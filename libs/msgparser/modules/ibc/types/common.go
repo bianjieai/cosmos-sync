@@ -1,11 +1,11 @@
-package msgs
+package types
 
 import (
-	cdc "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	codec "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	models "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/okex/exchain/libs/cosmos-sdk/codec/types"
+	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
 )
 
 func CreateMsgDocInfo(msg sdk.Msg, handler func() (Msg, []string)) MsgDocInfo {
@@ -49,6 +49,6 @@ func ConvertAny(v *types.Any) string {
 
 func UnmarshalAcknowledgement(bytesdata []byte) string {
 	var result Acknowledgement
-	cdc.GetMarshaler().MustUnmarshalJSON(bytesdata, &result)
+	codec.GetCodec().MustUnmarshalJSON(bytesdata, &result)
 	return result.String()
 }

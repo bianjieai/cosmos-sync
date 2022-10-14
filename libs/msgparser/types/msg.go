@@ -1,6 +1,8 @@
 package types
 
-import "github.com/cosmos/cosmos-sdk/types"
+import (
+	"github.com/okex/exchain/libs/cosmos-sdk/types"
+)
 
 type (
 	TxMsg struct {
@@ -15,7 +17,3 @@ type (
 
 	SdkMsg types.Msg
 )
-
-func MsgTypeURL(msg SdkMsg) string {
-	return types.MsgTypeURL(msg)
-}
