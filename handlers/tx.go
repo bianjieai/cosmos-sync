@@ -5,15 +5,14 @@ import (
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
+	msgsdktypes "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
-	"github.com/kaifei-bianjie/msg-parser/codec"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
-	"github.com/kaifei-bianjie/msg-parser/modules/ibc"
-	"github.com/kaifei-bianjie/msg-parser/modules/mt"
-	msgsdktypes "github.com/kaifei-bianjie/msg-parser/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"golang.org/x/net/context"
@@ -29,52 +28,7 @@ var (
 
 func InitRouter(conf *config.Config) {
 	_conf = conf
-	var router msgparser.Router
-	if conf.Server.SupportModules != "" {
-		modules := strings.Split(conf.Server.SupportModules, ",")
-		msgRoute := msgparser.NewRouter()
-		for _, one := range modules {
-			fn, exist := msgparser.RouteHandlerMap[one]
-			if !exist {
-				logger.Fatal("no support module: " + one)
-			}
-			msgRoute = msgRoute.AddRoute(one, fn)
-			switch one {
-			case msgparser.IbcRouteKey:
-				msgRoute = msgRoute.AddRoute(msgparser.IbcTransferRouteKey, msgparser.RouteHandlerMap[one])
-			case msgparser.TIbcRouteKey:
-				msgRoute = msgRoute.AddRoute(msgparser.TIbcTransferRouteKey, msgparser.RouteHandlerMap[one])
-			}
-		}
-		if msgRoute.GetRoutesLen() > 0 {
-			router = msgRoute
-		}
-	} else {
-		router = msgparser.RegisteRouter()
-	}
-
-	// check and remove disable support module route path
-	if conf.Server.DenyModules != "" {
-		modules := strings.Split(conf.Server.DenyModules, ",")
-		for _, one := range modules {
-			_, exist := msgparser.RouteHandlerMap[one]
-			if !exist {
-				logger.Fatal("disable no exist module: " + one)
-			}
-			if router.HasRoute(one) {
-				switch one {
-				case msgparser.IbcRouteKey:
-					router.RemoveRoute(msgparser.IbcRouteKey)
-					router.RemoveRoute(msgparser.IbcTransferRouteKey)
-				case msgparser.TIbcRouteKey:
-					router.RemoveRoute(msgparser.TIbcRouteKey)
-					router.RemoveRoute(msgparser.TIbcTransferRouteKey)
-				default:
-					router.RemoveRoute(one)
-				}
-			}
-		}
-	}
+	router := msgparser.RegisteRouter()
 	_parser = msgparser.NewMsgParser(router)
 
 	if conf.Server.Bech32AccPrefix != "" {
@@ -215,22 +169,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 		}
 
 		switch msgDocInfo.DocTxMsg.Type {
-		case MsgTypeMTIssueDenom:
-			if docTx.Status == constant.TxStatusFail {
-				break
-			}
-
-			// get denom_id from events then set to msg, because this msg hasn't denom_id
-			denomId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeIssueDenom, AttrKeyDenomId)
-			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTIssueDenom).Id = denomId
-		case MsgTypeMintMT:
-			if docTx.Status == constant.TxStatusFail {
-				break
-			}
-
-			// get mt_id from events then set to msg, because this msg hasn't mt_id
-			mtId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMintMT, AttrKeyMTId)
-			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTMint).Id = mtId
 		case MsgTypeIBCTransfer:
 			if ibcTranferMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgTransfer); ok {
 				if val, exist := eventsIndexMap[uint32(i)]; exist {
@@ -250,13 +188,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 					logger.String("txhash", txHash),
 					logger.Int("msg_index", i),
 					logger.Int64("height", block.Height))
-			}
-		case MsgTypeTIBCRecvPacket:
-			//docTx.Events = updateEvents(docTx.Events, UnmarshalTibcAcknowledgement)
-			for id, one := range docTx.EventsNew {
-				if one.MsgIndex == uint32(i) {
-					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalTibcAcknowledgement)
-				}
 			}
 		case MsgTypeRecvPacket:
 			//docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
@@ -432,24 +363,4 @@ func removeDuplicatesFromSlice(data []string) (result []string) {
 		result = append(result, one)
 	}
 	return
-}
-
-const (
-	EventTypeIssueDenom = "issue_denom"
-	EventTypeMintMT     = "mint_mt"
-	AttrKeyDenomId      = "denom_id"
-	AttrKeyMTId         = "mt_id"
-)
-
-func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string {
-	for _, val := range events {
-		if val.Type == typ {
-			for _, attr := range val.Attributes {
-				if attr.Key == attrKey {
-					return attr.Value
-				}
-			}
-		}
-	}
-	return ""
 }

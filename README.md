@@ -36,8 +36,6 @@ chain_id=""
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
-support_modules="" 
-deny_modules=""
 support_types=""
 ignore_ibc_header=false
 ```
@@ -64,10 +62,6 @@ ignore_ibc_header=false
 - chain_block_interval: `option` `int` block interval; default `5` (example: `5`)
 - behind_block_num: `option` `int` wait block num to handle when retry failed; default `0` (example: `0`)
 - promethous_port: `option` `int` promethous metrics server port
-- support_modules: `option` `string` setting only support module tx sync,default
-  support [all module](https://github.com/bianjieai/cosmos-sync/blob/irishub/1.1.0/libs/msgparser/types.go) (default: ``
-  example: `bank,nft`)
-- deny_modules: `option` `string` disable support module tx sync
 - support_types: `option` `string` setting only support msgType tx sync,default support all types(default: ``
   example: `transfer,recv_packet`)
 - ignore_ibc_header: `option` `boolean` setting update_client header info for tx collection ,default not ignore ibc header info(default: `false`

@@ -3,8 +3,8 @@ package msgparser
 import (
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	. "github.com/kaifei-bianjie/msg-parser/modules"
-	"github.com/kaifei-bianjie/msg-parser/types"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"regexp"
 )
 
@@ -82,27 +82,7 @@ func (rtr *router) RemoveRoute(path string) {
 
 func RegisteRouter() Router {
 	msgRoute := NewRouter()
-	msgRoute.AddRoute(BankRouteKey, handleBank).
-		AddRoute(ServiceRouteKey, handleService).
-		AddRoute(NftRouteKey, handleNft).
-		AddRoute(MtRouteKey, handleMt).
-		AddRoute(RecordRouteKey, handleRecord).
-		AddRoute(TokenRouteKey, handleToken).
-		AddRoute(CoinswapRouteKey, handleCoinswap).
-		AddRoute(CrisisRouteKey, handleCrisis).
-		AddRoute(DistributionRouteKey, handleDistribution).
-		AddRoute(SlashingRouteKey, handleSlashing).
-		AddRoute(EvidenceRouteKey, handleEvidence).
-		AddRoute(HtlcRouteKey, handleHtlc).
-		AddRoute(StakingRouteKey, handleStaking).
-		AddRoute(FeegrantRouteKey, handleFeegrant).
-		AddRoute(GovRouteKey, handleGov).
-		AddRoute(RandomRouteKey, handleRandom).
-		AddRoute(OracleRouteKey, handleOracle).
-		AddRoute(FarmRouteKey, handleFarm).
-		AddRoute(IbcRouteKey, handleIbc).
-		AddRoute(IbcTransferRouteKey, handleIbc).
-		AddRoute(TIbcRouteKey, handleTIbc).
-		AddRoute(TIbcTransferRouteKey, handleTIbc)
+	msgRoute.AddRoute(IbcRouteKey, handleIbc).
+		AddRoute(IbcTransferRouteKey, handleIbc)
 	return msgRoute
 }

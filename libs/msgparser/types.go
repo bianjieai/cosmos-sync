@@ -1,50 +1,6 @@
 package msgparser
 
 const (
-	BankRouteKey         string = "bank"
-	ServiceRouteKey      string = "service"
-	NftRouteKey          string = "nft"
-	MtRouteKey           string = "mt"
-	RecordRouteKey       string = "record"
-	TokenRouteKey        string = "token"
-	CoinswapRouteKey     string = "coinswap"
-	CrisisRouteKey       string = "crisis"
-	DistributionRouteKey string = "distribution"
-	SlashingRouteKey     string = "slashing"
-	EvidenceRouteKey     string = "evidence"
-	HtlcRouteKey         string = "htlc"
-	StakingRouteKey      string = "staking"
-	GovRouteKey          string = "gov"
-	FeegrantRouteKey     string = "feegrant"
-	RandomRouteKey       string = "random"
-	OracleRouteKey       string = "oracle"
-	FarmRouteKey         string = "farm"
-	IbcRouteKey          string = "ibc"
-	IbcTransferRouteKey  string = "transfer"
-	TIbcTransferRouteKey string = "NFT"
-	TIbcRouteKey         string = "tibc"
+	IbcRouteKey         string = "ibc"
+	IbcTransferRouteKey string = "transfer"
 )
-
-var RouteHandlerMap = map[string]Handler{
-	BankRouteKey:         handleBank,
-	ServiceRouteKey:      handleService,
-	NftRouteKey:          handleNft,
-	RecordRouteKey:       handleRecord,
-	TokenRouteKey:        handleToken,
-	CoinswapRouteKey:     handleCoinswap,
-	CrisisRouteKey:       handleCrisis,
-	DistributionRouteKey: handleDistribution,
-	SlashingRouteKey:     handleSlashing,
-	EvidenceRouteKey:     handleEvidence,
-	HtlcRouteKey:         handleHtlc,
-	StakingRouteKey:      handleStaking,
-	GovRouteKey:          handleGov,
-	FeegrantRouteKey:     handleFeegrant,
-	RandomRouteKey:       handleRandom,
-	OracleRouteKey:       handleOracle,
-	IbcRouteKey:          handleIbc,
-	IbcTransferRouteKey:  handleIbc,
-	FarmRouteKey:         handleFarm,
-	TIbcTransferRouteKey: handleTIbc,
-	TIbcRouteKey:         handleTIbc,
-}
