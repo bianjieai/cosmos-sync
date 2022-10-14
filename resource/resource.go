@@ -95,6 +95,7 @@ func LoadRpcResource(bz string, chainId string) (string, error) {
 	}
 	var rpcAddrs []string
 	for _, v := range chainRegisterResp.Apis.Rpc {
+		var nodeUrl string
 		nodehttp := strings.Split(v.Address, "://")[0]
 		nodeuri := strings.Split(v.Address, "://")[1]
 		if strings.Count(nodeuri, "/") <= 1 {
@@ -107,15 +108,15 @@ func LoadRpcResource(bz string, chainId string) (string, error) {
 					nodeuri = nodeuri + ":443"
 				}
 			}
-			nodeUrl := nodehttp + "://" + nodeuri
-			if err := checkRpcValid(nodeUrl, chainId); err == nil {
-				rpcAddrs = append(rpcAddrs, nodeUrl)
-			} else {
-				logger.Debug("invalid nodeurl:"+nodeUrl, logger.String("err", err.Error()))
-			}
-
+			nodeUrl = nodehttp + "://" + nodeuri
 		} else {
-			logger.Debug("no support nodeurl:" + v.Address)
+			nodeuri = strings.Replace(nodeuri, "/", ":443/", 1)
+			nodeUrl = nodehttp + "://" + nodeuri
+		}
+		if err := checkRpcValid(nodeUrl, chainId); err == nil {
+			rpcAddrs = append(rpcAddrs, nodeUrl)
+		} else {
+			logger.Debug("invalid nodeurl:"+nodeUrl, logger.String("err", err.Error()))
 		}
 	}
 	nodeEarliestHeightMap = make(map[string]int64, len(rpcAddrs))

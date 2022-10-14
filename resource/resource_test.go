@@ -11,11 +11,11 @@ func TestHttpGet(t *testing.T) {
 }
 
 func TestLoadRpcResource(t *testing.T) {
-	data, err := HttpGet("https://raw.githubusercontent.com/cosmos/chain-registry/master/sentinel/chain.json")
+	data, err := HttpGet("https://raw.githubusercontent.com/cosmos/chain-registry/master/likecoin/chain.json")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	nodeurl, err := LoadRpcResource(string(data), "sentinelhub_1")
+	nodeurl, err := LoadRpcResource(string(data), "likecoin_mainnet_2")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
