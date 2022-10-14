@@ -89,28 +89,3 @@ type PacketData struct {
 	Sender   string `bson:"sender" json:"sender"`
 	Receiver string `bson:"receiver" json:"receiver"`
 }
-
-func GetIbcPacketDenom(packet Packet, packetMsgDenom string) string {
-	if utils.ReceiverChainIsSource(packet.SourcePort, packet.SourceChannel, packetMsgDenom) {
-		// remove prefix added by sender chain
-		voucherPrefix := utils.GetDenomPrefix(packet.SourcePort, packet.SourceChannel)
-		unprefixedDenom := packetMsgDenom[len(voucherPrefix):]
-		denom := unprefixedDenom
-		denomTrace := utils.ParseDenomTrace(unprefixedDenom)
-		if denomTrace.Path != "" {
-			denom = utils.IBCDenom(fmt.Sprintf("%v/%v", denomTrace.Path, denomTrace.BaseDenom))
-		}
-		return denom
-	}
-
-	// since SendPacket did not prefix the denomination, we must prefix denomination here
-	sourcePrefix := utils.GetDenomPrefix(packet.DestinationPort, packet.DestinationChannel)
-	// NOTE: sourcePrefix contains the trailing "/"
-	prefixedDenom := sourcePrefix + packetMsgDenom
-	denomTrace := utils.ParseDenomTrace(prefixedDenom)
-	if denomTrace.Path != "" {
-		return utils.IBCDenom(fmt.Sprintf("%v/%v", denomTrace.Path, denomTrace.BaseDenom))
-	}
-
-	return denomTrace.BaseDenom
-}
