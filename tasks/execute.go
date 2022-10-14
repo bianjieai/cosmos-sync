@@ -199,7 +199,7 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 					logger.Int64("height", inProcessBlock),
 					logger.String("errTag", utils.GetErrTag(err)),
 					logger.String("err", err.Error()),
-					logger.String("task", fmt.Sprintf("%d-%d", task.StartHeight, task.EndHeight))
+					logger.String("task", fmt.Sprintf("%d-%d", task.StartHeight, task.EndHeight)),
 					logger.String("node_url", pool.GetClientNodeInfo(client.Id)))
 			}
 
