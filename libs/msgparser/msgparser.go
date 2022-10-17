@@ -88,6 +88,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = IritaSlashingRouteKey
 	} else if strings.HasPrefix(data, "/iritamod.perm") {
 		route = PermRouteKey
+	} else if strings.HasPrefix(data, "/iritamod.node.") {
+		route = NodeRouteKey
 	} else {
 		route = data
 	}
@@ -145,5 +147,6 @@ func init() {
 		TIbcTransferRouteKey:   tibcModClient.Tibc,
 		TIbcRouteKey:           tibcModClient.Tibc,
 		GovRouteKey:            spartanChainModClient.Gov,
+		NodeRouteKey:           iritaModClient.Node,
 	}
 }

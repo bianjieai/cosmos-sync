@@ -24,6 +24,7 @@ const (
 	TIbcRouteKey           string = "tibc"
 	EvmRouteKey            string = "evm"
 	PermRouteKey           string = "perm"
+	NodeRouteKey           string = "node"
 )
 
 type LegacyTx struct {
