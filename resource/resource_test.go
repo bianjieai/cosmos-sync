@@ -21,3 +21,8 @@ func TestLoadRpcResource(t *testing.T) {
 	}
 	t.Log(nodeurl)
 }
+
+func TestHandleUri(t *testing.T) {
+	t.Log(HandleUri("https://mainnet-full-node-02.hosts.cudos.org:36657"))
+	t.Log(HandleUri("https://mainnet-node.like.co/rpc/"))
+}

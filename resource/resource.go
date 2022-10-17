@@ -95,24 +95,7 @@ func LoadRpcResource(bz string, chainId string) (string, error) {
 	}
 	var rpcAddrs []string
 	for _, v := range chainRegisterResp.Apis.Rpc {
-		var nodeUrl string
-		nodehttp := strings.Split(v.Address, "://")[0]
-		nodeuri := strings.Split(v.Address, "://")[1]
-		if strings.Count(nodeuri, "/") <= 1 {
-			if strings.Contains(nodeuri, ":") {
-				nodeuri = strings.ReplaceAll(nodeuri, "/", "")
-			} else {
-				if strings.Contains(nodeuri, "/") {
-					nodeuri = strings.ReplaceAll(nodeuri, "/", ":443")
-				} else {
-					nodeuri = nodeuri + ":443"
-				}
-			}
-			nodeUrl = nodehttp + "://" + nodeuri
-		} else {
-			nodeuri = strings.Replace(nodeuri, "/", ":443/", 1)
-			nodeUrl = nodehttp + "://" + nodeuri
-		}
+		nodeUrl := HandleUri(v.Address)
 		if err := checkRpcValid(nodeUrl, chainId); err == nil {
 			rpcAddrs = append(rpcAddrs, nodeUrl)
 		} else {
@@ -122,6 +105,28 @@ func LoadRpcResource(bz string, chainId string) (string, error) {
 	nodeEarliestHeightMap = make(map[string]int64, len(rpcAddrs))
 
 	return strings.Join(rpcAddrs, ","), nil
+}
+
+func HandleUri(rpcaddr string) string {
+	var nodeUrl string
+	nodehttp := strings.Split(rpcaddr, "://")[0]
+	nodeuri := strings.Split(rpcaddr, "://")[1]
+	if strings.Count(nodeuri, "/") <= 1 {
+		if strings.Contains(nodeuri, ":") {
+			nodeuri = strings.ReplaceAll(nodeuri, "/", "")
+		} else {
+			if strings.Contains(nodeuri, "/") {
+				nodeuri = strings.ReplaceAll(nodeuri, "/", ":443")
+			} else {
+				nodeuri = nodeuri + ":443"
+			}
+		}
+		nodeUrl = nodehttp + "://" + nodeuri
+	} else {
+		nodeuri = strings.Replace(nodeuri, "/", ":443/", 1)
+		nodeUrl = nodehttp + "://" + nodeuri
+	}
+	return nodeUrl
 }
 
 func ReloadRpcResourceMap(rpcAddrs []string) {
