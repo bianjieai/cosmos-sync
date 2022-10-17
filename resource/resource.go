@@ -73,6 +73,11 @@ func checkRpcValid(nodeUrl string, chainId string) error {
 		return fmt.Errorf("node is catchingUp")
 	}
 
+	//node check tx_index
+	if strings.Compare(strings.ToLower(retStatus.NodeInfo.Other.TxIndex), "off") == 0 {
+		return fmt.Errorf("transaction indexing is disabled")
+	}
+
 	//network no match
 	network := strings.ReplaceAll(retStatus.NodeInfo.Network, "-", "_")
 	if network != chainId {
