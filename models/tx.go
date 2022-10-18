@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/kaifei-bianjie/msg-parser/types"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
 )

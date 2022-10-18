@@ -37,8 +37,6 @@ type (
 		BehindBlockNum     int    `mapstructure:"behind_block_num"`
 
 		PromethousPort  string `mapstructure:"promethous_port"`
-		SupportModules  string `mapstructure:"support_modules"`
-		DenyModules     string `mapstructure:"deny_modules"`
 		SupportTypes    string `mapstructure:"support_types"`
 		IgnoreIbcHeader bool   `mapstructure:"ignore_ibc_header"`
 		UseNodeUrls     bool   `mapstructure:"use_node_urls"`

@@ -3,8 +3,8 @@ package handlers
 import (
 	"context"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
-	"github.com/kaifei-bianjie/msg-parser/codec"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	"time"

@@ -3,20 +3,18 @@ node_uri= "mongodb://iobscan:iobscanPassword@192.168.150.40:27017/?connect=direc
 database= "iobscan-ibc_0805"
 
 [server]
-node_urls="https://irishub.stakesystems.io:2053"
+node_urls="https://rpc-osmosis-ia.cosmosia.notional.ventures:443"
 worker_num_create_task=1
 worker_num_execute_task=30
 worker_max_sleep_time=120
 block_num_per_worker_handle=100
 max_connection_num=100
 init_connection_num=5
-bech32_acc_prefix="iaa"
-chain_id="irishub_1"
+bech32_acc_prefix="osmo"
+chain_id="osmosis_1"
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
-support_modules=""
-deny_modules=""
-support_types=""
+support_types="transfer,recv_packet,timeout_packet,acknowledge_packet,update_client,channel_open_confirm"
 ignore_ibc_header=false
 use_node_urls=false
