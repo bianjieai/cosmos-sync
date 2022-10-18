@@ -9,6 +9,8 @@ require (
 	github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0
 	github.com/kaifei-bianjie/iritachain-mod-parser v0.0.0-20220927080649-b11c8b659583
 	github.com/kaifei-bianjie/iritamod-parser v0.0.0-20221017095308-8d8fdf5aa9ac
+	github.com/kaifei-bianjie/iritachain-mod-parser v0.0.0-20220928054622-140867e396da
+	github.com/kaifei-bianjie/iritamod-parser v0.0.0-20220923075745-50a7044003db
 	github.com/kaifei-bianjie/spartanchain-mod-parser v0.0.0-20220926103514-5f0a9d27d019
 	github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20220927054648-1e71af64d126
 	github.com/qiniu/qmgo v1.0.4
@@ -23,7 +25,6 @@ require (
 )
 
 replace (
-	github.com/CosmWasm/wasmd => github.com/bianjieai/wasmd v0.19.1-0.20211215102105-45e28c7c896c
 	github.com/cosmos/cosmos-sdk => github.com/bianjieai/cosmos-sdk v0.45.1-irita-20220816.0.20220816095307-845547d9c19e
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.34.8-irita-210413.0.20210908054213-781a5fed16d6
