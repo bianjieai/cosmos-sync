@@ -1,7 +1,7 @@
 package ibc
 
 import (
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 )
 
 // MsgUpdateClient defines a message to update an IBC client
@@ -26,10 +26,8 @@ func (m *DocMsgUpdateClient) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
 	)
-	signers := v.GetSigners()
-	for _, val := range signers {
-		addrs = append(addrs, val.String())
-	}
+	msg := v.(*MsgUpdateClient)
+	addrs = append(addrs, msg.Signer)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

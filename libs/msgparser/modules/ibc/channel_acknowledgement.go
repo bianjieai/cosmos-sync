@@ -2,7 +2,7 @@ package ibc
 
 import (
 	"fmt"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
 )
 
@@ -38,10 +38,9 @@ func (m *DocMsgAcknowledgement) HandleTxMsg(v SdkMsg) MsgDocInfo {
 		addrs []string
 	)
 
-	signers := v.GetSigners()
-	for _, val := range signers {
-		addrs = append(addrs, val.String())
-	}
+	msg := v.(*MsgAcknowledgement)
+	packetData := UnmarshalPacketData(msg.Packet.GetData())
+	addrs = append(addrs, msg.Signer, packetData.Receiver, packetData.Sender)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

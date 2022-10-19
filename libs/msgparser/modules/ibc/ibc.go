@@ -1,7 +1,7 @@
 package ibc
 
 import (
-	exchainTypes "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	exchainTypes "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	"github.com/okex/exchain/libs/cosmos-sdk/types"
 )
 

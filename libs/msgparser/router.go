@@ -3,7 +3,7 @@ package msgparser
 import (
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
 	"regexp"
 )

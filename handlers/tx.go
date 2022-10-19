@@ -6,9 +6,8 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	ibc "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
-	types2 "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	msgsdktypes "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
@@ -186,10 +185,9 @@ func parseTx(txBytes types.Tx, txHash string, txResult *ctypes.ResultTx, block *
 					logger.Int64("height", block.Height))
 			}
 		case MsgTypeRecvPacket:
-			//docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
 			for id, one := range docTx.EventsNew {
 				if one.MsgIndex == uint32(i) {
-					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, types2.UnmarshalAcknowledgement)
+					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
 				}
 			}
 			if _conf.Server.IgnoreIbcHeader {
@@ -206,11 +204,6 @@ func parseTx(txBytes types.Tx, txHash string, txResult *ctypes.ResultTx, block *
 			}
 		case MsgTypeUpdateClient:
 			if _conf.Server.IgnoreIbcHeader {
-				updateClientMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgUpdateClient)
-				if ok {
-					updateClientMsg.Header = "ignore ibc header info"
-					msgDocInfo.DocTxMsg.Msg = updateClientMsg
-				}
 				for id, one := range docTx.EventsNew {
 					if one.MsgIndex == uint32(i) {
 						docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removeHeaderOfUpdateClientEvents)

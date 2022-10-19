@@ -2,17 +2,13 @@ package codec
 
 import (
 	okexchaincodec "github.com/okex/exchain/app/codec"
-
 	"github.com/okex/exchain/libs/cosmos-sdk/codec"
 	_ "github.com/okex/exchain/libs/cosmos-sdk/crypto"
-	//"github.com/okex/exchain/libs/cosmos-sdk/crypto/keys"
-	//sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
 	"github.com/okex/exchain/libs/cosmos-sdk/types/module"
 	okmodule "github.com/okex/exchain/libs/cosmos-sdk/types/module"
 	"github.com/okex/exchain/libs/cosmos-sdk/x/auth"
 	cosmoscryptocodec "github.com/okex/exchain/libs/cosmos-sdk/x/auth/ibc-tx"
 	stdtx "github.com/okex/exchain/libs/cosmos-sdk/x/auth/types"
-	//"github.com/okex/exchain/libs/cosmos-sdk/x/auth/vesting"
 )
 
 var (

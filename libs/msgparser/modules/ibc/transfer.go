@@ -1,9 +1,8 @@
 package ibc
 
 import (
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc/types"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	models "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
 )
 
 type DocMsgTransfer struct {
@@ -35,9 +34,8 @@ func (m *DocMsgTransfer) BuildMsg(v interface{}) {
 func (m *DocMsgTransfer) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
-		msg   MsgTransfer
 	)
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	msg := v.(*MsgTransfer)
 	addrs = append(addrs, msg.Sender, msg.Receiver)
 	handler := func() (Msg, []string) {
 		return m, addrs
