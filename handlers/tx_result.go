@@ -25,7 +25,7 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxRe
 	for _, v := range block.Txs {
 		chanParseTxLimit <- true
 		// parse txReult with more goroutine concurrency
-		go getTxResult(client, v, chanParseTxLimit, chanRes)
+		go getTxResult(client, v, block.Height, chanParseTxLimit, chanRes)
 	}
 	txRetMap := make(map[string]chanTxResult, len(block.Txs))
 	for i := 0; i < len(block.Txs); i++ {
@@ -36,7 +36,7 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxRe
 }
 func includeIbcTxs(txBytes types.Tx) bool {
 	var inclueIbcTx bool
-	authTx, err := codec.GetStdTx(txBytes)
+	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
 		logger.Warn(err.Error())
 		return inclueIbcTx
@@ -46,8 +46,7 @@ func includeIbcTxs(txBytes types.Tx) bool {
 		return inclueIbcTx
 	}
 	for _, v := range msgs {
-		msgDocInfo := _parser.HandleTxMsg(v)
-		_, ok := _filterMap[msgDocInfo.DocTxMsg.Type]
+		_, ok := _filterMap[_parser.MsgType(v)]
 		if ok {
 			return true
 		}
@@ -55,7 +54,7 @@ func includeIbcTxs(txBytes types.Tx) bool {
 	return inclueIbcTx
 }
 
-func getTxResult(c *pool.Client, txBytes types.Tx, chanLimit chan bool, chanRes chan chanTxResult) {
+func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan bool, chanRes chan chanTxResult) {
 	defer func() {
 		if r := recover(); r != nil {
 			logger.Error("execute getTxResult fail", logger.Any("err", r))
@@ -66,11 +65,12 @@ func getTxResult(c *pool.Client, txBytes types.Tx, chanLimit chan bool, chanRes 
 		txResult *ctypes.ResultTx
 		err      error
 	)
+	hashbytes := txBytes.Hash(height)
 	if includeIbcTxs(txBytes) {
-		txResult, err = c.Tx(txBytes, false)
+		txResult, err = c.Tx(hashbytes, false)
 		if err != nil {
 			time.Sleep(1 * time.Second)
-			if v, err1 := c.Tx(txBytes, false); err1 != nil {
+			if v, err1 := c.Tx(hashbytes, false); err1 != nil {
 				err = err1
 			} else {
 				txResult = v

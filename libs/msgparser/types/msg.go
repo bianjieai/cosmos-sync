@@ -1,9 +1,5 @@
 package types
 
-import (
-	"github.com/okex/exchain/libs/cosmos-sdk/types"
-)
-
 type (
 	TxMsg struct {
 		Type string `bson:"type"`
@@ -14,6 +10,4 @@ type (
 		GetType() string
 		BuildMsg(msg interface{})
 	}
-
-	SdkMsg types.Msg
 )

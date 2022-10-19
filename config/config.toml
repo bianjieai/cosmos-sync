@@ -16,5 +16,5 @@ chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
 support_types="transfer,recv_packet,timeout_packet,acknowledge_packet,update_client,channel_open_confirm"
-ignore_ibc_header=false
+ignore_ibc_header=true
 use_node_urls=true

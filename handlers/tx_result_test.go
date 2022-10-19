@@ -20,7 +20,7 @@ func Test_handleTxResult(t *testing.T) {
 	defer func() {
 		c.Release()
 	}()
-	b := int64(14121638)
+	b := int64(14121588)
 	block, err := c.Block(&b)
 	if err != nil {
 		t.Fatal(err.Error())

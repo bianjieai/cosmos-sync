@@ -80,7 +80,7 @@ func loadHeight(height icoreclient.Height) Height {
 }
 
 func ConvertUint64ToInt64(data uint64) int64 {
-	dataStr := fmt.Sprint(data)
+	dataStr := strconv.FormatUint(data, 10)
 	if len(dataStr) <= 19 {
 		return int64(data)
 	}

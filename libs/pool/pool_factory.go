@@ -112,14 +112,6 @@ func (f *PoolFactory) autoLoadRpc() {
 
 func (f *PoolFactory) DestroyObject(ctx context.Context, object *commonPool.PooledObject) error {
 	c := object.Object.(*Client)
-	value, ok := f.peersMap.Load(c.Id)
-	//set endpoint invalid
-	if ok {
-		endPoint := value.(EndPoint)
-		endPoint.Available = false
-		f.peersMap.Store(c.Id, endPoint)
-		resource.SetInvalidNode(endPoint.Address)
-	}
 	if c.IsRunning() {
 		c.Stop()
 	}
