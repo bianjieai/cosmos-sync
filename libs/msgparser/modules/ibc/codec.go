@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	codec.RegisterAppOkModules(
+	codec.RegisterAppModules(
 		ibc.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 	)

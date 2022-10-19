@@ -12,12 +12,12 @@ import (
 )
 
 var (
-	appOkModules = []okmodule.AppModuleBasic{auth.AppModuleBasic{}}
-	codecProxy   *codec.CodecProxy
+	appModules = []okmodule.AppModuleBasic{auth.AppModuleBasic{}}
+	codecProxy *codec.CodecProxy
 )
 
 func InitTxDecoder() {
-	moduleBasics := module.NewBasicManager(appOkModules...)
+	moduleBasics := module.NewBasicManager(appModules...)
 	cdc := okexchaincodec.MakeCodec(moduleBasics)
 	interfaceReg := okexchaincodec.MakeIBC(moduleBasics)
 	protoCodec := codec.NewProtoCodec(interfaceReg)
@@ -37,6 +37,6 @@ func GetSigningTx(txBytes []byte) (*stdtx.IbcTx, error) {
 	return tx, nil
 }
 
-func RegisterAppOkModules(module ...okmodule.AppModuleBasic) {
-	appOkModules = append(appOkModules, module...)
+func RegisterAppModules(module ...okmodule.AppModuleBasic) {
+	appModules = append(appModules, module...)
 }
