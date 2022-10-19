@@ -31,8 +31,7 @@ func InitRouter(conf *config.Config) {
 	_conf = conf
 	router := msgparser.RegisteRouter()
 	_parser = msgparser.NewMsgParser(router)
-	tmtypes.UnittestOnlySetMilestoneVenusHeight(2322601)
-	//tmtypes.UnittestOnlySetMilestoneVenus1Height(2322601)
+	tmtypes.SetupMainNetEnvironment(1)
 	codec.SetBech32Prefix()
 	//ibc-zone
 	if filterMsgType := models.GetSrvConf().SupportTypes; filterMsgType != "" {

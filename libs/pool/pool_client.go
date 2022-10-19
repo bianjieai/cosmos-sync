@@ -5,7 +5,6 @@ package pool
 
 import (
 	"context"
-	"errors"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/resource"
@@ -109,25 +108,4 @@ func (c *Client) InvalidateObject() {
 
 func ClosePool() {
 	poolObject.Close(ctx)
-}
-
-func GetClientWithTimeout(timeout time.Duration) (*Client, error) {
-	c := make(chan interface{})
-	errCh := make(chan error)
-	go func() {
-		client, err := poolObject.BorrowObject(ctx)
-		if err != nil {
-			errCh <- err
-		} else {
-			c <- client
-		}
-	}()
-	select {
-	case res := <-c:
-		return res.(*Client), nil
-	case res := <-errCh:
-		return nil, res
-	case <-time.After(timeout):
-		return nil, errors.New("rpc node timeout")
-	}
 }
