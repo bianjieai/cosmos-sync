@@ -192,15 +192,17 @@ func (s *syncTaskService) TakeOverTaskAndExecute(task models.SyncTask, healthChe
 				logger.Warn("no execute task for this invalid client, reason:"+err.Error(),
 					logger.String("node_url", pool.GetClientNodeInfo(client.Id)),
 					logger.Int64("height", inProcessBlock),
+					logger.String("errTag", utils.GetErrTag(err)),
 					logger.String("task", fmt.Sprintf("%d-%d", task.StartHeight, task.EndHeight)))
-				return
+			} else {
+				logger.Error("Parse block fail",
+					logger.Int64("height", inProcessBlock),
+					logger.String("errTag", utils.GetErrTag(err)),
+					logger.String("err", err.Error()),
+					logger.String("task", fmt.Sprintf("%d-%d", task.StartHeight, task.EndHeight)),
+					logger.String("node_url", pool.GetClientNodeInfo(client.Id)))
 			}
 
-			logger.Error("Parse block fail",
-				logger.Int64("height", inProcessBlock),
-				logger.String("errTag", utils.GetErrTag(err)),
-				logger.String("err", err.Error()),
-				logger.String("node_url", pool.GetClientNodeInfo(client.Id)))
 			if maxSwitchTimes > 0 {
 				client = switchRpc(client)
 			} else {
@@ -323,7 +325,7 @@ func getBlockChainLatestHeight() (int64, error) {
 	defer func() {
 		client.Release()
 	}()
-	status, err := client.Status(context.Background())
+	status, err := client.Status()
 	if err != nil {
 		return 0, err
 	}
