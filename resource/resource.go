@@ -1,17 +1,15 @@
 package resource
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/models"
-	rpcclient "github.com/tendermint/tendermint/rpc/client/http"
+	rpcclient "github.com/okex/exchain/libs/tendermint/rpc/client/http"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
-	"time"
 )
 
 var (
@@ -62,9 +60,7 @@ func checkRpcValid(nodeUrl string, chainId string) error {
 		return err
 	}
 	defer client.Quit()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10)*time.Second)
-	defer cancel()
-	retStatus, err := client.Status(ctx)
+	retStatus, err := client.Status()
 	if err != nil {
 		return err
 	}

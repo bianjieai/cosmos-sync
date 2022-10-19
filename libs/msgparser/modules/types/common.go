@@ -1,11 +1,9 @@
-package msgs
+package types
 
 import (
-	cdc "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	codec "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	models "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
 )
 
 func CreateMsgDocInfo(msg sdk.Msg, handler func() (Msg, []string)) MsgDocInfo {
@@ -34,21 +32,8 @@ func CreateMsgDocInfo(msg sdk.Msg, handler func() (Msg, []string)) MsgDocInfo {
 	}
 }
 
-// ConvertMsg
-// Deprecated, use type assertion instead of this
-func ConvertMsg(v interface{}, msg interface{}) {
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
-}
-
-func ConvertAny(v *types.Any) string {
-	if v != nil {
-		return utils.MarshalJsonIgnoreErr(v)
-	}
-	return ""
-}
-
 func UnmarshalAcknowledgement(bytesdata []byte) string {
 	var result Acknowledgement
-	cdc.GetMarshaler().MustUnmarshalJSON(bytesdata, &result)
+	codec.GetCodec().MustUnmarshalJSON(bytesdata, &result)
 	return result.String()
 }

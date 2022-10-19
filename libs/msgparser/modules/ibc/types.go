@@ -2,11 +2,12 @@ package ibc
 
 import (
 	"fmt"
-	cdc "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
-	icoreclient "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	icorechannel "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	icoreclient "github.com/okex/exchain/libs/ibc-go/modules/core/02-client/types"
+	icorechannel "github.com/okex/exchain/libs/ibc-go/modules/core/04-channel/types"
+	"strconv"
 )
 
 func loadPacket(packet icorechannel.Packet) Packet {
@@ -17,7 +18,7 @@ func loadPacket(packet icorechannel.Packet) Packet {
 		DestinationPort:    packet.DestinationPort,
 		DestinationChannel: packet.DestinationChannel,
 		Data:               UnmarshalPacketData(packet.GetData()),
-		TimeoutTimestamp:   int64(packet.TimeoutTimestamp),
+		TimeoutTimestamp:   ConvertUint64ToInt64(packet.TimeoutTimestamp),
 		TimeoutHeight:      loadHeight(packet.TimeoutHeight)}
 }
 
@@ -26,7 +27,7 @@ func UnmarshalPacketData(bytesdata []byte) PacketData {
 		packetData FungibleTokenPacketData
 		data       PacketData
 	)
-	err := cdc.GetMarshaler().UnmarshalJSON(bytesdata, &packetData)
+	err := codec.GetCodec().UnmarshalJSON(bytesdata, &packetData)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -36,56 +37,20 @@ func UnmarshalPacketData(bytesdata []byte) PacketData {
 
 func loadHeight(height icoreclient.Height) Height {
 	return Height{
-		RevisionNumber: int64(height.RevisionNumber),
-		RevisionHeight: int64(height.RevisionHeight)}
+		RevisionNumber: ConvertUint64ToInt64(height.RevisionNumber),
+		RevisionHeight: ConvertUint64ToInt64(height.RevisionHeight)}
 }
 
-func loadChannel(channel icorechannel.Channel) Channel {
-	return Channel{
-		State:          int32(channel.State),
-		Ordering:       int32(channel.State),
-		Version:        channel.Version,
-		ConnectionHops: channel.ConnectionHops,
-		Counterparty: ChannelCounterparty{
-			ChannelId: channel.Counterparty.ChannelId,
-			PortId:    channel.Counterparty.PortId,
-		},
+func ConvertUint64ToInt64(data uint64) int64 {
+	dataStr := strconv.FormatUint(data, 10)
+	if len(dataStr) <= 19 {
+		return int64(data)
 	}
-}
 
-type Channel struct {
-	State          int32               `bson:"state"`
-	Ordering       int32               `bson:"ordering"`
-	Counterparty   ChannelCounterparty `bson:"counterparty"`
-	ConnectionHops []string            `bson:"connection_hops"`
-	Version        string              `bson:"version"`
-}
-type ChannelCounterparty struct {
-	PortId    string `bson:"port_id"`
-	ChannelId string `bson:"channel_id"`
-}
-
-type Height struct {
-	RevisionNumber int64 `bson:"revision_number"`
-	RevisionHeight int64 `bson:"revision_height"`
-}
-
-// Packet defines a type that carries data across different chains through IBC
-type Packet struct {
-	Sequence           int64      `bson:"sequence"`
-	SourcePort         string     `bson:"source_port"`
-	SourceChannel      string     `bson:"source_channel"`
-	DestinationPort    string     `bson:"destination_port"`
-	DestinationChannel string     `bson:"destination_channel"`
-	Data               PacketData `bson:"data"`
-	TimeoutHeight      Height     `bson:"timeout_height"`
-	TimeoutTimestamp   int64      `bson:"timeout_timestamp"`
-}
-
-//FungibleTokenPacketData
-type PacketData struct {
-	Denom    string `bson:"denom" json:"denom"`
-	Amount   int64  `bson:"amount" json:"amount"`
-	Sender   string `bson:"sender" json:"sender"`
-	Receiver string `bson:"receiver" json:"receiver"`
+	dataStr = dataStr[:19]
+	value, err := strconv.ParseInt(dataStr, 10, 64)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return value
 }

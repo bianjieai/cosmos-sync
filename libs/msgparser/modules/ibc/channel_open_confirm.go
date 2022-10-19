@@ -1,7 +1,7 @@
 package ibc
 
 import (
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
 )
 
@@ -29,10 +29,8 @@ func (m *DocMsgChannelOpenConfirm) BuildMsg(v interface{}) {
 func (m *DocMsgChannelOpenConfirm) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
-		msg   MsgChannelOpenConfirm
 	)
-
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
+	msg := v.(*MsgChannelOpenConfirm)
 	addrs = append(addrs, msg.Signer)
 	handler := func() (Msg, []string) {
 		return m, addrs

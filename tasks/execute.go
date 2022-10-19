@@ -325,7 +325,7 @@ func getBlockChainLatestHeight() (int64, error) {
 	defer func() {
 		client.Release()
 	}()
-	status, err := client.Status(context.Background())
+	status, err := client.Status()
 	if err != nil {
 		return 0, err
 	}

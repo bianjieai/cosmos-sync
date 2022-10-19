@@ -3,8 +3,8 @@ package msgparser
 import (
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
+	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
 	"regexp"
 )
 
@@ -14,7 +14,7 @@ var (
 	IsAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
 )
 
-type Handler func(v types.SdkMsg) MsgDocInfo
+type Handler func(v sdk.Msg) MsgDocInfo
 
 var _ Router = (*router)(nil)
 

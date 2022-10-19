@@ -10,7 +10,7 @@ type MsgClient struct {
 }
 
 func NewMsgClient() MsgClient {
-	codec.MakeEncodingConfig()
+	codec.InitTxDecoder()
 	return MsgClient{
 		Ibc: ibc.NewClient(),
 	}

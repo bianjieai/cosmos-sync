@@ -1,58 +1,42 @@
 package codec
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
-	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/cosmos/cosmos-sdk/std"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
-	"github.com/tendermint/tendermint/types"
+	okexchaincodec "github.com/okex/exchain/app/codec"
+	"github.com/okex/exchain/libs/cosmos-sdk/codec"
+	_ "github.com/okex/exchain/libs/cosmos-sdk/crypto"
+	ibctx "github.com/okex/exchain/libs/cosmos-sdk/types/ibc-adapter"
+	"github.com/okex/exchain/libs/cosmos-sdk/types/module"
+	"github.com/okex/exchain/libs/cosmos-sdk/x/auth"
+	cosmoscryptocodec "github.com/okex/exchain/libs/cosmos-sdk/x/auth/ibc-tx"
+	stdtx "github.com/okex/exchain/libs/cosmos-sdk/x/auth/types"
 )
 
 var (
-	appModules []module.AppModuleBasic
-	encodecfg  params.EncodingConfig
+	appModules = []module.AppModuleBasic{auth.AppModuleBasic{}}
+	codecProxy *codec.CodecProxy
+	txDecoder  ibctx.IbcTxDecoder
 )
 
-// 初始化账户地址前缀
-func MakeEncodingConfig() {
-	var cdc = codec.NewLegacyAmino()
-	cryptocodec.RegisterCrypto(cdc)
-
-	interfaceRegistry := ctypes.NewInterfaceRegistry()
+func InitTxDecoder() {
 	moduleBasics := module.NewBasicManager(appModules...)
-	moduleBasics.RegisterInterfaces(interfaceRegistry)
-	std.RegisterInterfaces(interfaceRegistry)
-	marshaler := codec.NewProtoCodec(interfaceRegistry)
-	txCfg := tx.NewTxConfig(marshaler, tx.DefaultSignModes)
-
-	encodecfg = params.EncodingConfig{
-		InterfaceRegistry: interfaceRegistry,
-		Marshaler:         marshaler,
-		TxConfig:          txCfg,
-		Amino:             cdc,
-	}
+	cdc := okexchaincodec.MakeCodec(moduleBasics)
+	interfaceReg := okexchaincodec.MakeIBC(moduleBasics)
+	protoCodec := codec.NewProtoCodec(interfaceReg)
+	codecProxy = codec.NewCodecProxy(protoCodec, cdc)
+	txDecoder = cosmoscryptocodec.IbcTxDecoder(codecProxy.GetProtocMarshal())
+	return
 }
 
-func GetTxDecoder() sdk.TxDecoder {
-	return encodecfg.TxConfig.TxDecoder()
+func GetCodec() *codec.ProtoCodec {
+	return codecProxy.GetProtocMarshal()
 }
 
-func GetMarshaler() codec.Codec {
-	return encodecfg.Marshaler
-}
-
-func GetSigningTx(txBytes types.Tx) (signing.Tx, error) {
-	Tx, err := GetTxDecoder()(txBytes)
+func GetSigningTx(txBytes []byte) (*stdtx.IbcTx, error) {
+	tx, err := txDecoder(txBytes)
 	if err != nil {
 		return nil, err
 	}
-	signingTx := Tx.(signing.Tx)
-	return signingTx, nil
+	return tx, nil
 }
 
 func RegisterAppModules(module ...module.AppModuleBasic) {

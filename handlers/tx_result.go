@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"context"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/bianjieai/cosmos-sync/utils"
+	ctypes "github.com/okex/exchain/libs/tendermint/rpc/core/types"
+	"github.com/okex/exchain/libs/tendermint/types"
 	"time"
 )
 
@@ -26,7 +26,7 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxRe
 	for _, v := range block.Txs {
 		chanParseTxLimit <- true
 		// parse txReult with more goroutine concurrency
-		go getTxResult(client, v, chanParseTxLimit, chanRes)
+		go getTxResult(client, v, block.Height, chanParseTxLimit, chanRes)
 	}
 	txRetMap := make(map[string]chanTxResult, len(block.Txs))
 	for i := 0; i < len(block.Txs); i++ {
@@ -35,11 +35,14 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxRe
 	}
 	return txRetMap
 }
-func includeIbcTxs(txBytes types.Tx) bool {
+func includeIbcTxs(txBytes types.Tx, txHash string, height int64) bool {
 	var inclueIbcTx bool
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
-		logger.Warn(err.Error())
+		logger.Warn(err.Error(),
+			logger.String("errTag", "TxDecoder"),
+			logger.String("txhash", txHash),
+			logger.Int64("height", height))
 		return inclueIbcTx
 	}
 	msgs := authTx.GetMsgs()
@@ -47,8 +50,7 @@ func includeIbcTxs(txBytes types.Tx) bool {
 		return inclueIbcTx
 	}
 	for _, v := range msgs {
-		msgDocInfo := _parser.HandleTxMsg(v)
-		_, ok := _filterMap[msgDocInfo.DocTxMsg.Type]
+		_, ok := _filterMap[_parser.MsgType(v)]
 		if ok {
 			return true
 		}
@@ -56,10 +58,14 @@ func includeIbcTxs(txBytes types.Tx) bool {
 	return inclueIbcTx
 }
 
-func getTxResult(c *pool.Client, txBytes types.Tx, chanLimit chan bool, chanRes chan chanTxResult) {
+func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan bool, chanRes chan chanTxResult) {
+	var txhash string
 	defer func() {
 		if r := recover(); r != nil {
-			logger.Error("execute getTxResult fail", logger.Any("err", r))
+			logger.Error("execute getTxResult fail",
+				logger.Int64("height", height),
+				logger.String("tx_hash", txhash),
+				logger.Any("err", r))
 		}
 		<-chanLimit
 	}()
@@ -67,13 +73,13 @@ func getTxResult(c *pool.Client, txBytes types.Tx, chanLimit chan bool, chanRes 
 		txResult *ctypes.ResultTx
 		err      error
 	)
-	if includeIbcTxs(txBytes) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		txResult, err = c.Tx(ctx, txBytes.Hash(), false)
+	hashbytes := txBytes.Hash(height)
+	txhash = utils.BuildHex(hashbytes)
+	if includeIbcTxs(txBytes, txhash, height) {
+		txResult, err = c.Tx(hashbytes, false)
 		if err != nil {
 			time.Sleep(1 * time.Second)
-			if v, err1 := c.Tx(ctx, txBytes.Hash(), false); err1 != nil {
+			if v, err1 := c.Tx(hashbytes, false); err1 != nil {
 				err = err1
 			} else {
 				txResult = v

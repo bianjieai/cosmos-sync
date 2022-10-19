@@ -6,16 +6,16 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	msgsdktypes "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	"github.com/tendermint/tendermint/types"
-	"golang.org/x/net/context"
+	ctypes "github.com/okex/exchain/libs/tendermint/rpc/core/types"
+	"github.com/okex/exchain/libs/tendermint/types"
+	tmtypes "github.com/okex/exchain/libs/tendermint/types"
 	"strings"
 	"time"
 )
@@ -30,10 +30,8 @@ func InitRouter(conf *config.Config) {
 	_conf = conf
 	router := msgparser.RegisteRouter()
 	_parser = msgparser.NewMsgParser(router)
-
-	if conf.Server.Bech32AccPrefix != "" {
-		initBech32Prefix(conf.Server.Bech32AccPrefix)
-	}
+	tmtypes.SetupMainNetEnvironment(1)
+	codec.SetBech32Prefix()
 	//ibc-zone
 	if filterMsgType := models.GetSrvConf().SupportTypes; filterMsgType != "" {
 		msgTypes := strings.Split(filterMsgType, ",")
@@ -49,11 +47,9 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		blockDoc models.Block
 		block    *ctypes.ResultBlock
 	)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if v, err := client.Block(ctx, &b); err != nil {
+	if v, err := client.Block(&b); err != nil {
 		time.Sleep(1 * time.Second)
-		if v2, err := client.Block(ctx, &b); err != nil {
+		if v2, err := client.Block(&b); err != nil {
 			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlock", err)
 		} else {
 			block = v2
@@ -68,16 +64,16 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Txn:      int64(len(block.Block.Data.Txs)),
 		Proposer: block.Block.ProposerAddress.String(),
 	}
-
 	txResultMap := handleTxResult(client, block.Block)
 
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for i, v := range block.Block.Txs {
-			if !includeIbcTxs(v) {
+			txbytes := v.Hash(block.Block.Height)
+			txHash := utils.BuildHex(txbytes)
+			if !includeIbcTxs(v, txHash, block.Block.Height) {
 				continue
 			}
-			txHash := utils.BuildHex(v.Hash())
 			txResult, ok := txResultMap[txHash]
 			if !ok {
 				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
@@ -87,7 +83,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
 					txResult.Err)
 			}
-			txDoc, err := parseTx(v, txResult.TxResult, block.Block, i)
+			txDoc, err := parseTx(v, txHash, txResult.TxResult, block.Block, i)
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}
@@ -100,13 +96,12 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	return &blockDoc, txDocs, nil
 }
 
-func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, index int) (models.Tx, error) {
+func parseTx(txBytes types.Tx, txHash string, txResult *ctypes.ResultTx, block *types.Block, index int) (models.Tx, error) {
 	var (
 		docTx          models.Tx
 		docTxMsgs      []msgsdktypes.TxMsg
 		includeCfgType bool
 	)
-	txHash := utils.BuildHex(txBytes.Hash())
 
 	docTx.Time = block.Time.Unix()
 	docTx.Height = block.Height
@@ -190,7 +185,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 					logger.Int64("height", block.Height))
 			}
 		case MsgTypeRecvPacket:
-			//docTx.Events = updateEvents(docTx.Events, UnmarshalAcknowledgement)
 			for id, one := range docTx.EventsNew {
 				if one.MsgIndex == uint32(i) {
 					docTx.EventsNew[id].Events = updateEvents(docTx.EventsNew[id].Events, UnmarshalAcknowledgement)
@@ -210,11 +204,6 @@ func parseTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block, in
 			}
 		case MsgTypeUpdateClient:
 			if _conf.Server.IgnoreIbcHeader {
-				updateClientMsg, ok := msgDocInfo.DocTxMsg.Msg.(*ibc.DocMsgUpdateClient)
-				if ok {
-					updateClientMsg.Header = "ignore ibc header info"
-					msgDocInfo.DocTxMsg.Msg = updateClientMsg
-				}
 				for id, one := range docTx.EventsNew {
 					if one.MsgIndex == uint32(i) {
 						docTx.EventsNew[id].Events = hookEvents(docTx.EventsNew[id].Events, removeHeaderOfUpdateClientEvents)

@@ -2,7 +2,7 @@ package ibc
 
 import (
 	"fmt"
-	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules/types"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
 )
 
@@ -33,11 +33,10 @@ func (m *DocMsgTimeout) BuildMsg(v interface{}) {
 func (m *DocMsgTimeout) HandleTxMsg(v SdkMsg) MsgDocInfo {
 	var (
 		addrs []string
-		msg   MsgTimeout
 	)
-
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(v), &msg)
-	addrs = append(addrs, msg.Signer)
+	msg := v.(*MsgTimeout)
+	packetData := UnmarshalPacketData(msg.Packet.GetData())
+	addrs = append(addrs, msg.Signer, packetData.Receiver, packetData.Sender)
 	handler := func() (Msg, []string) {
 		return m, addrs
 	}

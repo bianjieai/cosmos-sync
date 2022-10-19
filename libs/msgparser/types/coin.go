@@ -1,7 +1,7 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/okex/exchain/libs/cosmos-sdk/types"
 )
 
 type Coin struct {
@@ -28,7 +28,7 @@ func BuildDocCoins(coins sdk.Coins) []Coin {
 	return res
 }
 
-func BuildDocCoin(coin sdk.Coin) Coin {
+func BuildDocCoin(coin sdk.CoinAdapter) Coin {
 	return Coin{
 		Denom:  coin.Denom,
 		Amount: coin.Amount.String(),
