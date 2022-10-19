@@ -4,6 +4,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/utils"
 	ctypes "github.com/okex/exchain/libs/tendermint/rpc/core/types"
 	"github.com/okex/exchain/libs/tendermint/types"
 	"time"
@@ -34,11 +35,14 @@ func handleTxResult(client *pool.Client, block *types.Block) map[string]chanTxRe
 	}
 	return txRetMap
 }
-func includeIbcTxs(txBytes types.Tx) bool {
+func includeIbcTxs(txBytes types.Tx, txHash string, height int64) bool {
 	var inclueIbcTx bool
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
-		logger.Warn(err.Error())
+		logger.Warn(err.Error(),
+			logger.String("errTag", "TxDecoder"),
+			logger.String("txhash", txHash),
+			logger.Int64("height", height))
 		return inclueIbcTx
 	}
 	msgs := authTx.GetMsgs()
@@ -55,9 +59,13 @@ func includeIbcTxs(txBytes types.Tx) bool {
 }
 
 func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan bool, chanRes chan chanTxResult) {
+	var txhash string
 	defer func() {
 		if r := recover(); r != nil {
-			logger.Error("execute getTxResult fail", logger.Any("err", r))
+			logger.Error("execute getTxResult fail",
+				logger.Int64("height", height),
+				logger.String("tx_hash", txhash),
+				logger.Any("err", r))
 		}
 		<-chanLimit
 	}()
@@ -66,7 +74,8 @@ func getTxResult(c *pool.Client, txBytes types.Tx, height int64, chanLimit chan 
 		err      error
 	)
 	hashbytes := txBytes.Hash(height)
-	if includeIbcTxs(txBytes) {
+	txhash = utils.BuildHex(hashbytes)
+	if includeIbcTxs(txBytes, txhash, height) {
 		txResult, err = c.Tx(hashbytes, false)
 		if err != nil {
 			time.Sleep(1 * time.Second)

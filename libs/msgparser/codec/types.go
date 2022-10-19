@@ -8,6 +8,5 @@ import (
 func SetBech32Prefix() {
 	config := sdk.GetConfig()
 	okexchain.SetBech32Prefixes(config)
-	okexchain.SetBip44CoinType(config)
 	config.Seal()
 }

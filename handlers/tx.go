@@ -70,10 +70,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	if len(block.Block.Txs) > 0 {
 		for i, v := range block.Block.Txs {
 			txbytes := v.Hash(block.Block.Height)
-			if !includeIbcTxs(v) {
+			txHash := utils.BuildHex(txbytes)
+			if !includeIbcTxs(v, txHash, block.Block.Height) {
 				continue
 			}
-			txHash := utils.BuildHex(txbytes)
 			txResult, ok := txResultMap[txHash]
 			if !ok {
 				return &blockDoc, txDocs, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
