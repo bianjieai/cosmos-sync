@@ -298,6 +298,12 @@ func assertTaskValid(task models.SyncTask, blockNumPerWorkerHandle int64) (int64
 		}
 		break
 	}
+	//judge task status is "underway" when flag is true
+	if flag {
+		taskStatusUnderway := task.Status == models.SyncTaskStatusUnderway
+		taskStatusUnhandled := task.Status == models.SyncTaskStatusUnHandled
+		flag = taskStatusUnderway || taskStatusUnhandled
+	}
 	return blockChainLatestHeight, flag
 }
 
@@ -312,7 +318,8 @@ func assertTaskWorkerUnchanged(taskId primitive.ObjectID, workerId string) (bool
 		return false, err
 	}
 
-	if task.WorkerId == workerId {
+	//workid is not change and status is "underway"
+	if task.WorkerId == workerId && task.Status == models.SyncTaskStatusUnderway {
 		return true, nil
 	} else {
 		return false, nil
@@ -360,7 +367,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 			}
 		}
 
-		cond := bson.M{"_id": taskDoc.ID}
+		cond := bson.M{"_id": taskDoc.ID, "status": bson.M{"$in": []string{models.SyncTaskStatusUnderway, models.SyncTaskStatusUnHandled}}}
 		update := bson.M{
 			"$set": bson.M{
 				"current_height":   taskDoc.CurrentHeight,
