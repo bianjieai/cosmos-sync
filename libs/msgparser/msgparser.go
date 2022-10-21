@@ -11,6 +11,7 @@ import (
 
 type MsgParser interface {
 	HandleTxMsg(v types.SdkMsg) MsgDocInfo
+	MsgType(v types.SdkMsg) string
 }
 
 var (
@@ -54,6 +55,50 @@ func (parser msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
 		return MsgDocInfo{}
 	}
 	return handleFunc(v)
+}
+
+func (parser msgParser) MsgType(v types.SdkMsg) string {
+	switch v.(type) {
+	case *MsgRecvPacket:
+		return MsgTypeRecvPacket
+	case *MsgTransfer:
+		return MsgTypeIBCTransfer
+	case *MsgUpdateClient:
+		return MsgTypeUpdateClient
+	case *MsgChannelOpenConfirm:
+		return MsgTypeChannelOpenConfirm
+	case *MsgTimeout:
+		return MsgTypeTimeout
+	case *MsgAcknowledgement:
+		return MsgTypeAcknowledgement
+	case *MsgCreateClient:
+		return MsgTypeCreateClient
+	case *MsgUpgradeClient:
+		return MsgTypeUpgradeClient
+	case *MsgSubmitMisbehaviour:
+		return MsgTypeSubmitMisbehaviourClient
+	case *MsgConnectionOpenInit:
+		return MsgTypeConnectionOpenInit
+	case *MsgConnectionOpenTry:
+		return MsgTypeConnectionOpenTry
+	case *MsgConnectionOpenAck:
+		return MsgTypeConnectionOpenAck
+	case *MsgConnectionOpenConfirm:
+		return MsgTypeConnectionOpenConfirm
+	case *MsgChannelOpenInit:
+		return MsgTypeChannelOpenInit
+	case *MsgChannelOpenTry:
+		return MsgTypeChannelOpenTry
+	case *MsgChannelOpenAck:
+		return MsgTypeChannelOpenAck
+	case *MsgChannelCloseInit:
+		return MsgTypeChannelCloseInit
+	case *MsgChannelCloseConfirm:
+		return MsgTypeChannelCloseConfirm
+	case *MsgTimeoutOnClose:
+		return MsgTypeTimeoutOnClose
+	}
+	return ""
 }
 
 func init() {

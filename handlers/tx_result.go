@@ -47,8 +47,7 @@ func includeIbcTxs(txBytes types.Tx) bool {
 		return inclueIbcTx
 	}
 	for _, v := range msgs {
-		msgDocInfo := _parser.HandleTxMsg(v)
-		_, ok := _filterMap[msgDocInfo.DocTxMsg.Type]
+		_, ok := _filterMap[_parser.MsgType(v)]
 		if ok {
 			return true
 		}
