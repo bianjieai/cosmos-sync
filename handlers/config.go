@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	"strings"
 )
 
 var (
@@ -46,7 +45,25 @@ func initBech32Prefix(bech32AccPrefix string) {
 		if bech32AccPrefix == "iaa" {
 			initIrisPrefix()
 		} else {
-			codec.SetBech32Prefixs(strings.Split(bech32AccPrefix, ","))
+			initCosmosPrefix(bech32AccPrefix)
 		}
 	}
+}
+
+func initCosmosPrefix(bech32AccPrefix string) {
+	const (
+		PrefixValidator = "val"
+		PrefixConsensus = "cons"
+		PrefixPublic    = "pub"
+		PrefixOperator  = "oper"
+	)
+	Bech32PrefixAccAddr = bech32AccPrefix
+	Bech32PrefixAccPub = Bech32PrefixAccAddr + PrefixPublic
+	Bech32PrefixValAddr = Bech32PrefixAccAddr + PrefixValidator + PrefixOperator
+	Bech32PrefixValPub = Bech32PrefixAccAddr + PrefixValidator + PrefixOperator + PrefixPublic
+	Bech32PrefixConsAddr = Bech32PrefixAccAddr + PrefixValidator + PrefixConsensus
+	Bech32PrefixConsPub = Bech32PrefixAccAddr + PrefixValidator + PrefixConsensus + PrefixPublic
+
+	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
+		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)
 }
