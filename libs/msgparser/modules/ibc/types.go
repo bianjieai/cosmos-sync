@@ -5,8 +5,8 @@ import (
 	cdc "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
-	icoreclient "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	icorechannel "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	icoreclient "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	icorechannel "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 )
 
 func loadPacket(packet icorechannel.Packet) Packet {
@@ -85,7 +85,7 @@ type Packet struct {
 //FungibleTokenPacketData
 type PacketData struct {
 	Denom    string `bson:"denom" json:"denom"`
-	Amount   int64  `bson:"amount" json:"amount"`
+	Amount   string `bson:"amount" json:"amount"`
 	Sender   string `bson:"sender" json:"sender"`
 	Receiver string `bson:"receiver" json:"receiver"`
 }

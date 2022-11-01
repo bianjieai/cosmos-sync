@@ -3,11 +3,11 @@ package msgs
 import (
 	models "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibctransfer "github.com/cosmos/ibc-go/modules/apps/transfer/types"
-	ibcclient "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	ibcconnect "github.com/cosmos/ibc-go/modules/core/03-connection/types"
-	ibc "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	ibcchannel "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	ibctransfer "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
+	ibcclient "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcconnect "github.com/cosmos/ibc-go/v5/modules/core/03-connection/types"
+	ibc "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	ibcchannel "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 )
 
 const (
