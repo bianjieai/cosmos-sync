@@ -19,45 +19,15 @@ var (
 	Bech32PrefixConsPub string
 )
 
-func initIrisPrefix() {
+func initEvmosPrefix() {
 	const (
-		Bech32ChainPrefix = "i"
-		PrefixAcc         = "a"
-		PrefixValidator   = "v"
-		PrefixConsensus   = "c"
-		PrefixPublic      = "p"
-		PrefixAddress     = "a"
-	)
-	bech32AccPrefix := Bech32ChainPrefix
-	Bech32PrefixAccAddr = bech32AccPrefix + PrefixAcc + PrefixAddress
-	Bech32PrefixAccPub = bech32AccPrefix + PrefixAcc + PrefixPublic
-	Bech32PrefixValAddr = bech32AccPrefix + PrefixValidator + PrefixAddress
-	Bech32PrefixValPub = bech32AccPrefix + PrefixValidator + PrefixPublic
-	Bech32PrefixConsAddr = bech32AccPrefix + PrefixConsensus + PrefixAddress
-	Bech32PrefixConsPub = bech32AccPrefix + PrefixConsensus + PrefixPublic
-
-	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
-		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)
-}
-
-func initBech32Prefix(bech32AccPrefix string) {
-	if bech32AccPrefix != "" {
-		if bech32AccPrefix == "iaa" {
-			initIrisPrefix()
-		} else {
-			initCosmosPrefix(bech32AccPrefix)
-		}
-	}
-}
-
-func initCosmosPrefix(bech32AccPrefix string) {
-	const (
+		Bech32Prefix    = "evmos"
 		PrefixValidator = "val"
 		PrefixConsensus = "cons"
 		PrefixPublic    = "pub"
 		PrefixOperator  = "oper"
 	)
-	Bech32PrefixAccAddr = bech32AccPrefix
+	Bech32PrefixAccAddr = Bech32Prefix
 	Bech32PrefixAccPub = Bech32PrefixAccAddr + PrefixPublic
 	Bech32PrefixValAddr = Bech32PrefixAccAddr + PrefixValidator + PrefixOperator
 	Bech32PrefixValPub = Bech32PrefixAccAddr + PrefixValidator + PrefixOperator + PrefixPublic
