@@ -128,6 +128,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 		Status:  status,
 		Log:     log,
 		TxIndex: uint32(index),
+		TxId:    block.Height*100000 + int64(index),
 	}
 	docTx.EventsNew = parseABCILogs(txResult.Log)
 	msgs := authTx.GetMsgs()
