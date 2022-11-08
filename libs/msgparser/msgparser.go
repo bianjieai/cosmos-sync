@@ -120,7 +120,7 @@ func init() {
 	iritaModClient = iritamod_parser.NewMsgClient()
 	tibcModClient = tibc_mod_parser.NewMsgClient()
 	spartanChainModClient = spartanchain_mod_parser.NewMsgClient()
-
+	AdaptEthermintEncodingConfig()
 	RouteClientMap = map[string]common_parser.Client{
 		NftRouteKey:            irisModClient.Nft,
 		MtRouteKey:             irisModClient.Mt,
