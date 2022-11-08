@@ -6,7 +6,7 @@ import (
 	"github.com/tharsis/ethermint/encoding"
 )
 
-func MakeEncodingConfig() {
+func AdaptEthermintEncodingConfig() {
 	moduleBasics := module.NewBasicManager(commoncodec.AppModules...)
 	commoncodec.Encodecfg = encoding.MakeConfig(moduleBasics)
 }
