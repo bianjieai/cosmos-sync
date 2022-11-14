@@ -4,9 +4,9 @@ import (
 	"fmt"
 	cdc "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/utils"
 	icoreclient "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	icorechannel "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	"strconv"
 )
 
 func loadPacket(packet icorechannel.Packet) Packet {
@@ -24,14 +24,18 @@ func loadPacket(packet icorechannel.Packet) Packet {
 func UnmarshalPacketData(bytesdata []byte) PacketData {
 	var (
 		packetData FungibleTokenPacketData
-		data       PacketData
 	)
 	err := cdc.GetMarshaler().UnmarshalJSON(bytesdata, &packetData)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(packetData), &data)
-	return data
+
+	return PacketData{
+		Denom:    packetData.Denom,
+		Amount:   strconv.FormatUint(packetData.Amount, 10),
+		Receiver: packetData.Receiver,
+		Sender:   packetData.Sender,
+	}
 }
 
 func loadHeight(height icoreclient.Height) Height {
@@ -85,7 +89,7 @@ type Packet struct {
 //FungibleTokenPacketData
 type PacketData struct {
 	Denom    string `bson:"denom" json:"denom"`
-	Amount   int64  `bson:"amount" json:"amount"`
+	Amount   string `bson:"amount" json:"amount"`
 	Sender   string `bson:"sender" json:"sender"`
 	Receiver string `bson:"receiver" json:"receiver"`
 }
