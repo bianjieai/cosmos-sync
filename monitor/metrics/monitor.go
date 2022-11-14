@@ -24,6 +24,7 @@ func NewMonitor(port string) Monitor {
 	return client{metricClient}
 }
 
+// [Deprecated]
 func (c client) RegisterMetrics(metric ...metrics.Metric) {
 	c.MetricClient.RegisterMetric(metric...)
 }

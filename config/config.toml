@@ -1,17 +1,17 @@
 [database]
-node_uri= "mongodb://iobscan:iobscanPassword@192.168.150.40:27017/?connect=direct&authSource=iobscan-ibc_0805"
-database= "iobscan-ibc_0805"
+node_uri= "mongodb://root:123456@127.0.0.1:27017/?connect=direct&authSource=test"
+database= "test"
 
 [server]
-node_urls="https://opbningxia.bsngate.com:18602/api/9979c62195e54c43a7cfa4935a2c075e/rpc"
+node_urls="http://47.100.192.234:26657"
 worker_num_create_task=1
-worker_num_execute_task=1
+worker_num_execute_task=30
 worker_max_sleep_time=120
 block_num_per_worker_handle=100
 max_connection_num=100
 init_connection_num=5
 bech32_acc_prefix="iaa"
-chain_id="test"
+chain_id=""
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090

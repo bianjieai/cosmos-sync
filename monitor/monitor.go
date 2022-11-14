@@ -78,7 +78,7 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 	syncParseBugMetric := metrics.NewGuage(
 		"sync",
 		"",
-		"parse_tx_bug",
+		"parser_occure_bug",
 		"occure bug about sync parse tx",
 		nil,
 	)
