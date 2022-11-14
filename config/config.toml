@@ -4,7 +4,6 @@ database= "iobscan-ibc_0805"
 
 [server]
 node_urls="https://opbningxia.bsngate.com:18602/api/9979c62195e54c43a7cfa4935a2c075e/rpc"
-thread_num_parse_tx = 1
 worker_num_create_task=1
 worker_num_execute_task=1
 worker_max_sleep_time=120

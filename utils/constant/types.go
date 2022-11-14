@@ -6,7 +6,7 @@ const (
 	EnvNameConfigFilePath = "CONFIG_FILE_PATH"
 
 	NoSupportModule     = "NoSupport"
-	NoAdaptModule       = "NoAdapt"
+	SyncBug             = "Bug"
 	NoSupportMsgTypeTag = "no support msg parse"
 	//unable to resolve type URL /cosmos.bank.v1beta1.MsgSend
 	ErrNoSupportTxPrefix = "unable to resolve type URL"

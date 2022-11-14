@@ -29,7 +29,7 @@ type clientNode struct {
 	nodeTimeGap         metrics.Guage
 	syncWorkWay         metrics.Guage
 	syncCatchingTaskNum metrics.Guage
-	syncIncompleteTxs   metrics.Guage
+	syncParseBugMetric  metrics.Guage
 }
 
 func NewMetricNode(server metrics.Monitor) clientNode {
@@ -75,11 +75,11 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		"count of sync catchUping task",
 		nil,
 	)
-	syncIncompleteTxsMetric := metrics.NewGuage(
+	syncParseBugMetric := metrics.NewGuage(
 		"sync",
 		"",
-		"incomplete_txs_occure",
-		"occure incomplete txs about sync parse tx",
+		"parse_tx_bug",
+		"occure bug about sync parse tx",
 		nil,
 	)
 	//server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
@@ -89,7 +89,7 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 	nodeTimeGap, _ := metrics.CovertGuage(nodeTimeGapMetric)
 	syncWorkway, _ := metrics.CovertGuage(syncWorkwayMetric)
 	catchingTaskNum, _ := metrics.CovertGuage(syncCatchingTaskNumMetric)
-	syncIncompleteTxs, _ := metrics.CovertGuage(syncIncompleteTxsMetric)
+	syncParseBug, _ := metrics.CovertGuage(syncParseBugMetric)
 	return clientNode{
 		nodeStatus:          nodeStatus,
 		nodeHeight:          nodeHeight,
@@ -97,7 +97,7 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		nodeTimeGap:         nodeTimeGap,
 		syncWorkWay:         syncWorkway,
 		syncCatchingTaskNum: catchingTaskNum,
-		syncIncompleteTxs:   syncIncompleteTxs,
+		syncParseBugMetric:  syncParseBug,
 	}
 }
 
@@ -108,7 +108,7 @@ func (node *clientNode) Report() {
 		case <-t.C:
 			node.nodeStatusReport()
 			node.syncCatchUpingReport()
-			node.syncIncompleteTxsReport()
+			node.syncBugTxsReport()
 		}
 	}
 }
@@ -168,15 +168,15 @@ func (node *clientNode) syncCatchUpingReport() {
 	node.syncCatchingTaskNum.Set(float64(catchUpTasksNum))
 }
 
-func (node *clientNode) syncIncompleteTxsReport() {
-	exist, err := new(models.Tx).FindExistIncompleteTxs()
+func (node *clientNode) syncBugTxsReport() {
+	exist, err := new(models.Tx).FindExistBugTxs()
 	if err != nil {
 		logger.Error("query task exception", logger.String("error", err.Error()))
 	}
 	if exist {
-		node.syncIncompleteTxs.Set(float64(1))
+		node.syncParseBugMetric.Set(float64(1))
 	} else {
-		node.syncIncompleteTxs.Set(float64(0))
+		node.syncParseBugMetric.Set(float64(0))
 	}
 }
 

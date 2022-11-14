@@ -127,28 +127,26 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	if err != nil {
 		for i := range docTx.EventsNew {
 			msgName := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, "message", "action")
-
 			module := _parser.GetModule(msgName)
 			_, exist := msgparser.RouteClientMap[module]
 			if docTx.EventsNew[i].MsgIndex == 0 {
-				docTx.Type = msgName
-			}
-			if !exist {
-				docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
-					Type: constant.NoSupportModule,
-				})
-			} else {
-				docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
-					Type: constant.NoAdaptModule,
-				})
+				if !exist {
+					docTx.Type = constant.NoSupportModule
+					docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
+						Type: constant.NoSupportModule,
+					})
+				} else {
+					docTx.Type = constant.SyncBug
+					docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
+						Type: constant.SyncBug,
+					})
+				}
 			}
 
 			docTx.Types = append(docTx.Types, msgName)
 			docTx.Types = removeDuplicatesFromSlice(docTx.Types)
-			docTx.Memo = hex.EncodeToString(txBytes)
 
 		}
-		docTx.Fee = msgsdktypes.BuildFee(nil, uint64(txResult.GasWanted))
 
 		//logger.Warn(err.Error(),
 		//	logger.String("errTag", "TxDecoder"),
@@ -222,14 +220,14 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	docTx.ContractAddrs = removeDuplicatesFromSlice(docTx.ContractAddrs)
 	docTx.DocTxMsgs = docTxMsgs
 
-	// don't save txs which have not parsed
-	if docTx.Type == "" {
-		logger.Warn(constant.NoSupportMsgTypeTag,
-			logger.String("errTag", "TxMsg"),
-			logger.String("txhash", txHash),
-			logger.Int64("height", block.Height))
-		return models.Tx{}, nil
-	}
+	//// don't save txs which have not parsed
+	//if docTx.Type == "" {
+	//	logger.Warn(constant.NoSupportMsgTypeTag,
+	//		logger.String("errTag", "TxMsg"),
+	//		logger.String("txhash", txHash),
+	//		logger.Int64("height", block.Height))
+	//	return models.Tx{}, nil
+	//}
 
 	return docTx, nil
 }
