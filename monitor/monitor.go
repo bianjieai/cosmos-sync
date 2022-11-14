@@ -29,6 +29,7 @@ type clientNode struct {
 	nodeTimeGap         metrics.Guage
 	syncWorkWay         metrics.Guage
 	syncCatchingTaskNum metrics.Guage
+	syncIncompleteTxs   metrics.Guage
 }
 
 func NewMetricNode(server metrics.Monitor) clientNode {
@@ -74,13 +75,21 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		"count of sync catchUping task",
 		nil,
 	)
-	server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
+	syncIncompleteTxsMetric := metrics.NewGuage(
+		"sync",
+		"",
+		"incomplete_txs_occure",
+		"occure incomplete txs about sync parse tx",
+		nil,
+	)
+	//server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
 	nodeHeight, _ := metrics.CovertGuage(nodeHeightMetric)
 	dbHeight, _ := metrics.CovertGuage(dbHeightMetric)
 	nodeStatus, _ := metrics.CovertGuage(nodeStatusMetric)
 	nodeTimeGap, _ := metrics.CovertGuage(nodeTimeGapMetric)
 	syncWorkway, _ := metrics.CovertGuage(syncWorkwayMetric)
 	catchingTaskNum, _ := metrics.CovertGuage(syncCatchingTaskNumMetric)
+	syncIncompleteTxs, _ := metrics.CovertGuage(syncIncompleteTxsMetric)
 	return clientNode{
 		nodeStatus:          nodeStatus,
 		nodeHeight:          nodeHeight,
@@ -88,6 +97,7 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		nodeTimeGap:         nodeTimeGap,
 		syncWorkWay:         syncWorkway,
 		syncCatchingTaskNum: catchingTaskNum,
+		syncIncompleteTxs:   syncIncompleteTxs,
 	}
 }
 
@@ -98,6 +108,7 @@ func (node *clientNode) Report() {
 		case <-t.C:
 			node.nodeStatusReport()
 			node.syncCatchUpingReport()
+			node.syncIncompleteTxsReport()
 		}
 	}
 }
@@ -155,6 +166,18 @@ func (node *clientNode) syncCatchUpingReport() {
 		logger.Error("query task exception", logger.String("error", err.Error()))
 	}
 	node.syncCatchingTaskNum.Set(float64(catchUpTasksNum))
+}
+
+func (node *clientNode) syncIncompleteTxsReport() {
+	exist, err := new(models.Tx).FindExistIncompleteTxs()
+	if err != nil {
+		logger.Error("query task exception", logger.String("error", err.Error()))
+	}
+	if exist {
+		node.syncIncompleteTxs.Set(float64(1))
+	} else {
+		node.syncIncompleteTxs.Set(float64(0))
+	}
 }
 
 func Start() {

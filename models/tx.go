@@ -3,12 +3,17 @@ package models
 import (
 	"fmt"
 	"github.com/kaifei-bianjie/common-parser/types"
+	"github.com/qiniu/qmgo"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
+	"time"
 )
 
 const (
 	CollectionNameTx = "sync_tx"
+
+	MsgTypeNoSupport = "no_support"
+	MsgTypeNoAdapt   = "no_adapt"
 )
 
 type (
@@ -75,4 +80,24 @@ func (d Tx) EnsureIndexes() {
 
 func (d Tx) PkKvPair() map[string]interface{} {
 	return bson.M{"tx_hash": d.TxHash}
+}
+
+func (d Tx) FindExistIncompleteTxs() (bool, error) {
+	var abnormalTxs []Tx
+	q := bson.M{
+		"msgs.type": bson.M{"$in": []string{MsgTypeNoSupport, MsgTypeNoAdapt}},
+		"time":      bson.M{"$lt": time.Now().Unix()},
+	}
+
+	fn := func(c *qmgo.Collection) error {
+		return c.Find(_ctx, q).Select(bson.M{"msgs.type": 1}).Limit(10).All(&abnormalTxs)
+	}
+
+	err := ExecCollection(d.Name(), fn)
+
+	if err != nil {
+		return false, err
+	}
+
+	return len(abnormalTxs) > 0, nil
 }
