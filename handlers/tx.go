@@ -126,27 +126,22 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
 		for i := range docTx.EventsNew {
-			msgName := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, "message", "action")
+			msgName := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMessage, AttrKeyAction)
 			module := _parser.GetModule(msgName)
 			_, exist := msgparser.RouteClientMap[module]
 			if docTx.EventsNew[i].MsgIndex == 0 {
 				if !exist {
 					docTx.Type = constant.NoSupportModule
-					docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
-						Type: constant.NoSupportModule,
-					})
 				} else {
 					docTx.Type = constant.SyncBug
-					docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
-						Type: constant.SyncBug,
-					})
 				}
+				docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
+					Type: docTx.Type,
+				})
 			}
-
 			docTx.Types = append(docTx.Types, msgName)
-			docTx.Types = removeDuplicatesFromSlice(docTx.Types)
-
 		}
+		docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 
 		//logger.Warn(err.Error(),
 		//	logger.String("errTag", "TxDecoder"),
@@ -266,6 +261,8 @@ const (
 	EventTypeMintMT     = "mint_mt"
 	AttrKeyDenomId      = "denom_id"
 	AttrKeyMTId         = "mt_id"
+	EventTypeMessage    = "message"
+	AttrKeyAction       = "action"
 )
 
 func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string {
