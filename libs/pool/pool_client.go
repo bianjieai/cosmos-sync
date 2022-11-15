@@ -30,7 +30,7 @@ func Init(conf *config.Config) {
 	if conf.Server.UseNodeUrls {
 		rpcAddrs = conf.Server.NodeUrls
 	} else {
-		nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(conf.Server.ChainId)
+		nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(conf.Server.Chain, conf.Server.ChainId)
 		if err != nil {
 			//exist when get rcp node from github repo fail
 			logger.Fatal("GetRpcNodesFromGithubRepo fail " + err.Error())
@@ -56,6 +56,7 @@ func Init(conf *config.Config) {
 
 	poolFactory = PoolFactory{
 		chainId:    conf.Server.ChainId,
+		chain:      conf.Server.Chain,
 		peersMap:   syncMap,
 		local:      conf.Server.UseNodeUrls,
 		retryLimit: rate.NewLimiter(rate.Every(3*time.Minute), 1),

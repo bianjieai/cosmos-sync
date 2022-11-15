@@ -66,7 +66,8 @@ ignore_ibc_header=false
   example: `transfer,recv_packet`)
 - ignore_ibc_header: `option` `boolean` setting update_client header info for tx collection ,default not ignore ibc header info(default: `false`
     example: `false`)
-- chain_id: `option` `string` setting collection name by chain_id
+- chain_id: `option` `string`  chain_id of full node
+- chain: `option` `string` setting collection name by chain
 - use_node_urls: `option` `boolean` use setting full node uri set:`true` or get node uri from github.com set:`false`  (default: `false`)
 
 Note:
