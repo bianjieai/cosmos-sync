@@ -39,8 +39,8 @@ func SetInvalidNode(nodeUri string) {
 	}
 }
 
-func getData(chainId string) (string, error) {
-	chainRegistry, err := new(models.ChainRegistry).FindOne(chainId)
+func getData(chain string) (string, error) {
+	chainRegistry, err := new(models.ChainRegistry).FindOne(chain)
 	if err != nil {
 		//logger.Error("loadRpcResource error: " + err.Error())
 		return "", err
@@ -162,8 +162,8 @@ func HttpGet(url string) (bz []byte, err error) {
 	return
 }
 
-func GetRpcNodesFromGithubRepo(chainId string) (string, error) {
-	data, err := getData(chainId)
+func GetRpcNodesFromGithubRepo(chain, chainId string) (string, error) {
+	data, err := getData(chain)
 	if err != nil {
 		return "", fmt.Errorf("%v %s", err, "GetRpcNodesFromGithubRepo fail")
 	}
