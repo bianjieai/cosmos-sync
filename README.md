@@ -33,6 +33,7 @@ max_connection_num=100
 init_connection_num=5
 bech32_acc_prefix=""
 chain_id=""
+chain=""
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
