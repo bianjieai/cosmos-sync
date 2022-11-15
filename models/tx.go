@@ -49,10 +49,10 @@ type (
 )
 
 func (d Tx) Name() string {
-	if GetSrvConf().ChainId == "" {
+	if GetSrvConf().Chain == "" {
 		return CollectionNameTx
 	}
-	return fmt.Sprintf("sync_%v_tx", GetSrvConf().ChainId)
+	return fmt.Sprintf("sync_%v_tx", GetSrvConf().Chain)
 }
 
 func (d Tx) EnsureIndexes() {
