@@ -47,10 +47,10 @@ type (
 )
 
 func (d SyncTask) Name() string {
-	if GetSrvConf().ChainId == "" {
+	if GetSrvConf().Chain == "" {
 		return CollectionNameSyncTask
 	}
-	return fmt.Sprintf("sync_%v_task", GetSrvConf().ChainId)
+	return fmt.Sprintf("sync_%v_task", GetSrvConf().Chain)
 }
 
 func (d SyncTask) EnsureIndexes() {
