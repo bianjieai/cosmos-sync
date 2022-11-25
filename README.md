@@ -33,6 +33,7 @@ max_connection_num=100
 init_connection_num=5
 bech32_acc_prefix=""
 chain_id=""
+chain=""
 chain_block_interval=5
 behind_block_num=0
 promethous_port=9090
@@ -66,7 +67,8 @@ ignore_ibc_header=false
   example: `transfer,recv_packet`)
 - ignore_ibc_header: `option` `boolean` setting update_client header info for tx collection ,default not ignore ibc header info(default: `false`
     example: `false`)
-- chain_id: `option` `string` setting collection name by chain_id
+- chain_id: `option` `string`  chain_id of full node
+- chain: `option` `string` setting collection name by chain
 - use_node_urls: `option` `boolean` use setting full node uri set:`true` or get node uri from github.com set:`false`  (default: `false`)
 
 Note:

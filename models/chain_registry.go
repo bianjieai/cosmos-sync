@@ -6,7 +6,7 @@ import (
 )
 
 type ChainRegistry struct {
-	ChainId      string `bson:"chain_id"`
+	Chain        string `bson:"chain"`
 	ChainJsonUrl string `bson:"chain_json_url"`
 }
 
@@ -15,17 +15,17 @@ func (c ChainRegistry) Name() string {
 }
 
 func (c ChainRegistry) PkKvPair() map[string]interface{} {
-	return bson.M{"chain_id": c.ChainId}
+	return bson.M{"chain": c.Chain}
 }
 func (c ChainRegistry) EnsureIndexes() {
 
 }
 
-func (c ChainRegistry) FindOne(chainId string) (ChainRegistry, error) {
+func (c ChainRegistry) FindOne(chain string) (ChainRegistry, error) {
 	var res ChainRegistry
 	fn := func(c *qmgo.Collection) error {
 		return c.Find(_ctx, bson.M{
-			"chain_id": chainId,
+			"chain": chain,
 		}).One(&res)
 	}
 

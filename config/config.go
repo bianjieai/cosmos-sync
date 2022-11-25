@@ -33,6 +33,7 @@ type (
 		InitConnectionNum  int    `mapstructure:"init_connection_num"`
 		Bech32AccPrefix    string `mapstructure:"bech32_acc_prefix"`
 		ChainId            string `mapstructure:"chain_id"`
+		Chain              string `mapstructure:"chain"`
 		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
 		BehindBlockNum     int    `mapstructure:"behind_block_num"`
 
