@@ -79,9 +79,8 @@ func checkRpcValid(nodeUrl string, chainId string) error {
 	}
 
 	//network no match
-	network := strings.ReplaceAll(retStatus.NodeInfo.Network, "-", "_")
-	if network != chainId {
-		return fmt.Errorf("network(%s) not match config network:%s", network, chainId)
+	if retStatus.NodeInfo.Network != chainId {
+		return fmt.Errorf("network(%s) not match config network:%s", retStatus.NodeInfo.Network, chainId)
 	}
 	mutex.Lock()
 	if _, ok := nodeEarliestHeightMap[nodeUrl]; !ok {
