@@ -2,19 +2,6 @@
 
 package models
 
-import "fmt"
-
-const (
-	CollectionNameTxn = "sync_txn"
-)
-
-func getTxnName() string {
-	if GetSrvConf().ChainId == "" {
-		return CollectionNameTxn
-	}
-	return fmt.Sprintf("sync_%v_txn", GetSrvConf().ChainId)
-}
-
 var (
 	SyncTaskModel SyncTask
 	BlockModel    Block

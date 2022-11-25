@@ -15,6 +15,7 @@ import (
 type (
 	PoolFactory struct {
 		chainId    string
+		chain      string
 		local      bool
 		retryLimit *rate.Limiter
 		peersMap   sync.Map
@@ -88,7 +89,7 @@ func (f *PoolFactory) autoLoadRpc() {
 			logger.String("chainId", f.chainId))
 		return
 	}
-	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chainId)
+	nodeRpcs, err := resource.GetRpcNodesFromGithubRepo(f.chain, f.chainId)
 	if err != nil {
 		logger.Error("GetRpcNodesFromGithubRepo fail,err:"+err.Error(), logger.String("chain_id", f.chainId))
 		return
