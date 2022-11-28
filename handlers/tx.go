@@ -74,6 +74,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Proposer: block.Block.ProposerAddress.String(),
 	}
 
+	if blockDoc.Txn <= 0 {
+		return &blockDoc, nil, nil
+	}
+
 	blockResults, err := client.BlockResults(context.Background(), &b)
 	if err != nil {
 		time.Sleep(1 * time.Second)
