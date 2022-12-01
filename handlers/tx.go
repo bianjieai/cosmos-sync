@@ -133,7 +133,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 				if !exist {
 					docTx.Type = constant.NoSupportModule
 				} else {
-					docTx.Type = constant.SyncBug
+					docTx.Type = constant.IncorrectParse
 				}
 				docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
 					Type: docTx.Type,

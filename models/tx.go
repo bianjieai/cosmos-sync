@@ -80,10 +80,10 @@ func (d Tx) PkKvPair() map[string]interface{} {
 	return bson.M{"tx_hash": d.TxHash}
 }
 
-func (d Tx) FindExistBugTxs() (bool, error) {
+func (d Tx) FindIncorrectParseTxs() (bool, error) {
 	var bugTxs []Tx
 	q := bson.M{
-		"msgs.type": constant.SyncBug,
+		"msgs.type": constant.IncorrectParse,
 		"time":      bson.M{"$lt": time.Now().Unix()},
 	}
 

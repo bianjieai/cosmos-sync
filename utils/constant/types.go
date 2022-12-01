@@ -5,8 +5,8 @@ const (
 	TxStatusSuccess
 	EnvNameConfigFilePath = "CONFIG_FILE_PATH"
 
-	NoSupportModule     = "NoSupport"
-	SyncBug             = "Bug"
+	NoSupportModule     = "no_support"
+	IncorrectParse      = "incorrect_parse"
 	NoSupportMsgTypeTag = "no support msg parse"
 	//unable to resolve type URL /cosmos.bank.v1beta1.MsgSend
 	ErrNoSupportTxPrefix = "unable to resolve type URL"

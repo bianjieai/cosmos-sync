@@ -108,7 +108,7 @@ func (node *clientNode) Report() {
 		case <-t.C:
 			node.nodeStatusReport()
 			node.syncCatchUpingReport()
-			node.syncBugTxsReport()
+			node.incorrectParseTxsReport()
 		}
 	}
 }
@@ -168,8 +168,8 @@ func (node *clientNode) syncCatchUpingReport() {
 	node.syncCatchingTaskNum.Set(float64(catchUpTasksNum))
 }
 
-func (node *clientNode) syncBugTxsReport() {
-	exist, err := new(models.Tx).FindExistBugTxs()
+func (node *clientNode) incorrectParseTxsReport() {
+	exist, err := new(models.Tx).FindIncorrectParseTxs()
 	if err != nil {
 		logger.Error("query task exception", logger.String("error", err.Error()))
 	}
