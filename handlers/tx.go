@@ -99,7 +99,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 			if err != nil {
 				return &blockDoc, txDocs, err
 			}
-			if txDoc.TxHash != "" && len(txDoc.Type) > 0 {
+			if txDoc.TxHash != "" {
 				txDocs = append(txDocs, &txDoc)
 			}
 		}
@@ -126,16 +126,33 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	docTx.EventsNew = parseABCILogs(txResult.Log)
 	docTx.TxIndex = index
 	docTx.TxId = block.Height*100000 + int64(index)
-
+	docTx.GasUsed = txResult.GasUsed
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
-		logger.Warn(err.Error(),
-			logger.String("errTag", "TxDecoder"),
-			logger.String("txhash", txHash),
-			logger.Int64("height", block.Height))
+		for i := range docTx.EventsNew {
+			msgName := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMessage, AttrKeyAction)
+			module := _parser.GetModule(msgName)
+			_, exist := msgparser.RouteClientMap[module]
+			if docTx.EventsNew[i].MsgIndex == 0 {
+				if !exist {
+					docTx.Type = constant.NoSupportModule
+				} else {
+					docTx.Type = constant.IncorrectParse
+				}
+				docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
+					Type: docTx.Type,
+				})
+			}
+			docTx.Types = append(docTx.Types, msgName)
+		}
+		docTx.Types = removeDuplicatesFromSlice(docTx.Types)
+
+		//logger.Warn(err.Error(),
+		//	logger.String("errTag", "TxDecoder"),
+		//	logger.String("txhash", txHash),
+		//	logger.Int64("height", block.Height))
 		return docTx, nil
 	}
-	docTx.GasUsed = txResult.GasUsed
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
@@ -202,14 +219,14 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	docTx.ContractAddrs = removeDuplicatesFromSlice(docTx.ContractAddrs)
 	docTx.DocTxMsgs = docTxMsgs
 
-	// don't save txs which have not parsed
-	if docTx.Type == "" {
-		logger.Warn(constant.NoSupportMsgTypeTag,
-			logger.String("errTag", "TxMsg"),
-			logger.String("txhash", txHash),
-			logger.Int64("height", block.Height))
-		return models.Tx{}, nil
-	}
+	//// don't save txs which have not parsed
+	//if docTx.Type == "" {
+	//	logger.Warn(constant.NoSupportMsgTypeTag,
+	//		logger.String("errTag", "TxMsg"),
+	//		logger.String("txhash", txHash),
+	//		logger.Int64("height", block.Height))
+	//	return models.Tx{}, nil
+	//}
 
 	return docTx, nil
 }
@@ -248,6 +265,8 @@ const (
 	EventTypeMintMT     = "mint_mt"
 	AttrKeyDenomId      = "denom_id"
 	AttrKeyMTId         = "mt_id"
+	EventTypeMessage    = "message"
+	AttrKeyAction       = "action"
 )
 
 func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string {
