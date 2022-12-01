@@ -23,13 +23,13 @@ const (
 )
 
 type clientNode struct {
-	nodeStatus          metrics.Guage
-	nodeHeight          metrics.Guage
-	dbHeight            metrics.Guage
-	nodeTimeGap         metrics.Guage
-	syncWorkWay         metrics.Guage
-	syncCatchingTaskNum metrics.Guage
-	syncParseBugMetric  metrics.Guage
+	nodeStatus           metrics.Guage
+	nodeHeight           metrics.Guage
+	dbHeight             metrics.Guage
+	nodeTimeGap          metrics.Guage
+	syncWorkWay          metrics.Guage
+	syncCatchingTaskNum  metrics.Guage
+	incorrectParseMetric metrics.Guage
 }
 
 func NewMetricNode(server metrics.Monitor) clientNode {
@@ -75,11 +75,11 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		"count of sync catchUping task",
 		nil,
 	)
-	syncParseBugMetric := metrics.NewGuage(
+	incorrectParseMetric := metrics.NewGuage(
 		"sync",
 		"",
-		"parser_occure_bug",
-		"occure bug about sync parse tx",
+		"parser_occure_incorrect",
+		"sync incorrect parse tx",
 		nil,
 	)
 	//server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
@@ -89,15 +89,15 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 	nodeTimeGap, _ := metrics.CovertGuage(nodeTimeGapMetric)
 	syncWorkway, _ := metrics.CovertGuage(syncWorkwayMetric)
 	catchingTaskNum, _ := metrics.CovertGuage(syncCatchingTaskNumMetric)
-	syncParseBug, _ := metrics.CovertGuage(syncParseBugMetric)
+	incorrectParse, _ := metrics.CovertGuage(incorrectParseMetric)
 	return clientNode{
-		nodeStatus:          nodeStatus,
-		nodeHeight:          nodeHeight,
-		dbHeight:            dbHeight,
-		nodeTimeGap:         nodeTimeGap,
-		syncWorkWay:         syncWorkway,
-		syncCatchingTaskNum: catchingTaskNum,
-		syncParseBugMetric:  syncParseBug,
+		nodeStatus:           nodeStatus,
+		nodeHeight:           nodeHeight,
+		dbHeight:             dbHeight,
+		nodeTimeGap:          nodeTimeGap,
+		syncWorkWay:          syncWorkway,
+		syncCatchingTaskNum:  catchingTaskNum,
+		incorrectParseMetric: incorrectParse,
 	}
 }
 
@@ -174,9 +174,9 @@ func (node *clientNode) incorrectParseTxsReport() {
 		logger.Error("query task exception", logger.String("error", err.Error()))
 	}
 	if exist {
-		node.syncParseBugMetric.Set(float64(1))
+		node.incorrectParseMetric.Set(float64(1))
 	} else {
-		node.syncParseBugMetric.Set(float64(0))
+		node.incorrectParseMetric.Set(float64(0))
 	}
 }
 
