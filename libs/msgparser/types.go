@@ -23,4 +23,6 @@ const (
 	IbcTransferRouteKey  string = "transfer"
 	TIbcTransferRouteKey string = "NFT"
 	TIbcRouteKey         string = "tibc"
+	AuthzRouteKey        string = "authz"
+	GroupRouteKey        string = "group"
 )
