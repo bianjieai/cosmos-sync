@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/kaifei-bianjie/common-parser v0.0.0-20221202072759-61d0e0bc62a8
-	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221205023246-7aac5bcc96b1
+	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221205054953-6c2231877966
 	github.com/kaifei-bianjie/irismod-parser v0.0.0-20221202093107-36d6d11aea49
 	github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20221205031353-54388ffaacf4
 	github.com/qiniu/qmgo v1.0.4
