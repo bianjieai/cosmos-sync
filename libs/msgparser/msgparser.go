@@ -58,6 +58,10 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = GovRouteKey
 	} else if strings.HasPrefix(data, "/cosmos.feegrant") {
 		route = FeegrantRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.authz.") {
+		route = AuthzRouteKey
+	} else if strings.HasPrefix(data, "/cosmos.group.") {
+		route = GroupRouteKey
 	} else if strings.HasPrefix(data, "/tibc.core.") {
 		route = TIbcRouteKey
 	} else if strings.HasPrefix(data, "/tibc.apps.") {
@@ -129,5 +133,7 @@ func init() {
 		FarmRouteKey:         irisModClient.Farm,
 		TIbcTransferRouteKey: tibcModClient.Tibc,
 		TIbcRouteKey:         tibcModClient.Tibc,
+		AuthzRouteKey:        cosmosModClient.Authz,
+		GroupRouteKey:        cosmosModClient.Group,
 	}
 }
