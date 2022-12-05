@@ -2,9 +2,12 @@ package models
 
 import (
 	"fmt"
+	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/common-parser/types"
+	"github.com/qiniu/qmgo"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
+	"time"
 )
 
 const (
@@ -72,4 +75,24 @@ func (d Tx) EnsureIndexes() {
 
 func (d Tx) PkKvPair() map[string]interface{} {
 	return bson.M{"tx_hash": d.TxHash}
+}
+
+func (d Tx) FindIncorrectParseTxs() (bool, error) {
+	var incorrectTxs []Tx
+	q := bson.M{
+		"msgs.type": constant.IncorrectParse,
+		"time":      bson.M{"$lt": time.Now().Unix()},
+	}
+
+	fn := func(c *qmgo.Collection) error {
+		return c.Find(_ctx, q).Select(bson.M{"msgs.type": 1}).Limit(10).All(&incorrectTxs)
+	}
+
+	err := ExecCollection(d.Name(), fn)
+
+	if err != nil {
+		return false, err
+	}
+
+	return len(incorrectTxs) > 0, nil
 }
