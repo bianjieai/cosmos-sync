@@ -176,6 +176,13 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	docTx.GasUsed = txResult.GasUsed
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
+		if docTx.Status == constant.TxStatusFail {
+			docTx.Type = constant.NoSupportModule
+			docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
+				Type: docTx.Type,
+			})
+			return docTx, nil
+		}
 		for i := range docTx.EventsNew {
 			msgName := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMessage, AttrKeyAction)
 			module := _parser.GetModule(msgName)
