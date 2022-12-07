@@ -16,6 +16,7 @@ import (
 
 type MsgParser interface {
 	HandleTxMsg(v types.SdkMsg) MsgDocInfo
+	GetModule(data string) string
 }
 
 var (
@@ -36,12 +37,11 @@ func NewMsgParser() MsgParser {
 type msgParser struct{}
 
 // Handler returns the MsgServiceHandler for a given msg or nil if not found.
-func (parser msgParser) getModule(v types.SdkMsg) string {
+func (parser msgParser) GetModule(data string) string {
 	var (
 		route string
 	)
 
-	data := types.MsgTypeURL(v)
 	if strings.HasPrefix(data, "/cosmos.bank.") {
 		route = BankRouteKey
 	} else if strings.HasPrefix(data, "/cosmos.crisis.") {
@@ -97,7 +97,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 }
 
 func (parser msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
-	module := parser.getModule(v)
+	msgName := types.MsgTypeURL(v)
+	module := parser.GetModule(msgName)
 	client := RouteClientMap[module]
 	if client == nil {
 		logger.Warn("no support msg parse",
