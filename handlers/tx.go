@@ -116,7 +116,7 @@ func dealTxResult(client *pool.Client, block *ctypes.ResultBlock, blockDoc model
 	txResultMap := handleTxResult(client, block.Block)
 	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
-		for _, v := range block.Block.Txs {
+		for index, v := range block.Block.Txs {
 			txHash := utils.BuildHex(v.Hash())
 			txResult, ok := txResultMap[txHash]
 			if !ok || txResult.TxResult == nil {
@@ -127,7 +127,7 @@ func dealTxResult(client *pool.Client, block *ctypes.ResultBlock, blockDoc model
 				return &blockDoc, nil, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
 					txResult.Err)
 			}
-			txDoc, err := parseOneTx(v, txResult.TxResult, block.Block)
+			txDoc, err := parseOneTx(uint32(index), v, txResult.TxResult, block.Block)
 			if err != nil {
 				return &blockDoc, nil, err
 			}
@@ -137,7 +137,7 @@ func dealTxResult(client *pool.Client, block *ctypes.ResultBlock, blockDoc model
 	return &blockDoc, txDocs, nil
 }
 
-func parseOneTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (models.Tx, error) {
+func parseOneTx(index uint32, txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (models.Tx, error) {
 	var (
 		docTx     models.Tx
 		docTxMsgs []msgsdktypes.TxMsg
@@ -153,8 +153,8 @@ func parseOneTx(txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block)
 	}
 
 	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
-	docTx.TxIndex = txResult.Index
-	docTx.TxId = block.Height*100000 + int64(txResult.Index)
+	docTx.TxIndex = index
+	docTx.TxId = block.Height*100000 + int64(index)
 
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
