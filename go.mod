@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/kaifei-bianjie/common-parser v0.0.0-20221202072759-61d0e0bc62a8
-	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221205054953-6c2231877966
+	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221207095644-4c73cab57ebb
 	github.com/kaifei-bianjie/irismod-parser v0.0.0-20221202093107-36d6d11aea49
 	github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20221205031353-54388ffaacf4
 	github.com/qiniu/qmgo v1.0.4
@@ -136,6 +136,7 @@ require (
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/cobra v1.6.1 // indirect
