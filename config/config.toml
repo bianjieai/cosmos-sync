@@ -1,10 +1,9 @@
 [database]
-node_uri= "mongodb://ibc:ibcpassword@192.168.150.60:27018/?connect=direct&authSource=iobscan-ibc"
+node_uri= "mongodb://ibc:ibcpassword@192.168.150.40:27017/?connect=direct&authSource=iobscan-ibc"
 database= "iobscan-ibc"
 
 [server]
 node_urls="https://irishub.stakesystems.io:2053"
-thread_num_parse_tx = 1
 worker_num_create_task=1
 worker_num_execute_task=30
 worker_max_sleep_time=120
