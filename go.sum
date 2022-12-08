@@ -636,8 +636,8 @@ github.com/jung-kurt/gofpdf v1.0.3-0.20190309125859-24315acbbda5/go.mod h1:7Id9E
 github.com/jwilder/encoding v0.0.0-20170811194829-b4e1701a28ef/go.mod h1:Ct9fl0F6iIOGgxJ5npU/IUOhOhqlVrGjyIZc8/MagT0=
 github.com/kaifei-bianjie/common-parser v0.0.0-20221202072759-61d0e0bc62a8 h1:Gm/byIR/syCoxVWa39h7WBJ367KKiFzgX29E5LTV4F4=
 github.com/kaifei-bianjie/common-parser v0.0.0-20221202072759-61d0e0bc62a8/go.mod h1:DE0r4UAMbTDAkrO5e/ig/t8sMW1mHWwCoCAqUYx0zF8=
-github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221207095644-4c73cab57ebb h1:KAKQhm2agN4hZZHww3JnQ//5axBE53hHjeIP0UuaqCg=
-github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221207095644-4c73cab57ebb/go.mod h1:LZhmsVrwK0AqCtYj1Ix9v87WFmyOGesAF/Kx++HuofE=
+github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221208073534-cdca5059a556 h1:c0OzvQc/ZOtIq6k54rdBiNzEUSG2WLgKh4t7ZUbJamY=
+github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20221208073534-cdca5059a556/go.mod h1:LZhmsVrwK0AqCtYj1Ix9v87WFmyOGesAF/Kx++HuofE=
 github.com/kaifei-bianjie/irismod-parser v0.0.0-20221202093107-36d6d11aea49 h1:Ox+wBuEVoP+tfWS4f5zzXmjKzJMuJG9u1zp1DY0EpdI=
 github.com/kaifei-bianjie/irismod-parser v0.0.0-20221202093107-36d6d11aea49/go.mod h1:EGNhNtS9uwcx+EnyoZYtVen71ILL7RTTkvjObJHhSVg=
 github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20221205031353-54388ffaacf4 h1:ahBVBCAKlCCndyl49af3sT0HFou/QLirBngOtEsgQ8A=
