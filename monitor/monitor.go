@@ -23,11 +23,12 @@ const (
 )
 
 type clientNode struct {
-	nodeStatus  metrics.Guage
-	nodeHeight  metrics.Guage
-	dbHeight    metrics.Guage
-	nodeTimeGap metrics.Guage
-	syncWorkWay metrics.Guage
+	nodeStatus           metrics.Guage
+	nodeHeight           metrics.Guage
+	dbHeight             metrics.Guage
+	nodeTimeGap          metrics.Guage
+	syncWorkWay          metrics.Guage
+	incorrectParseMetric metrics.Guage
 }
 
 func NewMetricNode(server metrics.Monitor) clientNode {
@@ -66,18 +67,27 @@ func NewMetricNode(server metrics.Monitor) clientNode {
 		"sync task working status(0:CatchingUp 1:Following)",
 		nil,
 	)
-	server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
+	incorrectParseMetric := metrics.NewGuage(
+		"sync",
+		"",
+		"parser_occure_incorrect",
+		"sync incorrect parse tx",
+		nil,
+	)
+	//server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
 	nodeHeight, _ := metrics.CovertGuage(nodeHeightMetric)
 	dbHeight, _ := metrics.CovertGuage(dbHeightMetric)
 	nodeStatus, _ := metrics.CovertGuage(nodeStatusMetric)
 	nodeTimeGap, _ := metrics.CovertGuage(nodeTimeGapMetric)
 	syncWorkway, _ := metrics.CovertGuage(syncWorkwayMetric)
+	incorrectParse, _ := metrics.CovertGuage(incorrectParseMetric)
 	return clientNode{
-		nodeStatus:  nodeStatus,
-		nodeHeight:  nodeHeight,
-		dbHeight:    dbHeight,
-		nodeTimeGap: nodeTimeGap,
-		syncWorkWay: syncWorkway,
+		nodeStatus:           nodeStatus,
+		nodeHeight:           nodeHeight,
+		dbHeight:             dbHeight,
+		nodeTimeGap:          nodeTimeGap,
+		syncWorkWay:          syncWorkway,
+		incorrectParseMetric: incorrectParse,
 	}
 }
 
@@ -87,6 +97,7 @@ func (node *clientNode) Report() {
 		select {
 		case <-t.C:
 			node.nodeStatusReport()
+			node.incorrectParseTxsReport()
 		}
 	}
 }
@@ -137,6 +148,19 @@ func (node *clientNode) nodeStatusReport() {
 		node.syncWorkWay.Set(float64(SyncTaskCatchingUp))
 	}
 	return
+}
+
+
+func (node *clientNode) incorrectParseTxsReport() {
+	exist, err := new(models.Tx).FindIncorrectParseTxs()
+	if err != nil {
+		logger.Error("query task exception", logger.String("error", err.Error()))
+	}
+	if exist {
+		node.incorrectParseMetric.Set(float64(1))
+	} else {
+		node.incorrectParseMetric.Set(float64(0))
+	}
 }
 
 func Start() {

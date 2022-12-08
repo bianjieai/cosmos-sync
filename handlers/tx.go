@@ -46,7 +46,6 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		blockDoc models.Block
 		block    *ctypes.ResultBlock
 	)
-
 	ctx := context.Background()
 	if v, err := client.Block(ctx, &b); err != nil {
 		time.Sleep(500 * time.Millisecond)
@@ -64,6 +63,10 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		Hash:     block.Block.Header.Hash().String(),
 		Txn:      int64(len(block.Block.Data.Txs)),
 		Proposer: block.Block.ProposerAddress.String(),
+	}
+
+	if blockDoc.Txn <= 0 {
+		return &blockDoc, nil, nil
 	}
 
 	blockResults, err := client.BlockResults(context.Background(), &b)
@@ -107,10 +110,35 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	height := block.Height
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
-		logger.Warn(err.Error(),
-			logger.String("errTag", "TxDecoder"),
-			logger.String("txhash", txHash),
-			logger.Int64("height", height))
+		if docTx.Status == constant.TxStatusFail {
+			docTx.Type = constant.NoSupportModule
+			docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgtypes.TxMsg{
+				Type: docTx.Type,
+			})
+			return docTx, nil
+		}
+		for i := range docTx.EventsNew {
+			msgName := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMessage, AttrKeyAction)
+			module := _parser.GetModule(msgName)
+			_, exist := msgparser.RouteClientMap[module]
+			if docTx.EventsNew[i].MsgIndex == 0 {
+				if !exist {
+					docTx.Type = constant.NoSupportModule
+				} else {
+					docTx.Type = constant.IncorrectParse
+				}
+				docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgtypes.TxMsg{
+					Type: docTx.Type,
+				})
+			}
+			docTx.Types = append(docTx.Types, msgName)
+		}
+		docTx.Types = removeDuplicatesFromSlice(docTx.Types)
+
+		//logger.Warn(err.Error(),
+		//	logger.String("errTag", "TxDecoder"),
+		//	logger.String("txhash", txHash),
+		//	logger.Int64("height", block.Height))
 		return docTx, nil
 	}
 	fee := msgtypes.BuildFee(authTx.GetFee(), authTx.GetGas())
@@ -177,14 +205,14 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 
 	docTx.DocTxMsgs = docTxMsgs
 
-	// don't save txs which have not parsed
-	if docTx.Type == "" {
-		logger.Warn(constant.NoSupportMsgTypeTag,
-			logger.String("errTag", "TxMsg"),
-			logger.String("txhash", txHash),
-			logger.Int64("height", height))
-		return models.Tx{}, nil
-	}
+	//// don't save txs which have not parsed
+	//if docTx.Type == "" {
+	//	logger.Warn(constant.NoSupportMsgTypeTag,
+	//		logger.String("errTag", "TxMsg"),
+	//		logger.String("txhash", txHash),
+	//		logger.Int64("height", height))
+	//	return models.Tx{}, nil
+	//}
 
 	return docTx, nil
 }
@@ -224,6 +252,8 @@ const (
 	EventTypeMintMT     = "mint_mt"
 	AttrKeyDenomId      = "denom_id"
 	AttrKeyMTId         = "mt_id"
+	EventTypeMessage    = "message"
+	AttrKeyAction       = "action"
 )
 
 func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string {
