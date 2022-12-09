@@ -116,6 +116,7 @@ func init() {
 		BankRouteKey:         cosmosModClient.Bank,
 		ServiceRouteKey:      irisModClient.Service,
 		NftRouteKey:          irisModClient.Nft,
+		MtRouteKey:           irisModClient.Mt,
 		RecordRouteKey:       irisModClient.Record,
 		TokenRouteKey:        irisModClient.Token,
 		CoinswapRouteKey:     irisModClient.Coinswap,
