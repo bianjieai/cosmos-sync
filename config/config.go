@@ -48,7 +48,7 @@ type (
 		User           string `mapstructure:"user"`
 		Password       string `mapstructure:"password"`
 		Db             int    `mapstructure:"db"`
-		StreamKey      string `mapstructure:"stream_key"`
+		StreamTxEvmKey string `mapstructure:"stream_tx_evm_key"`
 		StreamMqMaxLen int64  `mapstructure:"stream_mq_max_len"`
 	}
 )

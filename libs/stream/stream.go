@@ -1,4 +1,4 @@
-package cache
+package stream
 
 import (
 	"context"
@@ -14,7 +14,7 @@ var (
 func InitMQClient(conf *config.Config) {
 	_redisStreamMQClient = &RedisStreamMQClient{
 		Client:         rdb,
-		StreamKey:      conf.Redis.StreamKey,
+		StreamKey:      conf.Redis.StreamTxEvmKey,
 		StreamMqMaxLen: conf.Redis.StreamMqMaxLen,
 	}
 }
@@ -48,16 +48,16 @@ func (mqClient *RedisStreamMQClient) PutMsg(streamKey string, msg map[string]int
 }
 
 // PutMsg 批量添加消息
-func (mqClient *RedisStreamMQClient) PutMsgBatch(streamKey string, evmTxHashs []string) error {
+func (mqClient *RedisStreamMQClient) PutMsgBatch(streamKey string, msgs []map[string]interface{}) error {
 	conn := mqClient.Client
 	//*表示由Redis自己生成消息ID，设置MAXLEN可以保证消息队列的长度不会一直累加
 	_, err := conn.Pipelined(context.Background(), func(pipe redis.Pipeliner) error {
-		for _, evmTxHash := range evmTxHashs {
+		for _, evmMsg := range msgs {
 			xAddArgs := redis.XAddArgs{
 				Stream: streamKey,
 				MaxLen: mqClient.StreamMqMaxLen,
 				ID:     "*",
-				Values: evmTxHash,
+				Values: evmMsg,
 			}
 
 			_, err := pipe.XAdd(context.Background(), &xAddArgs).Result()

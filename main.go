@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/handlers"
-	"github.com/bianjieai/cosmos-sync/libs/cache"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/libs/stream"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/tasks"
 	"os"
@@ -28,7 +28,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		cache.Close()
+		stream.Close()
 	}()
 	conf, err := config.ReadConfig()
 	if err != nil {
@@ -37,10 +37,10 @@ func main() {
 	models.Init(conf)
 	pool.Init(conf)
 	handlers.InitRouter(conf)
-	if err = cache.Init(conf); err != nil {
+	if err = stream.Init(conf); err != nil {
 		logger.Fatal(err.Error())
 	}
-	cache.InitMQClient(conf)
+	stream.InitMQClient(conf)
 
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 

@@ -3,9 +3,9 @@ package handlers
 import (
 	"encoding/hex"
 	"github.com/bianjieai/cosmos-sync/config"
-	"github.com/bianjieai/cosmos-sync/libs/cache"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/libs/stream"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/tharsis/ethermint/x/evm/types"
@@ -23,13 +23,13 @@ func TestParseTxs(t *testing.T) {
 	pool.Init(conf)
 	c := pool.GetClient()
 
-	if err = cache.Init(conf); err != nil {
+	if err = stream.Init(conf); err != nil {
 		logger.Fatal(err.Error())
 	}
-	cache.InitMQClient(conf)
+	stream.InitMQClient(conf)
 	defer func() {
 		c.Release()
-		cache.Close()
+		stream.Close()
 	}()
 
 	if blockDoc, txDocs, err := ParseBlockAndTxs(block, c); err != nil {

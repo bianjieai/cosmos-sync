@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/handlers"
-	"github.com/bianjieai/cosmos-sync/libs/cache"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/libs/stream"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
@@ -408,15 +408,10 @@ func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
 				txEvm.TxHash = doc.TxHash
 
 				var evmTxHash string
-				for _, event := range doc.EventsNew[0].Events {
-					if event.Type == MsgTypeEthereumTx {
-						for _, attribute := range event.Attributes {
-							if attribute.Key == "ethereumTxHash" {
-								evmTxHash = attribute.Value
-							}
-						}
-					}
+				for _, eventNew := range doc.EventsNew {
+					evmTxHash = eventNew.GetValue(MsgTypeEthereumTx, constant.EthereumTxHash)
 				}
+
 				txEvm.EvmTxHash = evmTxHash
 				txEvm.Time = doc.Time
 				txEvm.Status = doc.Status
@@ -440,9 +435,9 @@ func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
 func productMsgToMq(txEvms []*models.SyncTxEvm) error {
 	_, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
 		for _, txEvm := range txEvms {
-			streamLen, err := cache.GetClient().GetStreamLen(config.GetConfig().Redis.StreamKey)
+			streamLen, err := stream.GetClient().GetStreamLen(config.GetConfig().Redis.StreamTxEvmKey)
 			if err != nil {
-				logger.Error("productMsgToMq cache GetStreamLen fail",
+				logger.Error("productMsgToMq stream GetStreamLen fail",
 					logger.String("err", err.Error()))
 				return nil, err
 			}
@@ -453,9 +448,9 @@ func productMsgToMq(txEvms []*models.SyncTxEvm) error {
 				return nil, nil
 			}
 
-			_, err = cache.GetClient().PutMsg(config.GetConfig().Redis.StreamKey, txEvm.GetStreamMap())
+			_, err = stream.GetClient().PutMsg(config.GetConfig().Redis.StreamTxEvmKey, txEvm.GetStreamMap())
 			if err != nil {
-				logger.Error("productMsgToMq cache PutMsg fail",
+				logger.Error("productMsgToMq stream PutMsg fail",
 					logger.Int64("height", txEvm.Height),
 					logger.String("evm_tx_hash", txEvm.EvmTxHash),
 					logger.String("err", err.Error()))
