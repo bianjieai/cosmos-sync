@@ -8,12 +8,14 @@ import (
 
 var (
 	ConfigFilePath string
+	_config        *Config
 )
 
 type (
 	Config struct {
 		DataBase DataBaseConf `mapstructure:"database"`
 		Server   ServerConf   `mapstructure:"server"`
+		Redis    Redis        `mapstructure:"redis"`
 	}
 
 	DataBaseConf struct {
@@ -39,6 +41,15 @@ type (
 		PromethousPort    string `mapstructure:"promethous_port"`
 		OnlySupportModule string `mapstructure:"only_support_module"`
 		SyncTaskTimeout   int64  `mapstructure:"sync_task_timeout"`
+	}
+
+	Redis struct {
+		Addrs          string `mapstructure:"addrs"`
+		User           string `mapstructure:"user"`
+		Password       string `mapstructure:"password"`
+		Db             int    `mapstructure:"db"`
+		StreamTxEvmKey string `mapstructure:"stream_tx_evm_key"`
+		StreamMqMaxLen int64  `mapstructure:"stream_mq_max_len"`
 	}
 )
 
@@ -78,6 +89,10 @@ func ReadConfig() (*Config, error) {
 	cfg.Server.SleepTimeCreateTaskWorker = sleepTimeCreateTaskWorker
 
 	//logger.Debug("config: " + utils.MarshalJsonIgnoreErr(cfg))
-
+	_config = &cfg
 	return &cfg, nil
+}
+
+func GetConfig() *Config {
+	return _config
 }

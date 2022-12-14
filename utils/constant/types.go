@@ -15,4 +15,6 @@ const (
 	ErrDbNotFindTransaction                = "cannot find transaction"
 	IbcRecvPacketEventTypeWriteAcknowledge = "write_acknowledgement"
 	IbcRecvPacketEventAttriKeyPacketAck    = "packet_ack"
+
+	EthereumTxHash = "ethereumTxHash"
 )
