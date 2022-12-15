@@ -99,3 +99,16 @@ func (d Tx) FindIncorrectParseTxs() (bool, error) {
 
 	return len(bugTxs) > 0, nil
 }
+
+func (e EventNew) GetValue(eventType, attributeKey string) string {
+	for _, event := range e.Events {
+		if event.Type == eventType {
+			for _, attribute := range event.Attributes {
+				if attribute.Key == attributeKey {
+					return attribute.Value
+				}
+			}
+		}
+	}
+	return ""
+}
