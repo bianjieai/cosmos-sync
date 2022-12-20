@@ -672,8 +672,8 @@ github.com/kaifei-bianjie/common-parser v0.0.0-20220923023138-65dfc81a8ff5 h1:oS
 github.com/kaifei-bianjie/common-parser v0.0.0-20220923023138-65dfc81a8ff5/go.mod h1:aGOFt1sqsCUYx+DnH7p//FyYTgFls3bwbRZMTf1CkG4=
 github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20220923075813-81e7e2b17c67 h1:opYKK6XYh1aljpBf76V7H4y4EC04uDM8ZcVmBAcAc78=
 github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20220923075813-81e7e2b17c67/go.mod h1:oUFlSyuRlXQGNIHRdkTd3t5UNshPEE6M/4C4s31GcDk=
-github.com/kaifei-bianjie/cschain-mod-parser v0.0.0-20220923071309-f893c540979b h1:XNCPepwZw4fmqiznxKs9kGG+enpad4gUlPJ2EsmMvUQ=
-github.com/kaifei-bianjie/cschain-mod-parser v0.0.0-20220923071309-f893c540979b/go.mod h1:uni2ijfX1fgIgoLiR/X5M0G4vOj6AlbQ29boyInsqAo=
+github.com/kaifei-bianjie/cschain-mod-parser v0.0.0-20221220072642-c22c42ccc4bd h1:uhxxBFfdsbyE0mjjWg5mOt4dusoBIfg7PK4YIBay1FE=
+github.com/kaifei-bianjie/cschain-mod-parser v0.0.0-20221220072642-c22c42ccc4bd/go.mod h1:uni2ijfX1fgIgoLiR/X5M0G4vOj6AlbQ29boyInsqAo=
 github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0 h1:RSLsufLEeABxDFqUFRC47oDK5Ij4gsSypNkQjBh/aW0=
 github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0/go.mod h1:86hxvc319yAs4DbRUMMbqotwekjv0R785bVU8Gpu1kM=
 github.com/kaifei-bianjie/iritamod-parser v0.0.0-20220923075745-50a7044003db h1:86ZGN0H+hmBMv59A/TsO3QLCBdaKcIi0c7xGLx8+auA=

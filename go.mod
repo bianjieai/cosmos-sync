@@ -6,7 +6,7 @@ require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/kaifei-bianjie/common-parser v0.0.0-20220923023138-65dfc81a8ff5
 	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20220923075813-81e7e2b17c67
-	github.com/kaifei-bianjie/cschain-mod-parser v0.0.0-20220923071309-f893c540979b
+	github.com/kaifei-bianjie/cschain-mod-parser v0.0.0-20221220072642-c22c42ccc4bd
 	github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0
 	github.com/kaifei-bianjie/iritamod-parser v0.0.0-20220923075745-50a7044003db
 	github.com/qiniu/qmgo v1.0.4
