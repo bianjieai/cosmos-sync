@@ -419,7 +419,9 @@ func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
 				txEvm.Signers = doc.Signers
 				txEvm.TxId = doc.TxId
 				txEvm.GasUsed = doc.GasUsed
-				txEvm.ContractAddress = doc.ContractAddrs[0]
+				if len(doc.ContractAddrs) > 0 {
+					txEvm.ContractAddress = doc.ContractAddrs[0]
+				}
 				txEvm.Fee = doc.Fee
 				txEvm.RecordStatus = RecordStatusUnprocessed
 				txEvm.CreateTime = time.Now().Unix()
