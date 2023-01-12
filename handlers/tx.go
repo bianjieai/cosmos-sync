@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/hex"
+	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
@@ -160,6 +161,22 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 		//	logger.Int64("height", block.Height))
 		return docTx, nil
 	}
+
+	feeGranter := authTx.FeeGranter()
+	if feeGranter != nil {
+		docTx.FeeGranter = feeGranter.String()
+	}
+
+	feePayer := authTx.FeePayer()
+	if feePayer != nil {
+		docTx.FeePayer = feePayer.String()
+	}
+
+	feeGrantee := GetFeeGranteeFromEvents(txResult.Events)
+	if feeGrantee != "" {
+		docTx.FeeGrantee = feeGrantee
+	}
+
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
@@ -282,6 +299,19 @@ func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string
 			for _, attr := range val.Attributes {
 				if attr.Key == attrKey {
 					return attr.Value
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func GetFeeGranteeFromEvents(events []types2.Event) string {
+	for _, val := range events {
+		if val.Type == constant.UseGrantee || val.Type == constant.SetGrantee {
+			for _, attribute := range val.Attributes {
+				if fmt.Sprintf("%s", attribute.Key) == constant.Grantee {
+					return fmt.Sprintf("%s", attribute.Value)
 				}
 			}
 		}
