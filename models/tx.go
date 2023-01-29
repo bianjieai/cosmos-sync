@@ -16,23 +16,26 @@ const (
 
 type (
 	Tx struct {
-		TxId      int64         `bson:"tx_id"`
-		Time      int64         `bson:"time"`
-		Height    int64         `bson:"height"`
-		TxHash    string        `bson:"tx_hash"`
-		Type      string        `bson:"type"` // parse from first msg
-		Memo      string        `bson:"memo"`
-		Status    uint32        `bson:"status"`
-		Log       string        `bson:"log"`
-		Fee       *types.Fee    `bson:"fee"`
-		GasUsed   int64         `bson:"gas_used"`
-		Types     []string      `bson:"types"`
-		EventsNew []EventNew    `bson:"events_new"`
-		Signers   []string      `bson:"signers"`
-		DocTxMsgs []types.TxMsg `bson:"msgs"`
-		Addrs     []string      `bson:"addrs"`
-		TxIndex   uint32        `bson:"tx_index"`
-		Ext       interface{}   `bson:"ext"`
+		TxId       int64         `bson:"tx_id"`
+		Time       int64         `bson:"time"`
+		Height     int64         `bson:"height"`
+		TxHash     string        `bson:"tx_hash"`
+		Type       string        `bson:"type"` // parse from first msg
+		Memo       string        `bson:"memo"`
+		Status     uint32        `bson:"status"`
+		Log        string        `bson:"log"`
+		Fee        *types.Fee    `bson:"fee"`
+		FeePayer   string        `bson:"fee_payer"`
+		FeeGranter string        `bson:"fee_granter"`
+		FeeGrantee string        `bson:"fee_grantee"`
+		GasUsed    int64         `bson:"gas_used"`
+		Types      []string      `bson:"types"`
+		EventsNew  []EventNew    `bson:"events_new"`
+		Signers    []string      `bson:"signers"`
+		DocTxMsgs  []types.TxMsg `bson:"msgs"`
+		Addrs      []string      `bson:"addrs"`
+		TxIndex    uint32        `bson:"tx_index"`
+		Ext        interface{}   `bson:"ext"`
 	}
 
 	Event struct {
