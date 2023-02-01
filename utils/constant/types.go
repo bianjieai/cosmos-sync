@@ -26,4 +26,8 @@ const (
 	IbcUpdateClientEventAttriKeyHeader       = "header"
 	IbcRecvPacketEventTypeRecvPacket         = "recv_packet"
 	IbcRecvPacketEventAttriKeyPacketDataHex  = "packet_data_hex"
+
+	UseGrantee = "use_feegrant"
+	SetGrantee = "set_feegrant"
+	Grantee    = "grantee"
 )
