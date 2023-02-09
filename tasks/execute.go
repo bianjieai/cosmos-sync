@@ -333,7 +333,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 		blockCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Block{}.Name())
 		txCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Tx{}.Name())
 		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
-		txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTxEvm{}.Name())
+		txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.EvmTx{}.Name())
 		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil {
 			return nil, err
 		}
@@ -397,12 +397,12 @@ const (
 	RecordStatusCompleted
 )
 
-func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
-	txEvms := make([]*models.SyncTxEvm, 0, len(txDocs))
+func dealEvmTx(txDocs []*models.Tx) []*models.EvmTx {
+	txEvms := make([]*models.EvmTx, 0, len(txDocs))
 	for _, doc := range txDocs {
 		if doc.Type == MsgTypeEthereumTx {
 			if doc.Status == constant.TxStatusSuccess {
-				var txEvm models.SyncTxEvm
+				var txEvm models.EvmTx
 				txEvm.Height = doc.Height
 				txEvm.Types = doc.Types
 				txEvm.TxHash = doc.TxHash
@@ -434,7 +434,7 @@ func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
 	return txEvms
 }
 
-func productMsgToMq(txEvms []*models.SyncTxEvm) error {
+func productMsgToMq(txEvms []*models.EvmTx) error {
 	_, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
 		for _, txEvm := range txEvms {
 			streamLen, err := stream.GetClient().GetStreamLen(config.GetConfig().Redis.StreamTxEvmKey)
@@ -459,7 +459,7 @@ func productMsgToMq(txEvms []*models.SyncTxEvm) error {
 				return nil, err
 			}
 
-			txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTxEvm{}.Name())
+			txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.EvmTx{}.Name())
 
 			query := bson.M{"height": txEvm.Height, "evm_tx_hash": txEvm.EvmTxHash, "record_status": RecordStatusUnprocessed}
 			update := bson.M{

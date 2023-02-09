@@ -17,4 +17,8 @@ const (
 	IbcRecvPacketEventAttriKeyPacketAck    = "packet_ack"
 
 	EthereumTxHash = "ethereumTxHash"
+
+	UseGrantee = "use_feegrant"
+	SetGrantee = "set_feegrant"
+	Grantee    = "grantee"
 )

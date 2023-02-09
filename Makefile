@@ -8,6 +8,7 @@ GO_ENV=$(GOCMD) env
 BINARY_NAME=cosmos-sync
 BINARY_UNIX=$(BINARY_NAME)-unix
 export GO111MODULE = on
+export GOPROXY=https://goproxy.cn,direct
 
 all: get_deps build
 

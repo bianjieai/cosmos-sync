@@ -25,6 +25,9 @@ type (
 		Status          uint32        `bson:"status"`
 		Log             string        `bson:"log"`
 		Fee             *types.Fee    `bson:"fee"`
+		FeePayer        string        `bson:"fee_payer"`
+		FeeGranter      string        `bson:"fee_granter"`
+		FeeGrantee      string        `bson:"fee_grantee"`
 		GasUsed         int64         `bson:"gas_used"`
 		Types           []string      `bson:"types"`
 		EventsNew       []EventNew    `bson:"events_new"`

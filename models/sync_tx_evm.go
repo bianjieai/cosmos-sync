@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	CollectionNameSyncTxEvm = "ex_sync_tx_evm"
+	CollectionNameExEvmTx = "ex_evm_tx"
 )
 
 type (
-	SyncTxEvm struct {
+	EvmTx struct {
 		Height                  int64       `bson:"height"`
 		Types                   []string    `bson:"types"`
 		TxHash                  string      `bson:"tx_hash"`
@@ -29,28 +29,28 @@ type (
 		ContractAddress         string      `bson:"contract_address"`
 		RelationContractAddress []string    `bson:"relation_contract_address"`
 		Fee                     *types.Fee  `bson:"fee"`
-		EvmData                 interface{} `bson:"evm_data"`
+		EvmDatas                interface{} `bson:"evm_datas"`
 		RecordStatus            int         `bson:"record_status"`
 		CreateTime              int64       `bson:"create_time"`
 		UpdateTime              int64       `bson:"update_time"`
 	}
 )
 
-func (d SyncTxEvm) Name() string {
+func (d EvmTx) Name() string {
 	if GetSrvConf().ChainId == "" {
-		return CollectionNameSyncTxEvm
+		return CollectionNameExEvmTx
 	}
-	return fmt.Sprintf("ex_sync_%v_tx_evm", GetSrvConf().ChainId)
+	return fmt.Sprintf("ex_%v_evm_tx", GetSrvConf().ChainId)
 }
 
-func (d SyncTxEvm) EnsureIndexes() {
+func (d EvmTx) EnsureIndexes() {
 }
 
-func (d SyncTxEvm) PkKvPair() map[string]interface{} {
+func (d EvmTx) PkKvPair() map[string]interface{} {
 	return nil
 }
 
-func (d SyncTxEvm) GetStreamMap() map[string]interface{} {
+func (d EvmTx) GetStreamMap() map[string]interface{} {
 	return map[string]interface{}{
 		"height":      d.Height,
 		"evm_tx_hash": d.EvmTxHash,
