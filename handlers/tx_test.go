@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"github.com/bianjieai/cosmos-sync/config"
+	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/libs/stream"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	. "github.com/kaifei-bianjie/tibc-mod-parser/modules"
@@ -19,8 +21,13 @@ func TestParseTxs(t *testing.T) {
 	InitRouter(conf)
 	pool.Init(conf)
 	c := pool.GetClient()
+	if err = stream.Init(conf); err != nil {
+		logger.Fatal(err.Error())
+	}
+	stream.InitMQClient(conf)
 	defer func() {
 		c.Release()
+		stream.Close()
 	}()
 
 	if blockDoc, txDocs, err := ParseBlockAndTxs(block, c); err != nil {

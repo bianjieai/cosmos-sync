@@ -3,6 +3,7 @@ module github.com/bianjieai/cosmos-sync
 go 1.18
 
 require (
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/kaifei-bianjie/common-parser v0.0.0-20221202072759-61d0e0bc62a8
 	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20230112104748-066601862f7c
@@ -61,6 +62,7 @@ require (
 	github.com/dgraph-io/badger/v2 v2.2007.4 // indirect
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
