@@ -27,6 +27,9 @@ const (
 	IbcRecvPacketEventTypeRecvPacket         = "recv_packet"
 	IbcRecvPacketEventAttriKeyPacketDataHex  = "packet_data_hex"
 
+	EthereumTxHash    = "ethereumTxHash"
+	MsgTypeEthereumTx = "ethereum_tx"
+
 	UseGrantee = "use_feegrant"
 	SetGrantee = "set_feegrant"
 	Grantee    = "grantee"

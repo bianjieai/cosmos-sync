@@ -19,3 +19,12 @@ support_modules=""
 deny_modules=""
 support_types=""
 ignore_ibc_header=false
+
+
+[redis]
+addrs ="127.0.0.1:6379"
+user = ""
+password = ""
+db = 0
+stream_tx_evm_key = "stream:tx_evm"
+stream_mq_max_len = 10000
