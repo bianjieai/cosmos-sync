@@ -208,21 +208,6 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 		return docTx, nil
 	}
 
-	feeGranter := authTx.FeeGranter()
-	if feeGranter != nil {
-		docTx.FeeGranter = feeGranter.String()
-	}
-
-	feePayer := authTx.FeePayer()
-	if feePayer != nil {
-		docTx.FeePayer = feePayer.String()
-	}
-
-	feeGrantee := GetFeeGranteeFromEvents(txResult.Events)
-	if feeGrantee != "" {
-		docTx.FeeGrantee = feeGrantee
-	}
-
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
@@ -359,6 +344,29 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
 	docTx.DocTxMsgs = docTxMsgs
+
+	feeGranter := authTx.FeeGranter()
+	if feeGranter != nil {
+		docTx.FeeGranter = feeGranter.String()
+		docTx.FeePayer = feeGranter.String()
+	} else {
+		feePayer := authTx.FeePayer()
+		if feePayer != nil {
+			docTx.FeePayer = feePayer.String()
+		} else {
+			if len(msgs) > 0 {
+				signers := msgs[0].GetSigners()
+				if len(signers) > 0 {
+					docTx.FeePayer = signers[0].String()
+				}
+			}
+		}
+	}
+
+	feeGrantee := GetFeeGranteeFromEvents(txResult.Events)
+	if feeGrantee != "" {
+		docTx.FeeGrantee = feeGrantee
+	}
 
 	//setting type but not included in tx,skip this tx
 	if len(_filterMap) > 0 && !includeCfgType {

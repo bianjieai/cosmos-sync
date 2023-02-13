@@ -379,12 +379,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	}
 
 	if len(txEvms) > 0 {
-		if err = productMsgToMq(txEvms); err != nil {
-			logger.Error("saveDocsWithTxn productMsgToMq fail",
-				logger.Int64("height", blockDoc.Height),
-				logger.String("err", err.Error()))
-			return err
-		}
+		go productMsgToMq(txEvms)
 	}
 
 	return nil
@@ -433,29 +428,16 @@ func dealEvmTx(txDocs []*models.Tx) []*models.EvmTx {
 	return txEvms
 }
 
-func productMsgToMq(txEvms []*models.EvmTx) error {
-	_, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
+func productMsgToMq(txEvms []*models.EvmTx) {
+	_, _ = models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
 		for _, txEvm := range txEvms {
-			streamLen, err := stream.GetClient().GetStreamLen(config.GetConfig().Redis.StreamTxEvmKey)
-			if err != nil {
-				logger.Error("productMsgToMq stream GetStreamLen fail",
-					logger.String("err", err.Error()))
-				return nil, err
-			}
-
-			if streamLen >= config.GetConfig().Redis.StreamMqMaxLen {
-				//TODO 队列满了，需要监控告警
-				logger.Debug("productMsgToMq streamLen >= StreamMqMaxLen", logger.Int64("maxLen", config.GetConfig().Redis.StreamMqMaxLen))
-				return nil, nil
-			}
-
-			_, err = stream.GetClient().PutMsg(config.GetConfig().Redis.StreamTxEvmKey, txEvm.GetStreamMap())
+			_, err := stream.GetClient().PutMsg(config.GetConfig().Redis.StreamTxEvmKey, txEvm.GetStreamMap())
 			if err != nil {
 				logger.Error("productMsgToMq stream PutMsg fail",
 					logger.Int64("height", txEvm.Height),
 					logger.String("evm_tx_hash", txEvm.EvmTxHash),
 					logger.String("err", err.Error()))
-				return nil, err
+				continue
 			}
 
 			txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.EvmTx{}.Name())
@@ -467,13 +449,15 @@ func productMsgToMq(txEvms []*models.EvmTx) error {
 					"update_time":   time.Now().Unix(),
 				},
 			}
-			if err := txEvmCli.UpdateOne(sessCtx, query, update); err != nil {
-				return nil, err
+			if err = txEvmCli.UpdateOne(sessCtx, query, update); err != nil {
+				logger.Error("productMsgToMq txEvmCli UpdateOne",
+					logger.Int64("height", txEvm.Height),
+					logger.String("evm_tx_hash", txEvm.EvmTxHash),
+					logger.String("err", err.Error()))
+				continue
 			}
 		}
 
 		return nil, nil
 	})
-
-	return err
 }
