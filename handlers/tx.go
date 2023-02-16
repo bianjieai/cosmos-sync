@@ -231,21 +231,11 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	feeGranter := authTx.FeeGranter()
 	if feeGranter != nil {
 		docTx.FeeGranter = feeGranter.String()
-		docTx.FeePayer = feeGranter.String()
-	} else {
-		feePayer := authTx.FeePayer()
-		if feePayer != nil {
-			docTx.FeePayer = feePayer.String()
-		} else {
-			if len(msgs) > 0 {
-				signers := msgs[0].GetSigners()
-				if len(signers) > 0 {
-					docTx.FeePayer = signers[0].String()
-				}
-			}
-		}
 	}
-
+	feePayer := authTx.FeePayer()
+	if feePayer != nil {
+		docTx.FeePayer = feePayer.String()
+	}
 	feeGrantee := GetFeeGranteeFromEvents(txResult.Events)
 	if feeGrantee != "" {
 		docTx.FeeGrantee = feeGrantee
