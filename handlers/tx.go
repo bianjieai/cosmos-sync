@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
@@ -21,7 +22,6 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
-	"golang.org/x/net/context"
 	"strings"
 	"time"
 )
