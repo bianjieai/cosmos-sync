@@ -21,8 +21,7 @@ var (
 	cosmosModClient cosmosmod.MsgClient
 	irisModClient   irismod.MsgClient
 	tibcModClient   tibcmod.MsgClient
-
-	RouteClientMap map[string]commonparser.Client
+	RouteClientMap  map[string]commonparser.Client
 )
 
 func NewMsgParser() MsgParser {
@@ -86,6 +85,8 @@ func (parser msgParser) GetModule(data string) string {
 		route = RandomRouteKey
 	} else if strings.HasPrefix(data, "/irismod.oracle.") {
 		route = OracleRouteKey
+	} else if strings.HasPrefix(data, "/ethermint.evm.") {
+		route = EvmRouteKey
 	} else {
 		route = data
 	}
@@ -111,7 +112,7 @@ func init() {
 	cosmosModClient = cosmosmod.NewMsgClient()
 	irisModClient = irismod.NewMsgClient()
 	tibcModClient = tibcmod.NewMsgClient()
-
+	AdaptEthermintEncodingConfig()
 	RouteClientMap = map[string]commonparser.Client{
 		BankRouteKey:         cosmosModClient.Bank,
 		ServiceRouteKey:      irisModClient.Service,
@@ -137,5 +138,6 @@ func init() {
 		TIbcRouteKey:         tibcModClient.Tibc,
 		AuthzRouteKey:        cosmosModClient.Authz,
 		GroupRouteKey:        cosmosModClient.Group,
+		EvmRouteKey:          irisModClient.Evm,
 	}
 }
