@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/hex"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
@@ -9,6 +10,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
+	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	commonparser "github.com/kaifei-bianjie/common-parser"
 	"github.com/kaifei-bianjie/common-parser/codec"
 	msgsdktypes "github.com/kaifei-bianjie/common-parser/types"
@@ -16,6 +18,7 @@ import (
 	"github.com/kaifei-bianjie/cosmosmod-parser/modules/ibc"
 	cosmosmod "github.com/kaifei-bianjie/cosmosmod-parser/modules/ibc"
 	. "github.com/kaifei-bianjie/irismod-parser/modules"
+	"github.com/kaifei-bianjie/irismod-parser/modules/evm"
 	"github.com/kaifei-bianjie/irismod-parser/modules/mt"
 	. "github.com/kaifei-bianjie/tibc-mod-parser/modules"
 	types2 "github.com/tendermint/tendermint/abci/types"
@@ -243,6 +246,24 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 		}
 
 		switch msgDocInfo.DocTxMsg.Type {
+		case MsgTypeEthereumTx:
+			var msgEtheumTx evm.DocMsgEthereumTx
+			var txData msgparser.LegacyTx
+			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
+			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
+			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
+			if len(txResult.Data) > 0 {
+				if txRespond, err := evmtypes.DecodeTxResponse(txResult.Data); err == nil {
+					if len(txRespond.Ret) > 0 {
+						docTx.EvmTxRespondRet = hex.EncodeToString(txRespond.Ret)
+					}
+				} else {
+					logger.Warn("DecodeTxResponse failed",
+						logger.String("err", err.Error()),
+						logger.String("txhash", txHash),
+						logger.Int64("height", block.Height))
+				}
+			}
 		case MsgTypeMTIssueDenom:
 			if docTx.Status == constant.TxStatusFail {
 				break
@@ -343,6 +364,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
 	docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
+	docTx.ContractAddrs = removeDuplicatesFromSlice(docTx.ContractAddrs)
 	docTx.DocTxMsgs = docTxMsgs
 
 	feeGranter := authTx.FeeGranter()

@@ -25,6 +25,7 @@ const (
 	TIbcRouteKey         string = "tibc"
 	AuthzRouteKey        string = "authz"
 	GroupRouteKey        string = "group"
+	EvmRouteKey          string = "evm"
 )
 
 type LegacyTx struct {
