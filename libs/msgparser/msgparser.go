@@ -87,6 +87,8 @@ func (parser msgParser) GetModule(data string) string {
 		route = OracleRouteKey
 	} else if strings.HasPrefix(data, "/ethermint.evm.") {
 		route = EvmRouteKey
+	} else if strings.HasPrefix(data, "/uptick.collection.") {
+		route = UptickNftRouteKey
 	} else {
 		route = data
 	}
@@ -139,5 +141,6 @@ func init() {
 		AuthzRouteKey:        cosmosModClient.Authz,
 		GroupRouteKey:        cosmosModClient.Group,
 		EvmRouteKey:          irisModClient.Evm,
+		UptickNftRouteKey:    irisModClient.UptickNft,
 	}
 }
