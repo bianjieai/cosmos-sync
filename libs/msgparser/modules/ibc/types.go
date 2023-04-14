@@ -4,9 +4,8 @@ import (
 	"fmt"
 	cdc "github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
-	icoreclient "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	icorechannel "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	"strconv"
+	icoreclient "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	icorechannel "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 )
 
 func loadPacket(packet icorechannel.Packet) Packet {
@@ -32,7 +31,7 @@ func UnmarshalPacketData(bytesdata []byte) PacketData {
 
 	return PacketData{
 		Denom:    packetData.Denom,
-		Amount:   strconv.FormatUint(packetData.Amount, 10),
+		Amount:   packetData.Amount,
 		Receiver: packetData.Receiver,
 		Sender:   packetData.Sender,
 	}

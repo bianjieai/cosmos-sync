@@ -3,7 +3,7 @@ package codec
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	ctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	//cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,6 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/tendermint/tendermint/types"
+
+	enccodec "github.com/evmos/ethermint/encoding/codec"
 )
 
 var (
@@ -21,7 +23,7 @@ var (
 // 初始化账户地址前缀
 func MakeEncodingConfig() {
 	var cdc = codec.NewLegacyAmino()
-	cryptocodec.RegisterCrypto(cdc)
+	//cryptocodec.RegisterCrypto(cdc)
 
 	interfaceRegistry := ctypes.NewInterfaceRegistry()
 	moduleBasics := module.NewBasicManager(appModules...)
@@ -32,10 +34,14 @@ func MakeEncodingConfig() {
 
 	encodecfg = params.EncodingConfig{
 		InterfaceRegistry: interfaceRegistry,
-		Marshaler:         marshaler,
+		Codec:             marshaler,
 		TxConfig:          txCfg,
 		Amino:             cdc,
 	}
+	enccodec.RegisterLegacyAminoCodec(encodecfg.Amino)
+	moduleBasics.RegisterLegacyAminoCodec(encodecfg.Amino)
+	enccodec.RegisterInterfaces(encodecfg.InterfaceRegistry)
+	moduleBasics.RegisterInterfaces(encodecfg.InterfaceRegistry)
 }
 
 func GetTxDecoder() sdk.TxDecoder {
@@ -43,7 +49,7 @@ func GetTxDecoder() sdk.TxDecoder {
 }
 
 func GetMarshaler() codec.Codec {
-	return encodecfg.Marshaler
+	return encodecfg.Codec
 }
 
 func GetSigningTx(txBytes types.Tx) (signing.Tx, error) {

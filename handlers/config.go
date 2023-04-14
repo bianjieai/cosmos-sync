@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	"strings"
 )
 
 var (
@@ -46,7 +45,7 @@ func initBech32Prefix(bech32AccPrefix string) {
 		if bech32AccPrefix == "iaa" {
 			initIrisPrefix()
 		} else {
-			codec.SetBech32Prefixs(strings.Split(bech32AccPrefix, ","))
+			codec.SetBech32Prefixs(bech32AccPrefix)
 		}
 	}
 }
