@@ -15,7 +15,7 @@ WORKDIR $GOPATH/src
 
 # Install minimum necessary dependencies, build binary
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
-    apk add --no-cache $PACKAGES && git config --global url."https://bamboo:EAVxPiH3DiuYUaTWRzgz@gitlab.bianjie.ai/cschain/cschain".insteadOf "https://gitlab.bianjie.ai/cschain/cschain" && git config --global url."https://bamboo:EAVxPiH3DiuYUaTWRzgz@github.com/bianjieai/iritamod".insteadOf "https://github.com/bianjieai/iritamod" && make all
+    apk add --no-cache $PACKAGES && git config --global url."https://bamboo:FS_Q5LmxwExwK6hFN9Fs@gitlab.bianjie.ai/cschain/cschain".insteadOf "https://gitlab.bianjie.ai/cschain/cschain" && git config --global url."https://bamboo:FS_Q5LmxwExwK6hFN9Fs@github.com/bianjieai/iritamod".insteadOf "https://github.com/bianjieai/iritamod" && make all
 
 FROM alpine:3.10
 
