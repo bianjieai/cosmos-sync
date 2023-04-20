@@ -85,7 +85,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	if err != nil {
 		time.Sleep(1 * time.Second)
 		blockResults, err = client.BlockResults(context.Background(), &b)
-		if strings.Contains(err.Error(), "RPC error -32603 ") {
+		if err != nil && strings.Contains(err.Error(), "RPC error -32603 ") {
 			logger.Warn("skip height RPC error -32603",
 				logger.String("err", err.Error()),
 				logger.Int64("height", block.Block.Height))
