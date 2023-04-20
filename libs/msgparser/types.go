@@ -27,6 +27,7 @@ const (
 	GroupRouteKey        string = "group"
 	EvmRouteKey          string = "evm"
 	UptickNftRouteKey    string = "collection"
+	UptickERC20RouteKey  string = "erc20"
 )
 
 type LegacyTx struct {

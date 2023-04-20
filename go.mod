@@ -9,7 +9,7 @@ require (
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible
 	github.com/kaifei-bianjie/common-parser v0.0.0-20221202072759-61d0e0bc62a8
 	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20230112104748-066601862f7c
-	github.com/kaifei-bianjie/irismod-parser v0.0.0-20230412023522-76cc58191bed
+	github.com/kaifei-bianjie/irismod-parser v0.0.0-20230420015321-14263d98ff6f
 	github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20221205031353-54388ffaacf4
 	github.com/qiniu/qmgo v1.0.4
 	github.com/spf13/viper v1.14.0
@@ -207,6 +207,5 @@ replace (
 	github.com/cosmos/cosmos-sdk => github.com/bianjieai/cosmos-sdk v0.46.5-irita-20221201
 	github.com/cosmos/iavl => github.com/cosmos/iavl v0.19.4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	github.com/kaifei-bianjie/irismod-parser => github.com/yingjian-bianjie/irismod-parser v0.0.0-20230414122708-d4c82cf4ae99
 	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.34.22-irita-221107
 )
