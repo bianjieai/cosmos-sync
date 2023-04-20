@@ -79,12 +79,18 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		return &blockDoc, nil, nil
 	}
 
+	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
+
 	blockResults, err := client.BlockResults(context.Background(), &b)
 	if err != nil {
 		time.Sleep(1 * time.Second)
 		blockResults, err = client.BlockResults(context.Background(), &b)
-		if err != nil {
-			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
+		if strings.Contains(err.Error(), "RPC error -32603 ") {
+			logger.Warn("skip height RPC error -32603",
+				logger.String("err", err.Error()),
+				logger.Int64("height", block.Block.Height))
+			return &blockDoc, txDocs, nil
+			//return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
 		}
 	}
 
@@ -92,7 +98,6 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
 	}
 
-	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
 	if len(block.Block.Txs) > 0 {
 		for i, v := range block.Block.Txs {
 			txResult := blockResults.TxsResults[i]
