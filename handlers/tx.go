@@ -28,9 +28,11 @@ import (
 
 var (
 	_parser msgparser.MsgParser
+	_conf   *config.Config
 )
 
 func InitRouter(conf *config.Config) {
+	_conf = conf
 	initBech32Prefix(conf)
 
 	if conf.Server.OnlySupportModule != "" {
@@ -48,6 +50,7 @@ func InitRouter(conf *config.Config) {
 		}
 	}
 	_parser = msgparser.NewMsgParser()
+	_conf = conf
 }
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
@@ -85,33 +88,162 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	if err != nil {
 		time.Sleep(1 * time.Second)
 		blockResults, err = client.BlockResults(context.Background(), &b)
-		if err != nil && strings.Contains(err.Error(), "RPC error -32603 ") {
-			logger.Warn("skip height RPC error -32603",
-				logger.String("err", err.Error()),
-				logger.Int64("height", block.Block.Height))
-			return &blockDoc, txDocs, nil
-			//return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
+		if err != nil {
+			if strings.Contains(err.Error(), "error marshalling response") {
+				return dealTxResult(client, block, blockDoc)
+			}
+			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
+		}
+
+		if len(block.Block.Txs) != len(blockResults.TxsResults) {
+			return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
+		}
+
+		if len(block.Block.Txs) > 0 {
+			for i, v := range block.Block.Txs {
+				txResult := blockResults.TxsResults[i]
+				txDoc, err := parseTx(v, txResult, block.Block, uint32(i))
+				if err != nil {
+					return &blockDoc, txDocs, err
+				}
+				if txDoc.TxHash != "" {
+					txDocs = append(txDocs, &txDoc)
+				}
+			}
 		}
 	}
-
-	if len(block.Block.Txs) != len(blockResults.TxsResults) {
-		return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
-	}
-
-	if len(block.Block.Txs) > 0 {
-		for i, v := range block.Block.Txs {
-			txResult := blockResults.TxsResults[i]
-			txDoc, err := parseTx(v, txResult, block.Block, uint32(i))
-			if err != nil {
-				return &blockDoc, txDocs, err
-			}
-			if txDoc.TxHash != "" {
-				txDocs = append(txDocs, &txDoc)
-			}
-		}
-	}
-
 	return &blockDoc, txDocs, nil
+}
+
+func dealTxResult(client *pool.Client, block *ctypes.ResultBlock, blockDoc models.Block) (*models.Block, []*models.Tx, error) {
+	txResultMap := handleTxResult(client, block.Block)
+	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
+	if len(block.Block.Txs) > 0 {
+		for index, v := range block.Block.Txs {
+			txHash := utils.BuildHex(v.Hash())
+			txResult, ok := txResultMap[txHash]
+			if !ok || txResult.TxResult == nil {
+				return &blockDoc, nil, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					fmt.Errorf("no found"))
+			}
+			if txResult.Err != nil {
+				return &blockDoc, nil, utils.ConvertErr(block.Block.Height, txHash, "TxResult",
+					txResult.Err)
+			}
+			txDoc, err := parseOneTx(uint32(index), v, txResult.TxResult, block.Block)
+			if err != nil {
+				return &blockDoc, nil, err
+			}
+			txDocs = append(txDocs, &txDoc)
+		}
+	}
+	return &blockDoc, txDocs, nil
+}
+
+func parseOneTx(index uint32, txBytes types.Tx, txResult *ctypes.ResultTx, block *types.Block) (models.Tx, error) {
+	var (
+		docTx     models.Tx
+		docTxMsgs []msgsdktypes.TxMsg
+	)
+	txHash := utils.BuildHex(txBytes.Hash())
+
+	docTx.Time = block.Time.Unix()
+	docTx.Height = block.Height
+	docTx.TxHash = txHash
+	docTx.Status = parseTxStatus(txResult.TxResult.Code)
+	if docTx.Status == constant.TxStatusFail {
+		docTx.Log = txResult.TxResult.Log
+	}
+
+	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
+	docTx.TxIndex = index
+	docTx.TxId = block.Height*100000 + int64(index)
+
+	authTx, err := codec.GetSigningTx(txBytes)
+	if err != nil {
+		logger.Warn(err.Error(),
+			logger.String("errTag", "TxDecoder"),
+			logger.String("txhash", txHash),
+			logger.Int64("height", block.Height))
+		return docTx, nil
+	}
+	docTx.GasUsed = txResult.TxResult.GasUsed
+	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
+	docTx.Memo = authTx.GetMemo()
+
+	msgs := authTx.GetMsgs()
+	if len(msgs) == 0 {
+		return docTx, nil
+	}
+
+	for i, v := range msgs {
+		msgDocInfo := _parser.HandleTxMsg(v)
+		if len(msgDocInfo.Addrs) == 0 {
+			continue
+		}
+		if i == 0 {
+			docTx.Type = msgDocInfo.DocTxMsg.Type
+		}
+
+		switch msgDocInfo.DocTxMsg.Type {
+		case MsgTypeEthereumTx:
+			var msgEtheumTx evm.DocMsgEthereumTx
+			var txData msgparser.LegacyTx
+			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
+			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
+			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
+			if len(txResult.TxResult.Data) > 0 {
+				if txRespond, err := evmtypes.DecodeTxResponse(txResult.TxResult.Data); err == nil {
+					if len(txRespond.Ret) > 0 {
+						docTx.EvmTxRespondRet = hex.EncodeToString(txRespond.Ret)
+					}
+				} else {
+					logger.Warn("DecodeTxResponse failed",
+						logger.String("err", err.Error()),
+						logger.String("txhash", txHash),
+						logger.Int64("height", block.Height))
+				}
+			}
+		case MsgTypeMTIssueDenom:
+			if docTx.Status == constant.TxStatusFail {
+				break
+			}
+
+			// get denom_id from events then set to msg, because this msg hasn't denom_id
+			denomId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeIssueDenom, AttrKeyDenomId)
+			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTIssueDenom).Id = denomId
+		case MsgTypeMintMT:
+			if docTx.Status == constant.TxStatusFail {
+				break
+			}
+
+			// get mt_id from events then set to msg, because this msg hasn't mt_id
+			mtId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMintMT, AttrKeyMTId)
+			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTMint).Id = mtId
+		}
+
+		docTx.Signers = append(docTx.Signers, removeDuplicatesFromSlice(msgDocInfo.Signers)...)
+		docTx.Addrs = append(docTx.Addrs, removeDuplicatesFromSlice(msgDocInfo.Addrs)...)
+		docTxMsgs = append(docTxMsgs, msgDocInfo.DocTxMsg)
+		docTx.Types = append(docTx.Types, msgDocInfo.DocTxMsg.Type)
+	}
+
+	docTx.Addrs = removeDuplicatesFromSlice(docTx.Addrs)
+	docTx.Types = removeDuplicatesFromSlice(docTx.Types)
+	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
+	docTx.ContractAddrs = removeDuplicatesFromSlice(docTx.ContractAddrs)
+	docTx.DocTxMsgs = docTxMsgs
+
+	// don't save txs which have not parsed
+	if docTx.Type == "" {
+		logger.Warn(constant.NoSupportMsgTypeTag,
+			logger.String("errTag", "TxMsg"),
+			logger.String("txhash", txHash),
+			logger.Int64("height", block.Height))
+		return models.Tx{}, nil
+	}
+
+	return docTx, nil
 }
 
 func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.Block, index uint32) (models.Tx, error) {
@@ -257,6 +389,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 
 	return docTx, nil
 }
+
 func parseTxStatus(code uint32) uint32 {
 	if code == 0 {
 		return constant.TxStatusSuccess
