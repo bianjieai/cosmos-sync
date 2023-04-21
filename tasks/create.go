@@ -138,7 +138,7 @@ func (s *syncTaskService) createTask(blockNumPerWorkerHandle int64, chanLimit ch
 		}
 
 		if !invalidFollowTask.ID.IsZero() {
-			cond := bson.M{"_id": invalidFollowTask.ID}
+			cond := bson.M{"_id": invalidFollowTask.ID, "current_height": invalidFollowTask.CurrentHeight}
 			update := bson.M{
 				"$set": bson.M{
 					"status":           models.FollowTaskStatusInvalid,

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
@@ -28,12 +29,11 @@ import (
 
 var (
 	_parser msgparser.MsgParser
-	_conf   *config.Config
 )
 
 func InitRouter(conf *config.Config) {
-	_conf = conf
 	initBech32Prefix(conf)
+
 	if conf.Server.OnlySupportModule != "" {
 		resRouteClient := make(map[string]common_parser.Client, 0)
 		modules := strings.Split(conf.Server.OnlySupportModule, ",")
@@ -49,7 +49,6 @@ func InitRouter(conf *config.Config) {
 		}
 	}
 	_parser = msgparser.NewMsgParser()
-	_conf = conf
 }
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
@@ -81,6 +80,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		return &blockDoc, nil, nil
 	}
 
+	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
+
 	blockResults, err := client.BlockResults(context.Background(), &b)
 	if err != nil {
 		time.Sleep(1 * time.Second)
@@ -88,6 +89,12 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		if err != nil {
 			//return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
 			return dealTxResult(client, block, blockDoc)
+		if err != nil && strings.Contains(err.Error(), "RPC error -32603 ") {
+			logger.Warn("skip height RPC error -32603",
+				logger.String("err", err.Error()),
+				logger.Int64("height", block.Block.Height))
+			return &blockDoc, txDocs, nil
+			//return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
 		}
 	}
 
@@ -365,21 +372,11 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 	feeGranter := authTx.FeeGranter()
 	if feeGranter != nil {
 		docTx.FeeGranter = feeGranter.String()
-		docTx.FeePayer = feeGranter.String()
-	} else {
-		feePayer := authTx.FeePayer()
-		if feePayer != nil {
-			docTx.FeePayer = feePayer.String()
-		} else {
-			if len(msgs) > 0 {
-				signers := msgs[0].GetSigners()
-				if len(signers) > 0 {
-					docTx.FeePayer = signers[0].String()
-				}
-			}
-		}
 	}
-
+	feePayer := authTx.FeePayer()
+	if feePayer != nil {
+		docTx.FeePayer = feePayer.String()
+	}
 	feeGrantee := GetFeeGranteeFromEvents(txResult.Events)
 	if feeGrantee != "" {
 		docTx.FeeGrantee = feeGrantee
