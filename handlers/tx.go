@@ -22,16 +22,17 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
-	"golang.org/x/net/context"
 	"strings"
 	"time"
 )
 
 var (
 	_parser msgparser.MsgParser
+	_conf   *config.Config
 )
 
 func InitRouter(conf *config.Config) {
+	_conf = conf
 	initBech32Prefix(conf)
 
 	if conf.Server.OnlySupportModule != "" {
@@ -49,6 +50,7 @@ func InitRouter(conf *config.Config) {
 		}
 	}
 	_parser = msgparser.NewMsgParser()
+	_conf = conf
 }
 
 func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx, error) {
@@ -87,35 +89,29 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		time.Sleep(1 * time.Second)
 		blockResults, err = client.BlockResults(context.Background(), &b)
 		if err != nil {
-			//return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
-			return dealTxResult(client, block, blockDoc)
-		if err != nil && strings.Contains(err.Error(), "RPC error -32603 ") {
-			logger.Warn("skip height RPC error -32603",
-				logger.String("err", err.Error()),
-				logger.Int64("height", block.Block.Height))
-			return &blockDoc, txDocs, nil
-			//return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
-		}
-	}
-
-	if len(block.Block.Txs) != len(blockResults.TxsResults) {
-		return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
-	}
-
-	txDocs := make([]*models.Tx, 0, len(block.Block.Txs))
-	if len(block.Block.Txs) > 0 {
-		for i, v := range block.Block.Txs {
-			txResult := blockResults.TxsResults[i]
-			txDoc, err := parseTx(v, txResult, block.Block, uint32(i))
-			if err != nil {
-				return &blockDoc, txDocs, err
+			if strings.Contains(err.Error(), "error marshalling response") {
+				return dealTxResult(client, block, blockDoc)
 			}
-			if txDoc.TxHash != "" {
-				txDocs = append(txDocs, &txDoc)
+			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
+		}
+
+		if len(block.Block.Txs) != len(blockResults.TxsResults) {
+			return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
+		}
+
+		if len(block.Block.Txs) > 0 {
+			for i, v := range block.Block.Txs {
+				txResult := blockResults.TxsResults[i]
+				txDoc, err := parseTx(v, txResult, block.Block, uint32(i))
+				if err != nil {
+					return &blockDoc, txDocs, err
+				}
+				if txDoc.TxHash != "" {
+					txDocs = append(txDocs, &txDoc)
+				}
 			}
 		}
 	}
-
 	return &blockDoc, txDocs, nil
 }
 
