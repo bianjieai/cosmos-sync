@@ -25,6 +25,7 @@ const (
 	EvmRouteKey            string = "evm"
 	PermRouteKey           string = "perm"
 	Layer2RouteKey         string = "layer2"
+	NodeRouteKey           string = "node"
 )
 
 type LegacyTx struct {

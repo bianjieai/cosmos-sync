@@ -333,7 +333,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 		blockCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Block{}.Name())
 		txCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Tx{}.Name())
 		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
-		txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTxEvm{}.Name())
+		txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.EvmTx{}.Name())
 		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil {
 			return nil, err
 		}
@@ -380,12 +380,7 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	}
 
 	if len(txEvms) > 0 {
-		if err = productMsgToMq(txEvms); err != nil {
-			logger.Error("saveDocsWithTxn productMsgToMq fail",
-				logger.Int64("height", blockDoc.Height),
-				logger.String("err", err.Error()))
-			return err
-		}
+		go productMsgToMq(txEvms)
 	}
 
 	return nil
@@ -397,12 +392,12 @@ const (
 	RecordStatusCompleted
 )
 
-func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
-	txEvms := make([]*models.SyncTxEvm, 0, len(txDocs))
+func dealEvmTx(txDocs []*models.Tx) []*models.EvmTx {
+	txEvms := make([]*models.EvmTx, 0, len(txDocs))
 	for _, doc := range txDocs {
 		if doc.Type == MsgTypeEthereumTx {
 			if doc.Status == constant.TxStatusSuccess {
-				var txEvm models.SyncTxEvm
+				var txEvm models.EvmTx
 				txEvm.Height = doc.Height
 				txEvm.Types = doc.Types
 				txEvm.TxHash = doc.TxHash
@@ -419,7 +414,9 @@ func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
 				txEvm.Signers = doc.Signers
 				txEvm.TxId = doc.TxId
 				txEvm.GasUsed = doc.GasUsed
-				txEvm.ContractAddress = doc.ContractAddrs[0]
+				if len(doc.ContractAddrs) > 0 {
+					txEvm.ContractAddress = doc.ContractAddrs[0]
+				}
 				txEvm.Fee = doc.Fee
 				txEvm.RecordStatus = RecordStatusUnprocessed
 				txEvm.CreateTime = time.Now().Unix()
@@ -432,32 +429,19 @@ func dealEvmTx(txDocs []*models.Tx) []*models.SyncTxEvm {
 	return txEvms
 }
 
-func productMsgToMq(txEvms []*models.SyncTxEvm) error {
-	_, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
+func productMsgToMq(txEvms []*models.EvmTx) {
+	_, _ = models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
 		for _, txEvm := range txEvms {
-			streamLen, err := stream.GetClient().GetStreamLen(config.GetConfig().Redis.StreamTxEvmKey)
-			if err != nil {
-				logger.Error("productMsgToMq stream GetStreamLen fail",
-					logger.String("err", err.Error()))
-				return nil, err
-			}
-
-			if streamLen >= config.GetConfig().Redis.StreamMqMaxLen {
-				//TODO 队列满了，需要监控告警
-				logger.Debug("productMsgToMq streamLen >= StreamMqMaxLen", logger.Int64("maxLen", config.GetConfig().Redis.StreamMqMaxLen))
-				return nil, nil
-			}
-
-			_, err = stream.GetClient().PutMsg(config.GetConfig().Redis.StreamTxEvmKey, txEvm.GetStreamMap())
+			_, err := stream.GetClient().PutMsg(config.GetConfig().Redis.StreamTxEvmKey, txEvm.GetStreamMap())
 			if err != nil {
 				logger.Error("productMsgToMq stream PutMsg fail",
 					logger.Int64("height", txEvm.Height),
 					logger.String("evm_tx_hash", txEvm.EvmTxHash),
 					logger.String("err", err.Error()))
-				return nil, err
+				continue
 			}
 
-			txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTxEvm{}.Name())
+			txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.EvmTx{}.Name())
 
 			query := bson.M{"height": txEvm.Height, "evm_tx_hash": txEvm.EvmTxHash, "record_status": RecordStatusUnprocessed}
 			update := bson.M{
@@ -466,13 +450,15 @@ func productMsgToMq(txEvms []*models.SyncTxEvm) error {
 					"update_time":   time.Now().Unix(),
 				},
 			}
-			if err := txEvmCli.UpdateOne(sessCtx, query, update); err != nil {
-				return nil, err
+			if err = txEvmCli.UpdateOne(sessCtx, query, update); err != nil {
+				logger.Error("productMsgToMq txEvmCli UpdateOne",
+					logger.Int64("height", txEvm.Height),
+					logger.String("evm_tx_hash", txEvm.EvmTxHash),
+					logger.String("err", err.Error()))
+				continue
 			}
 		}
 
 		return nil, nil
 	})
-
-	return err
 }

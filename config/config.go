@@ -30,12 +30,12 @@ type (
 		WorkerMaxSleepTime        int    `mapstructure:"worker_max_sleep_time"`
 		BlockNumPerWorkerHandle   int    `mapstructure:"block_num_per_worker_handle"`
 		SleepTimeCreateTaskWorker int    `mapstructure:"sleep_time_create_task_worker"`
-
-		MaxConnectionNum   int    `mapstructure:"max_connection_num"`
-		InitConnectionNum  int    `mapstructure:"init_connection_num"`
-		ChainId            string `mapstructure:"chain_id"`
-		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
-		BehindBlockNum     int    `mapstructure:"behind_block_num"`
+		ThreadNumParseTx          int    `mapstructure:"thread_num_parse_tx"`
+		MaxConnectionNum          int    `mapstructure:"max_connection_num"`
+		InitConnectionNum         int    `mapstructure:"init_connection_num"`
+		ChainId                   string `mapstructure:"chain_id"`
+		ChainBlockInterval        int    `mapstructure:"chain_block_interval"`
+		BehindBlockNum            int    `mapstructure:"behind_block_num"`
 
 		Bech32AccPrefix   string `mapstructure:"bech32_acc_prefix"`
 		PromethousPort    string `mapstructure:"promethous_port"`
