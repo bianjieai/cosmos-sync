@@ -73,6 +73,7 @@ func getTxResult(c *pool.Client, txBytes types.Tx, chanLimit chan bool, chanRes 
 		if err != nil {
 			time.Sleep(1 * time.Second)
 			if v, err1 := c.Tx(ctx, txBytes.Hash(), false); err1 != nil {
+				logger.Error("get tx by Tx interface fail", logger.Any("hash", string(txBytes.Hash())), logger.Any("err", err1))
 				err = err1
 			} else {
 				txResult = v
