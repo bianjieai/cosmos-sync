@@ -10,7 +10,7 @@ require (
 	github.com/kaifei-bianjie/cosmosmod-parser v0.0.0-20220923075813-81e7e2b17c67
 	github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0
 	github.com/kaifei-bianjie/iritachain-mod-parser v0.0.0-20230317063603-82411421f5f2
-	github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230620030902-92b26adc0f91
+	github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230704110254-ea20e0595a37
 	github.com/kaifei-bianjie/spartanchain-mod-parser v0.0.0-20220926103514-5f0a9d27d019
 	github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20220927054648-1e71af64d126
 	github.com/qiniu/qmgo v1.0.4

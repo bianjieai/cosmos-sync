@@ -1262,8 +1262,8 @@ github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0 h1:R
 github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0/go.mod h1:86hxvc319yAs4DbRUMMbqotwekjv0R785bVU8Gpu1kM=
 github.com/kaifei-bianjie/iritachain-mod-parser v0.0.0-20230317063603-82411421f5f2 h1:gFPwIPEDc5zmX7HwPUMceLcVh0N8QRfemp1JlCUS5xU=
 github.com/kaifei-bianjie/iritachain-mod-parser v0.0.0-20230317063603-82411421f5f2/go.mod h1:WI2FSLFW+ineOqotck/S9mOkqbJJ92zvIJffvnINgN8=
-github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230620030902-92b26adc0f91 h1:y/c3tdU45PoAg1Y4JHw5pBmflzwMVk3fx6c+Ow0B1NE=
-github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230620030902-92b26adc0f91/go.mod h1:kFE0l9D/LlQj6OXQctDSrZTe4IGWpwXkyFbEuOaz5I8=
+github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230704110254-ea20e0595a37 h1:KCWzRHuitaPPf3+CTP6UJQmMDnyxgYNypaM0JjBxT88=
+github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230704110254-ea20e0595a37/go.mod h1:kFE0l9D/LlQj6OXQctDSrZTe4IGWpwXkyFbEuOaz5I8=
 github.com/kaifei-bianjie/spartanchain-mod-parser v0.0.0-20220926103514-5f0a9d27d019 h1:LXTtjxmMqbXjmdSbj8SVplSvySMK5Eu/Y4sX0xOISvI=
 github.com/kaifei-bianjie/spartanchain-mod-parser v0.0.0-20220926103514-5f0a9d27d019/go.mod h1:efcdBPrPp/6b7S6k3Aupii4Yl613Zs3oO7Lz3eaWNJU=
 github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20220927054648-1e71af64d126 h1:BOeAYQRYhIoCpH4QSLm8vKd7oyiWYIqh/5BJ2Wit1Rc=
