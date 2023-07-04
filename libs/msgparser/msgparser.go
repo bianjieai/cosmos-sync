@@ -90,8 +90,8 @@ func (parser msgParser) GetModule(data string) string {
 		route = PermRouteKey
 	} else if strings.HasPrefix(data, "/iritamod.node.") {
 		route = NodeRouteKey
-	} else if strings.HasPrefix(data, "/iritamod.layer2") {
-		route = Layer2RouteKey
+	} else if strings.HasPrefix(data, "/iritamod.side_chain.") {
+		route = SideChainRouteKey
 	} else {
 		route = data
 	}
@@ -146,7 +146,7 @@ func init() {
 		IritaSlashingRouteKey:  iritaModClient.Slashing,
 		IdentityRouteKey:       iritaModClient.Identity,
 		PermRouteKey:           iritaModClient.Perm,
-		Layer2RouteKey:         iritaModClient.Layer2,
+		SideChainRouteKey:      iritaModClient.SideChain,
 		EvmRouteKey:            iritaChainModClient.Evm,
 		TIbcTransferRouteKey:   tibcModClient.Tibc,
 		TIbcRouteKey:           tibcModClient.Tibc,
