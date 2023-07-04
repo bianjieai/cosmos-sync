@@ -637,10 +637,9 @@ github.com/bianjieai/cosmos-sdk v0.45.1-irita-20220816.0.20220816095307-845547d9
 github.com/bianjieai/cosmos-sdk v0.45.1-irita-20220816.0.20220816095307-845547d9c19e/go.mod h1:844fVGwl2JVfV8cxsr0+A0mtcYUkkPlEW3Q4skuEwaI=
 github.com/bianjieai/ethermint v0.10.2-irita-20230315 h1:OzTtBrRh42b6GqBY/0ec9NfYIH8TIh+sGb5N96hrQsQ=
 github.com/bianjieai/ethermint v0.10.2-irita-20230315/go.mod h1:wY1g0XkLenjcgfuok56QprJPZk8/1Z2DKiDsjqnZWso=
-github.com/bianjieai/iritamod v1.2.1-0.20220809083453-a38b88e9aac1 h1:3tJL9qf/Re76MG+BDirjRI7oE6biIjmKsP6d1ahO7Ac=
 github.com/bianjieai/iritamod v1.2.1-0.20220809083453-a38b88e9aac1/go.mod h1:6WLWIGKdgUcJaN7ym6FqSdr80OMW7CP7jT/+u549scU=
-github.com/bianjieai/iritamod v1.2.1-0.20230525103414-2c6d235c2ff1 h1:JyLVHU0V9wynbwlg7et/b+cTtB28SKBOI2edXBmEChk=
-github.com/bianjieai/iritamod v1.2.1-0.20230525103414-2c6d235c2ff1/go.mod h1:5woISMgARzwIysP3WFP5WZ2eod2dDcAGgRGVfpuT08Q=
+github.com/bianjieai/iritamod v1.2.1-0.20230613082613-3fb58cc1f431 h1:IvgtaLostSVc2FzaU8sdspbHiIV5VHZMGgq0DTp1oqQ=
+github.com/bianjieai/iritamod v1.2.1-0.20230613082613-3fb58cc1f431/go.mod h1:5woISMgARzwIysP3WFP5WZ2eod2dDcAGgRGVfpuT08Q=
 github.com/bianjieai/spartan-cosmos v1.0.2 h1:ikFvLCKuabTTcbqG6jSOHeU9wTHD8CGTxgAHDCS9PnQ=
 github.com/bianjieai/spartan-cosmos v1.0.2/go.mod h1:HVRbug0eWHJUSorATfdypvc22tzGmBigY5ItweMrrTk=
 github.com/bianjieai/tendermint v0.34.8-irita-210413.0.20210908054213-781a5fed16d6 h1:HH5nXXpB0kvoYZmKYWiUpAwMc8R7f7BYoj+plO/9EoA=
@@ -1263,10 +1262,8 @@ github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0 h1:R
 github.com/kaifei-bianjie/irismod-parser v0.0.0-20220926014114-6f1e08c26bf0/go.mod h1:86hxvc319yAs4DbRUMMbqotwekjv0R785bVU8Gpu1kM=
 github.com/kaifei-bianjie/iritachain-mod-parser v0.0.0-20230317063603-82411421f5f2 h1:gFPwIPEDc5zmX7HwPUMceLcVh0N8QRfemp1JlCUS5xU=
 github.com/kaifei-bianjie/iritachain-mod-parser v0.0.0-20230317063603-82411421f5f2/go.mod h1:WI2FSLFW+ineOqotck/S9mOkqbJJ92zvIJffvnINgN8=
-github.com/kaifei-bianjie/iritamod-parser v0.0.0-20221017095308-8d8fdf5aa9ac h1:4tY9YY9y0XUQQmIAa0bsaLTsacdtNtiv4+Gnrm4guqk=
-github.com/kaifei-bianjie/iritamod-parser v0.0.0-20221017095308-8d8fdf5aa9ac/go.mod h1:i3Ox9E97WbJvT0nOqpTnbn93/NnQxbLb0yAhe4YIUaw=
-github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230531095914-2302216d4da2 h1:P8DozkSocn49JP3XwZYn2G5sjdNkOZrJeDt3Zoqrl8g=
-github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230531095914-2302216d4da2/go.mod h1:myCzYhpQFzevqBeeLGzCQ0F57FXBF6kXDRERz/hgR6w=
+github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230704110254-ea20e0595a37 h1:KCWzRHuitaPPf3+CTP6UJQmMDnyxgYNypaM0JjBxT88=
+github.com/kaifei-bianjie/iritamod-parser v0.0.0-20230704110254-ea20e0595a37/go.mod h1:kFE0l9D/LlQj6OXQctDSrZTe4IGWpwXkyFbEuOaz5I8=
 github.com/kaifei-bianjie/spartanchain-mod-parser v0.0.0-20220926103514-5f0a9d27d019 h1:LXTtjxmMqbXjmdSbj8SVplSvySMK5Eu/Y4sX0xOISvI=
 github.com/kaifei-bianjie/spartanchain-mod-parser v0.0.0-20220926103514-5f0a9d27d019/go.mod h1:efcdBPrPp/6b7S6k3Aupii4Yl613Zs3oO7Lz3eaWNJU=
 github.com/kaifei-bianjie/tibc-mod-parser v0.0.0-20220927054648-1e71af64d126 h1:BOeAYQRYhIoCpH4QSLm8vKd7oyiWYIqh/5BJ2Wit1Rc=

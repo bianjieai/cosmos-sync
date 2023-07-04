@@ -90,8 +90,9 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 		if err != nil {
 			if strings.Contains(err.Error(), "error marshalling response") {
 				return dealTxResult(client, block, blockDoc)
+			} else {
+				return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
 			}
-			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
 		}
 	}
 
@@ -157,16 +158,37 @@ func parseOneTx(index uint32, txBytes types.Tx, txResult *ctypes.ResultTx, block
 	docTx.EventsNew = parseABCILogs(txResult.TxResult.Log)
 	docTx.TxIndex = index
 	docTx.TxId = block.Height*100000 + int64(index)
+	docTx.GasUsed = txResult.TxResult.GasUsed
 
 	authTx, err := codec.GetSigningTx(txBytes)
 	if err != nil {
-		logger.Warn(err.Error(),
-			logger.String("errTag", "TxDecoder"),
-			logger.String("txhash", txHash),
-			logger.Int64("height", block.Height))
+		if docTx.Status == constant.TxStatusFail {
+			docTx.Type = constant.NoSupportModule
+			docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
+				Type: docTx.Type,
+			})
+			return docTx, nil
+		}
+		for i := range docTx.EventsNew {
+			msgName := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMessage, AttrKeyAction)
+			module := _parser.GetModule(msgName)
+			_, exist := msgparser.RouteClientMap[module]
+			if docTx.EventsNew[i].MsgIndex == 0 {
+				if !exist {
+					docTx.Type = constant.NoSupportModule
+				} else {
+					docTx.Type = constant.IncorrectParse
+				}
+				docTx.DocTxMsgs = append(docTx.DocTxMsgs, msgsdktypes.TxMsg{
+					Type: docTx.Type,
+				})
+			}
+			docTx.Types = append(docTx.Types, msgName)
+		}
+		docTx.Types = removeDuplicatesFromSlice(docTx.Types)
 		return docTx, nil
 	}
-	docTx.GasUsed = txResult.TxResult.GasUsed
+
 	docTx.Fee = msgsdktypes.BuildFee(authTx.GetFee(), authTx.GetGas())
 	docTx.Memo = authTx.GetMemo()
 
@@ -232,6 +254,19 @@ func parseOneTx(index uint32, txBytes types.Tx, txResult *ctypes.ResultTx, block
 	docTx.Signers = removeDuplicatesFromSlice(docTx.Signers)
 	docTx.ContractAddrs = removeDuplicatesFromSlice(docTx.ContractAddrs)
 	docTx.DocTxMsgs = docTxMsgs
+
+	feeGranter := authTx.FeeGranter()
+	if feeGranter != nil {
+		docTx.FeeGranter = feeGranter.String()
+	}
+	feePayer := authTx.FeePayer()
+	if feePayer != nil {
+		docTx.FeePayer = feePayer.String()
+	}
+	feeGrantee := GetFeeGranteeFromEvents(txResult.TxResult.Events)
+	if feeGrantee != "" {
+		docTx.FeeGrantee = feeGrantee
+	}
 
 	// don't save txs which have not parsed
 	if docTx.Type == "" {

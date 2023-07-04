@@ -24,7 +24,7 @@ const (
 	TIbcRouteKey           string = "tibc"
 	EvmRouteKey            string = "evm"
 	PermRouteKey           string = "perm"
-	Layer2RouteKey         string = "layer2"
+	SideChainRouteKey      string = "sidechain"
 	NodeRouteKey           string = "node"
 )
 
