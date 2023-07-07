@@ -1,6 +1,6 @@
 [database]
-node_uri= "mongodb://root:123456@localhost:27017/?connect=direct&authSource=test"
-database= "test"
+node_uri= "mongodb://wenchang:123456@127.0.0.1:27017/?authSource=iobscan-wcchain"
+database= "iobscan-wcchain"
 
 [server]
 node_urls="tcp://10.0.0.36:26657"
@@ -17,3 +17,12 @@ behind_block_num=0
 promethous_port=9090
 only_support_module=""
 is_json_rpc_protocol=true
+
+
+[redis]
+addrs ="127.0.0.1:6379"
+user = ""
+password = ""
+db = 0
+stream_tx_evm_key = "stream:tx_evm"
+stream_mq_max_len = 10000
