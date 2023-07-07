@@ -5,6 +5,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/handlers"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/libs/stream"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/tasks"
 	"os"
@@ -36,6 +37,12 @@ func main() {
 	models.Init(conf)
 	pool.Init(conf)
 	handlers.InitRouter(conf)
+	if conf.Redis.Addrs != "" {
+		if err = stream.Init(conf); err != nil {
+			logger.Fatal(err.Error())
+		}
+		stream.InitMQClient(conf)
+	}
 
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
