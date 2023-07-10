@@ -3,6 +3,10 @@ FROM golang:1.16-alpine as builder
 # Set up dependencies
 ENV PACKAGES make gcc git libc-dev linux-headers bash
 ENV GO111MODULE  on
+
+ARG GITUSER=1
+ARG GITPASS=2
+ARG GOPRIVATE=gitlab.bianjie.ai
 ARG GOPROXY=https://goproxy.cn,direct
 ARG APKPROXY=http://mirrors.ustc.edu.cn/alpine
 
@@ -11,7 +15,7 @@ WORKDIR $GOPATH/src
 
 # Install minimum necessary dependencies, build binary
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && \
-    apk add --no-cache $PACKAGES && make all
+    apk add --no-cache $PACKAGES && git config --global url."https://${GITUSER}:${GITPASS}@gitlab.bianjie.ai/cschain/cschain".insteadOf "https://gitlab.bianjie.ai/cschain/cschain" && git config --global url."https://${GITUSER}:${GITPASS}@github.com/bianjieai/iritamod".insteadOf "https://github.com/bianjieai/iritamod" && make all
 
 FROM alpine:3.10
 
