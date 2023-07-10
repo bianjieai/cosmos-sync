@@ -27,5 +27,6 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 	github.com/tendermint/tendermint => github.com/bianjieai/tendermint v0.34.0-irita-210104.0.20210112015006-57e95aa6402f
 	github.com/tharsis/ethermint => github.com/bianjieai/ethermint v0.10.2-irita-20230315
+	golang.org/x/sys => golang.org/x/sys v0.0.0-20211210111614-af8b64212486
 	google.golang.org/grpc => google.golang.org/grpc v1.35.0
 )
