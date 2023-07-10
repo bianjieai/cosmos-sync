@@ -18,6 +18,7 @@ promethous_port=9090
 only_support_module=""
 is_json_rpc_protocol=true
 
+
 [redis]
 addrs ="127.0.0.1:6379"
 user = ""
