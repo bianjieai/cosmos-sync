@@ -3,12 +3,15 @@ package tasks
 import (
 	"context"
 	"fmt"
+	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/handlers"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
+	"github.com/bianjieai/cosmos-sync/libs/stream"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
+	. "github.com/kaifei-bianjie/iritachain-mod-parser/modules"
 	"github.com/qiniu/qmgo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -319,11 +322,14 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	if blockDoc.Height == 0 {
 		return fmt.Errorf("invalid block, height equal 0")
 	}
+	txEvms := dealEvmTx(txDocs)
 
 	_, err := models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
 		blockCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Block{}.Name())
 		txCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.Tx{}.Name())
 		taskCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.SyncTask{}.Name())
+		txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.EvmTx{}.Name())
+
 		if _, err := blockCli.InsertOne(sessCtx, blockDoc); err != nil {
 			return nil, err
 		}
@@ -334,6 +340,16 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 			}
 		} else if sizeTxDocs > 1 {
 			if _, err := txCli.InsertMany(sessCtx, txDocs); err != nil {
+				return nil, err
+			}
+		}
+
+		if len(txEvms) == 1 {
+			if _, err := txEvmCli.InsertOne(sessCtx, txEvms[0]); err != nil {
+				return nil, err
+			}
+		} else if len(txEvms) > 1 {
+			if _, err := txEvmCli.InsertMany(sessCtx, txEvms); err != nil {
 				return nil, err
 			}
 		}
@@ -352,5 +368,93 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 		return nil, nil
 	})
 
-	return err
+	if err != nil {
+		logger.Error("saveDocsWithTxn DoTransaction fail",
+			logger.Int64("height", blockDoc.Height),
+			logger.String("err", err.Error()))
+		return err
+	}
+
+	if len(txEvms) > 0 {
+		go productMsgToMq(txEvms)
+	}
+
+	return nil
+}
+
+const (
+	RecordStatusUnprocessed = iota
+	RecordStatusProcessing
+	RecordStatusCompleted
+)
+
+func dealEvmTx(txDocs []*models.Tx) []*models.EvmTx {
+	txEvms := make([]*models.EvmTx, 0, len(txDocs))
+	for _, doc := range txDocs {
+		if doc.Type == MsgTypeEthereumTx {
+			if doc.Status == constant.TxStatusSuccess {
+				var txEvm models.EvmTx
+				txEvm.Height = doc.Height
+				txEvm.Types = doc.Types
+				txEvm.TxHash = doc.TxHash
+
+				var evmTxHash string
+				for _, eventNew := range doc.EventsNew {
+					evmTxHash = eventNew.GetValue(MsgTypeEthereumTx, constant.EthereumTxHash)
+				}
+
+				txEvm.EvmTxHash = evmTxHash
+				txEvm.Time = doc.Time
+				txEvm.Status = doc.Status
+				txEvm.Memo = doc.Memo
+				txEvm.Signers = doc.Signers
+				txEvm.TxId = doc.TxId
+				txEvm.GasUsed = doc.GasUsed
+				if len(doc.ContractAddrs) > 0 {
+					txEvm.ContractAddress = doc.ContractAddrs[0]
+				}
+				txEvm.Fee = doc.Fee
+				txEvm.RecordStatus = RecordStatusUnprocessed
+				txEvm.CreateTime = time.Now().Unix()
+				txEvm.UpdateTime = time.Now().Unix()
+				txEvms = append(txEvms, &txEvm)
+			}
+		}
+
+	}
+	return txEvms
+}
+
+func productMsgToMq(txEvms []*models.EvmTx) {
+	_, _ = models.GetClient().DoTransaction(context.Background(), func(sessCtx context.Context) (interface{}, error) {
+		for _, txEvm := range txEvms {
+			_, err := stream.GetClient().PutMsg(config.GetConfig().Redis.StreamTxEvmKey, txEvm.GetStreamMap())
+			if err != nil {
+				logger.Error("productMsgToMq stream PutMsg fail",
+					logger.Int64("height", txEvm.Height),
+					logger.String("evm_tx_hash", txEvm.EvmTxHash),
+					logger.String("err", err.Error()))
+				continue
+			}
+
+			txEvmCli := models.GetClient().Database(models.GetDbConf().Database).Collection(models.EvmTx{}.Name())
+
+			query := bson.M{"height": txEvm.Height, "evm_tx_hash": txEvm.EvmTxHash, "record_status": RecordStatusUnprocessed}
+			update := bson.M{
+				"$set": bson.M{
+					"record_status": RecordStatusProcessing,
+					"update_time":   time.Now().Unix(),
+				},
+			}
+			if err = txEvmCli.UpdateOne(sessCtx, query, update); err != nil {
+				logger.Error("productMsgToMq txEvmCli UpdateOne",
+					logger.Int64("height", txEvm.Height),
+					logger.String("evm_tx_hash", txEvm.EvmTxHash),
+					logger.String("err", err.Error()))
+				continue
+			}
+		}
+
+		return nil, nil
+	})
 }

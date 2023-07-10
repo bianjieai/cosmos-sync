@@ -8,6 +8,7 @@ import (
 	cosmosmod_parser "github.com/kaifei-bianjie/cosmosmod-parser"
 	cschain_mod_parser "github.com/kaifei-bianjie/cschain-mod-parser"
 	irismod_parser "github.com/kaifei-bianjie/irismod-parser"
+	iritachain_mod_parser "github.com/kaifei-bianjie/iritachain-mod-parser"
 	iritamod_parser "github.com/kaifei-bianjie/iritamod-parser"
 	"strings"
 )
@@ -17,10 +18,11 @@ type MsgParser interface {
 }
 
 var (
-	cosmosModClient  cosmosmod_parser.MsgClient
-	irisModClient    irismod_parser.MsgClient
-	iritaModClient   iritamod_parser.MsgClient
-	cschainModClient cschain_mod_parser.MsgClient
+	cosmosModClient     cosmosmod_parser.MsgClient
+	irisModClient       irismod_parser.MsgClient
+	iritaModClient      iritamod_parser.MsgClient
+	cschainModClient    cschain_mod_parser.MsgClient
+	iritaChainModClient iritachain_mod_parser.MsgClient
 
 	RouteClientMap map[string]common_parser.Client
 )
@@ -76,6 +78,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = IdentityRouteKey
 	} else if strings.HasPrefix(data, "/cschain.ibc.") {
 		route = IbcRouteKey
+	} else if strings.HasPrefix(data, "/ethermint.evm.") {
+		route = EvmRouteKey
 	} else {
 		route = data
 	}
@@ -106,6 +110,7 @@ func init() {
 	irisModClient = irismod_parser.NewMsgClient()
 	iritaModClient = iritamod_parser.NewMsgClient()
 	cschainModClient = cschain_mod_parser.NewMsgClient()
+	iritaChainModClient = iritachain_mod_parser.NewMsgClient()
 
 	RouteClientMap = map[string]common_parser.Client{
 		BankRouteKey:         cosmosModClient.Bank,
@@ -128,5 +133,6 @@ func init() {
 		IdentityRouteKey:     iritaModClient.Identity,
 		IbcRouteKey:          cschainModClient.Ibc,
 		IbcTransferRouteKey:  cschainModClient.Ibc,
+		EvmRouteKey:          iritaChainModClient.Evm,
 	}
 }
