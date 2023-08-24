@@ -381,6 +381,12 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 		}
 		return nil, nil
 	})
+	if err != nil {
+		if qmgo.IsDup(err) {
+			//if err is mongo E11000 (duplicate err),return nil
+			return nil
+		}
+	}
 
 	return err
 }
