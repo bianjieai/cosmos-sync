@@ -372,10 +372,13 @@ func saveDocsWithTxn(blockDoc *models.Block, txDocs []*models.Tx, taskDoc *model
 	})
 
 	if err != nil {
-		logger.Error("saveDocsWithTxn DoTransaction fail",
-			logger.Int64("height", blockDoc.Height),
-			logger.String("err", err.Error()))
-		return err
+		if !qmgo.IsDup(err) {
+			//if err is not mongo E11000 (duplicate err),return err
+			logger.Error("saveDocsWithTxn DoTransaction fail",
+				logger.Int64("height", blockDoc.Height),
+				logger.String("err", err.Error()))
+			return err
+		}
 	}
 
 	if len(txEvms) > 0 {
