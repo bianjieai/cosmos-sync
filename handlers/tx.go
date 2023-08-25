@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"context"
+	"encoding/hex"
+	"fmt"
 	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
@@ -14,9 +16,12 @@ import (
 	msgtypes "github.com/kaifei-bianjie/common-parser/types"
 	. "github.com/kaifei-bianjie/irismod-parser/modules"
 	"github.com/kaifei-bianjie/irismod-parser/modules/mt"
+	. "github.com/kaifei-bianjie/iritachain-mod-parser/modules"
+	"github.com/kaifei-bianjie/iritachain-mod-parser/modules/evm"
 	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	"strings"
 	"time"
 )
@@ -157,6 +162,7 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 		Log:     log,
 		TxIndex: uint32(index),
 		TxId:    block.Height*100000 + int64(index),
+		GasUsed: txResult.GasUsed,
 	}
 	docTx.EventsNew = parseABCILogs(txResult.Log)
 	msgs := authTx.GetMsgs()
@@ -174,6 +180,24 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 		}
 
 		switch msgDocInfo.DocTxMsg.Type {
+		case MsgTypeEthereumTx:
+			var msgEtheumTx evm.DocMsgEthereumTx
+			var txData msgparser.LegacyTx
+			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
+			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
+			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
+			if len(txResult.Data) > 0 {
+				if txRespond, err := evmtypes.DecodeTxResponse(txResult.Data); err == nil {
+					if len(txRespond.Ret) > 0 {
+						docTx.EvmTxRespondRet = hex.EncodeToString(txRespond.Ret)
+					}
+				} else {
+					logger.Warn("DecodeTxResponse failed",
+						logger.String("err", err.Error()),
+						logger.String("txhash", txHash),
+						logger.Int64("height", block.Height))
+				}
+			}
 		case MsgTypeMTIssueDenom:
 			if docTx.Status == constant.TxStatusFail {
 				break
@@ -205,14 +229,27 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 
 	docTx.DocTxMsgs = docTxMsgs
 
-	//// don't save txs which have not parsed
-	//if docTx.Type == "" {
-	//	logger.Warn(constant.NoSupportMsgTypeTag,
-	//		logger.String("errTag", "TxMsg"),
-	//		logger.String("txhash", txHash),
-	//		logger.Int64("height", height))
-	//	return models.Tx{}, nil
-	//}
+	feeGranter := authTx.FeeGranter()
+	if feeGranter != nil {
+		docTx.FeeGranter = feeGranter.String()
+	}
+	feePayer := authTx.FeePayer()
+	if feePayer != nil {
+		docTx.FeePayer = feePayer.String()
+	}
+	feeGrantee := GetFeeGranteeFromEvents(txResult.Events)
+	if feeGrantee != "" {
+		docTx.FeeGrantee = feeGrantee
+	}
+
+	// don't save txs which have not parsed
+	if docTx.Type == "" {
+		logger.Warn(constant.NoSupportMsgTypeTag,
+			logger.String("errTag", "TxMsg"),
+			logger.String("txhash", txHash),
+			logger.Int64("height", height))
+		return models.Tx{}, nil
+	}
 
 	return docTx, nil
 }
@@ -262,6 +299,19 @@ func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string
 			for _, attr := range val.Attributes {
 				if attr.Key == attrKey {
 					return attr.Value
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func GetFeeGranteeFromEvents(events []types2.Event) string {
+	for _, val := range events {
+		if val.Type == constant.UseGrantee || val.Type == constant.SetGrantee {
+			for _, attribute := range val.Attributes {
+				if fmt.Sprintf("%s", attribute.Key) == constant.Grantee {
+					return fmt.Sprintf("%s", attribute.Value)
 				}
 			}
 		}

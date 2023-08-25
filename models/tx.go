@@ -16,22 +16,28 @@ const (
 
 type (
 	Tx struct {
-		TxId      int64         `bson:"tx_id"`
-		Time      int64         `bson:"time"`
-		Height    int64         `bson:"height"`
-		TxHash    string        `bson:"tx_hash"`
-		Type      string        `bson:"type"` // parse from first msg
-		Memo      string        `bson:"memo"`
-		Status    uint32        `bson:"status"`
-		Log       string        `bson:"log"`
-		Fee       *types.Fee    `bson:"fee"`
-		Types     []string      `bson:"types"`
-		EventsNew []EventNew    `bson:"events_new"`
-		Signers   []string      `bson:"signers"`
-		DocTxMsgs []types.TxMsg `bson:"msgs"`
-		Addrs     []string      `bson:"addrs"`
-		TxIndex   uint32        `bson:"tx_index"` // sequence tx of this block
-		Ext       interface{}   `bson:"ext"`
+		TxId            int64         `bson:"tx_id"`
+		Time            int64         `bson:"time"`
+		Height          int64         `bson:"height"`
+		TxHash          string        `bson:"tx_hash"`
+		Type            string        `bson:"type"` // parse from first msg
+		Memo            string        `bson:"memo"`
+		Status          uint32        `bson:"status"`
+		Log             string        `bson:"log"`
+		Fee             *types.Fee    `bson:"fee"`
+		FeePayer        string        `bson:"fee_payer"`
+		FeeGranter      string        `bson:"fee_granter"`
+		FeeGrantee      string        `bson:"fee_grantee"`
+		Types           []string      `bson:"types"`
+		EventsNew       []EventNew    `bson:"events_new"`
+		Signers         []string      `bson:"signers"`
+		DocTxMsgs       []types.TxMsg `bson:"msgs"`
+		Addrs           []string      `bson:"addrs"`
+		ContractAddrs   []string      `bson:"contract_addrs"`
+		EvmTxRespondRet string        `bson:"evm_tx_respond_ret"`
+		TxIndex         uint32        `bson:"tx_index"` // sequence tx of this block
+		Ext             interface{}   `bson:"ext"`
+		GasUsed         int64         `bson:"gas_used"`
 	}
 
 	Event struct {
@@ -75,6 +81,19 @@ func (d Tx) EnsureIndexes() {
 
 func (d Tx) PkKvPair() map[string]interface{} {
 	return bson.M{"tx_hash": d.TxHash}
+}
+
+func (e EventNew) GetValue(eventType, attributeKey string) string {
+	for _, event := range e.Events {
+		if event.Type == eventType {
+			for _, attribute := range event.Attributes {
+				if attribute.Key == attributeKey {
+					return attribute.Value
+				}
+			}
+		}
+	}
+	return ""
 }
 
 func (d Tx) FindIncorrectParseTxs() (bool, error) {
