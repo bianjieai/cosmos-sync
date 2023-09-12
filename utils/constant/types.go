@@ -21,4 +21,10 @@ const (
 	UseGrantee = "use_feegrant"
 	SetGrantee = "set_feegrant"
 	Grantee    = "grantee"
+
+	BlockGas = "block_gas"
+
+	AttrKeyAmount = "amount"
+
+	DefaultBlockGasUsed = "0"
 )
