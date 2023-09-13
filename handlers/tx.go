@@ -119,6 +119,7 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 	}
 
 	if blockDoc.Txn <= 0 {
+		blockDoc.GasUsed = constant.DefaultBlockGasUsed
 		return &blockDoc, nil, nil
 	}
 
@@ -130,6 +131,8 @@ func ParseBlockAndTxs(b int64, client *pool.Client) (*models.Block, []*models.Tx
 			return &blockDoc, nil, utils.ConvertErr(b, "", "ParseBlockResult", err)
 		}
 	}
+
+	blockDoc.GasUsed = getBlockGasFromEndBlockEvents(blockResults.EndBlockEvents)
 
 	if len(block.Block.Txs) != len(blockResults.TxsResults) {
 		return nil, nil, utils.ConvertErr(b, "", "block.Txs length not equal blockResult", nil)
@@ -531,4 +534,17 @@ func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string
 		}
 	}
 	return ""
+}
+
+func getBlockGasFromEndBlockEvents(events []types2.Event) string {
+	for _, event := range events {
+		if event.Type == constant.BlockGas {
+			for _, attribute := range event.Attributes {
+				if string(attribute.Key) == constant.AttrKeyAmount {
+					return string(attribute.Value)
+				}
+			}
+		}
+	}
+	return constant.DefaultBlockGasUsed
 }
