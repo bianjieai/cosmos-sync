@@ -18,6 +18,7 @@ type (
 		Txn      int64  `bson:"txn"`
 		Time     int64  `bson:"time"`
 		Proposer string `bson:"proposer"`
+		GasUsed  string `bson:"gas_used"`
 	}
 )
 
