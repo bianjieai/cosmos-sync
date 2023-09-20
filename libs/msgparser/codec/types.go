@@ -1,8 +1,6 @@
-package handlers
+package codec
 
-import (
-	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-)
+import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
 	// PrefixValidator is the prefix for validator keys
@@ -30,7 +28,11 @@ var (
 	Bech32PrefixConsPub = Bech32PrefixAccAddr + PrefixValidator + PrefixConsensus + PrefixPublic
 )
 
-func init() {
-	codec.SetBech32Prefix(Bech32PrefixAccAddr, Bech32PrefixAccPub, Bech32PrefixValAddr,
-		Bech32PrefixValPub, Bech32PrefixConsAddr, Bech32PrefixConsPub)
+func SetBech32Prefix(bech32PrefixAccAddr, bech32PrefixAccPub, bech32PrefixValAddr,
+	bech32PrefixValPub, bech32PrefixConsAddr, bech32PrefixConsPub string) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount(bech32PrefixAccAddr, bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(bech32PrefixValAddr, bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(bech32PrefixConsAddr, bech32PrefixConsPub)
+	config.Seal()
 }

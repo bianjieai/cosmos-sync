@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/kaifei-bianjie/common-parser/types"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
 )

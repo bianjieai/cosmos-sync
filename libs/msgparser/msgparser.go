@@ -2,14 +2,17 @@ package msgparser
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	common_parser "github.com/kaifei-bianjie/common-parser"
-	. "github.com/kaifei-bianjie/common-parser/modules"
-	"github.com/kaifei-bianjie/common-parser/types"
-	cosmosmod_parser "github.com/kaifei-bianjie/cosmosmod-parser"
-	cschain_mod_parser "github.com/kaifei-bianjie/cschain-mod-parser"
-	irismod_parser "github.com/kaifei-bianjie/irismod-parser"
-	iritachain_mod_parser "github.com/kaifei-bianjie/iritachain-mod-parser"
-	iritamod_parser "github.com/kaifei-bianjie/iritamod-parser"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/bank"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/evm"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/identity"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/nft"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/record"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/service"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"strings"
 )
 
@@ -18,13 +21,7 @@ type MsgParser interface {
 }
 
 var (
-	cosmosModClient     cosmosmod_parser.MsgClient
-	chainModClient      irismod_parser.MsgClient
-	iritaModClient      iritamod_parser.MsgClient
-	cschainModClient    cschain_mod_parser.MsgClient
-	iritaChainModClient iritachain_mod_parser.MsgClient
-
-	RouteClientMap map[string]common_parser.Client
+	RouteClientMap map[string]modules.Client
 )
 
 func NewMsgParser() MsgParser {
@@ -80,19 +77,14 @@ func (parser *msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
 }
 
 func init() {
-	cosmosModClient = cosmosmod_parser.NewMsgClient()
-	chainModClient = irismod_parser.NewMsgClient()
-	iritaModClient = iritamod_parser.NewMsgClient()
-	cschainModClient = cschain_mod_parser.NewMsgClient()
-	iritaChainModClient = iritachain_mod_parser.NewMsgClient()
-
-	RouteClientMap = map[string]common_parser.Client{
-		BankRouteKey:     cosmosModClient.Bank,
-		NftRouteKey:      chainModClient.Nft,
-		RecordRouteKey:   chainModClient.Record,
-		ServiceRouteKey:  chainModClient.Service,
-		IdentityRouteKey: iritaModClient.Identity,
-		IbcRouteKey:      cschainModClient.Ibc,
-		EvmRouteKey:      iritaChainModClient.Evm,
+	codec.MakeEncodingConfig()
+	RouteClientMap = map[string]modules.Client{
+		BankRouteKey:     bank.NewClient(),
+		NftRouteKey:      nft.NewClient(),
+		RecordRouteKey:   record.NewClient(),
+		ServiceRouteKey:  service.NewClient(),
+		IdentityRouteKey: identity.NewClient(),
+		IbcRouteKey:      ibc.NewClient(),
+		EvmRouteKey:      evm.NewClient(),
 	}
 }
