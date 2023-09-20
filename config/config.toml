@@ -12,3 +12,11 @@ max_connection_num=100
 init_connection_num=5
 chain_block_interval=5
 promethous_port="9090"
+
+[redis]
+addrs ="127.0.0.1:6379"
+user = ""
+password = ""
+db = 0
+stream_tx_evm_key = "stream:tx_evm"
+stream_mq_max_len = 10000

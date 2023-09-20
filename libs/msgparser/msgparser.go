@@ -8,6 +8,7 @@ import (
 	cosmosmod_parser "github.com/kaifei-bianjie/cosmosmod-parser"
 	cschain_mod_parser "github.com/kaifei-bianjie/cschain-mod-parser"
 	irismod_parser "github.com/kaifei-bianjie/irismod-parser"
+	iritachain_mod_parser "github.com/kaifei-bianjie/iritachain-mod-parser"
 	iritamod_parser "github.com/kaifei-bianjie/iritamod-parser"
 	"strings"
 )
@@ -17,20 +18,13 @@ type MsgParser interface {
 }
 
 var (
-	cosmosModClient  cosmosmod_parser.MsgClient
-	chainModClient   irismod_parser.MsgClient
-	iritaModClient   iritamod_parser.MsgClient
-	cschainModClient cschain_mod_parser.MsgClient
+	cosmosModClient     cosmosmod_parser.MsgClient
+	chainModClient      irismod_parser.MsgClient
+	iritaModClient      iritamod_parser.MsgClient
+	cschainModClient    cschain_mod_parser.MsgClient
+	iritaChainModClient iritachain_mod_parser.MsgClient
 
 	RouteClientMap map[string]common_parser.Client
-	RoutePrefixMap = map[string]string{
-		"/cosmos.bank.":       BankRouteKey,
-		"/irismod.nft.":       NftRouteKey,
-		"/irismod.record.":    RecordRouteKey,
-		"/irismod.service.":   ServiceRouteKey,
-		"/iritamod.identity.": IdentityRouteKey,
-		"/cschain.ibc.":       IbcRouteKey,
-	}
 )
 
 func NewMsgParser() MsgParser {
@@ -46,12 +40,21 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 	)
 
 	data := types.MsgTypeURL(v)
-	for prefix, r := range RoutePrefixMap {
-		if strings.HasPrefix(data, prefix) {
-			route = r
-		}
-	}
-	if _, ok := RouteClientMap[route]; !ok {
+	if strings.HasPrefix(data, "/cosmos.bank.") {
+		route = BankRouteKey
+	} else if strings.HasPrefix(data, "/irismod.nft.") {
+		route = NftRouteKey
+	} else if strings.HasPrefix(data, "/irismod.record.") {
+		route = RecordRouteKey
+	} else if strings.HasPrefix(data, "/irismod.service.") {
+		route = ServiceRouteKey
+	} else if strings.HasPrefix(data, "/iritamod.identity.") {
+		route = IdentityRouteKey
+	} else if strings.HasPrefix(data, "/cschain.ibc.") {
+		route = IbcRouteKey
+	} else if strings.HasPrefix(data, "/ethermint.evm.") {
+		route = EvmRouteKey
+	} else {
 		route = data
 	}
 	return route
@@ -81,6 +84,7 @@ func init() {
 	chainModClient = irismod_parser.NewMsgClient()
 	iritaModClient = iritamod_parser.NewMsgClient()
 	cschainModClient = cschain_mod_parser.NewMsgClient()
+	iritaChainModClient = iritachain_mod_parser.NewMsgClient()
 
 	RouteClientMap = map[string]common_parser.Client{
 		BankRouteKey:     cosmosModClient.Bank,
@@ -89,5 +93,6 @@ func init() {
 		ServiceRouteKey:  chainModClient.Service,
 		IdentityRouteKey: iritaModClient.Identity,
 		IbcRouteKey:      cschainModClient.Ibc,
+		EvmRouteKey:      iritaChainModClient.Evm,
 	}
 }

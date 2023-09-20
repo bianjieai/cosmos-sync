@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
@@ -11,9 +12,12 @@ import (
 	"github.com/bianjieai/cosmos-sync/utils/constant"
 	"github.com/kaifei-bianjie/common-parser/codec"
 	msgtypes "github.com/kaifei-bianjie/common-parser/types"
+	. "github.com/kaifei-bianjie/iritachain-mod-parser/modules"
+	"github.com/kaifei-bianjie/iritachain-mod-parser/modules/evm"
 	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	"time"
 )
 
@@ -126,6 +130,27 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 		}
 		if i == 0 {
 			docTx.Type = msgDocInfo.DocTxMsg.Type
+		}
+
+		switch msgDocInfo.DocTxMsg.Type {
+		case MsgTypeEthereumTx:
+			var msgEtheumTx evm.DocMsgEthereumTx
+			var txData msgparser.LegacyTx
+			utils.UnMarshalJsonIgnoreErr(utils.MarshalJsonIgnoreErr(msgDocInfo.DocTxMsg.Msg), &msgEtheumTx)
+			utils.UnMarshalJsonIgnoreErr(msgEtheumTx.Data, &txData)
+			docTx.ContractAddrs = append(docTx.ContractAddrs, txData.To)
+			if len(txResult.Data) > 0 {
+				if txRespond, err := evmtypes.DecodeTxResponse(txResult.Data); err == nil {
+					if len(txRespond.Ret) > 0 {
+						docTx.EvmTxRespondRet = hex.EncodeToString(txRespond.Ret)
+					}
+				} else {
+					logger.Warn("DecodeTxResponse failed",
+						logger.String("err", err.Error()),
+						logger.String("txhash", txHash),
+						logger.Int64("height", block.Height))
+				}
+			}
 		}
 
 		for _, signer := range v.GetSigners() {
