@@ -5,11 +5,8 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
-	"github.com/bianjieai/cosmos-sync/monitor/metrics"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/qiniu/qmgo"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 )
 
@@ -23,61 +20,39 @@ const (
 )
 
 type clientNode struct {
-	nodeStatus  metrics.Guage
-	nodeHeight  metrics.Guage
-	dbHeight    metrics.Guage
-	nodeTimeGap metrics.Guage
-	syncWorkWay metrics.Guage
+	nodeStatus  prometheus.Gauge
+	nodeTimeGap prometheus.Gauge
+	syncWorkWay prometheus.Gauge
 }
 
-func NewMetricNode(server metrics.Monitor) clientNode {
-	nodeHeightMetric := metrics.NewGuage(
-		"sync",
-		"status",
-		"node_height",
-		"full node latest block height",
-		nil,
-	)
-	dbHeightMetric := metrics.NewGuage(
-		"sync",
-		"status",
-		"db_height",
-		"sync system database max block height",
-		nil,
-	)
-	nodeStatusMetric := metrics.NewGuage(
-		"sync",
-		"status",
-		"node_status",
-		"full node status(0:NotReachable,1:Syncing,2:CatchingUp)",
-		nil,
-	)
-	nodeTimeGapMetric := metrics.NewGuage(
-		"sync",
-		"status",
-		"node_seconds_gap",
-		"the seconds gap between node block time with sync db block time",
-		nil,
-	)
-	syncWorkwayMetric := metrics.NewGuage(
-		"sync",
-		"",
-		"task_working_status",
-		"sync task working status(0:CatchingUp 1:Following)",
-		nil,
-	)
-	server.RegisterMetrics(nodeHeightMetric, dbHeightMetric, nodeStatusMetric, nodeTimeGapMetric, syncWorkwayMetric)
-	nodeHeight, _ := metrics.CovertGuage(nodeHeightMetric)
-	dbHeight, _ := metrics.CovertGuage(dbHeightMetric)
-	nodeStatus, _ := metrics.CovertGuage(nodeStatusMetric)
-	nodeTimeGap, _ := metrics.CovertGuage(nodeTimeGapMetric)
-	syncWorkway, _ := metrics.CovertGuage(syncWorkwayMetric)
+func NewMetricNode() clientNode {
+
+	nodeStatusMetric := prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace: "sync",
+		Subsystem: "status",
+		Name:      "node_status",
+		Help:      "full node status(0:NotReachable,1:Syncing,2:CatchingUp)",
+	})
+	nodeTimeGapMetric := prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace: "sync",
+		Subsystem: "status",
+		Name:      "node_seconds_gap",
+		Help:      "the seconds gap between node block time with sync db block time",
+	})
+	syncWorkwayMetric := prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace: "sync",
+		Subsystem: "",
+		Name:      "task_working_status",
+		Help:      "sync task working status(0:CatchingUp 1:Following)",
+	})
+
+	prometheus.MustRegister(nodeStatusMetric)
+	prometheus.MustRegister(nodeTimeGapMetric)
+	prometheus.MustRegister(syncWorkwayMetric)
 	return clientNode{
-		nodeStatus:  nodeStatus,
-		nodeHeight:  nodeHeight,
-		dbHeight:    dbHeight,
-		nodeTimeGap: nodeTimeGap,
-		syncWorkWay: syncWorkway,
+		nodeStatus:  nodeStatusMetric,
+		nodeTimeGap: nodeTimeGapMetric,
+		syncWorkWay: syncWorkwayMetric,
 	}
 }
 
@@ -106,7 +81,6 @@ func (node *clientNode) nodeStatusReport() {
 		logger.Error("query block exception", logger.String("error", err.Error()))
 	}
 
-	node.dbHeight.Set(float64(block.Height))
 	status, err := client.Status(context.Background())
 	if err != nil {
 		logger.Error("rpc node connection exception", logger.String("error", err.Error()))
@@ -118,7 +92,6 @@ func (node *clientNode) nodeStatusReport() {
 		} else {
 			node.nodeStatus.Set(float64(NodeStatusSyncing))
 		}
-		node.nodeHeight.Set(float64(status.SyncInfo.LatestBlockHeight))
 	}
 
 	follow, err := new(models.SyncTask).QueryValidFollowTasks()
@@ -140,15 +113,7 @@ func (node *clientNode) nodeStatusReport() {
 }
 
 func Start() {
-	c := make(chan os.Signal)
-	//monitor system signal
-	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	// start monitor
-	server := metrics.NewMonitor(models.GetSrvConf().PromethousPort)
-	node := NewMetricNode(server)
-
-	server.Report(func() {
-		go node.Report()
-	})
-	<-c
+	node := NewMetricNode()
+	node.Report()
 }

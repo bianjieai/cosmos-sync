@@ -21,12 +21,6 @@ func GetDbConf() *config.DataBaseConf {
 	}
 	return &_conf.DataBase
 }
-func GetSrvConf() *config.ServerConf {
-	if _conf == nil {
-		logger.Fatal("db.Init not work")
-	}
-	return &_conf.Server
-}
 
 func GetClient() *qmgo.Client {
 	return _cli

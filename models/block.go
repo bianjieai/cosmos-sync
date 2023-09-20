@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"github.com/qiniu/qmgo"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,10 +21,7 @@ type (
 )
 
 func (d Block) Name() string {
-	if GetSrvConf().ChainId == "" {
-		return CollectionNameBlock
-	}
-	return fmt.Sprintf("sync_%v_block", GetSrvConf().ChainId)
+	return CollectionNameBlock
 }
 
 func (d Block) EnsureIndexes() {

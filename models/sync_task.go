@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"github.com/qiniu/qmgo"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
@@ -46,10 +45,7 @@ type (
 )
 
 func (d SyncTask) Name() string {
-	if GetSrvConf().ChainId == "" {
-		return CollectionNameSyncTask
-	}
-	return fmt.Sprintf("sync_%v_task", GetSrvConf().ChainId)
+	return CollectionNameSyncTask
 }
 
 func (d SyncTask) EnsureIndexes() {
