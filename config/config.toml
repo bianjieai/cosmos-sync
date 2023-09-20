@@ -3,8 +3,7 @@ node_uri= "mongodb://iobscan:iobscanPassword@192.168.150.40:27017/?connect=direc
 database= "iobscan-ibc_0805"
 
 [server]
-node_urls="tcp://10.0.0.36:26657"
-worker_num_create_task=1
+node_urls="tcp://10.0.4.138:26657"
 worker_num_execute_task=30
 worker_max_sleep_time=120
 block_num_per_worker_handle=100
