@@ -2,8 +2,8 @@ package ibc
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	recordtype "gitlab.bianjie.ai/cschain/cschain/modules/ibc/applications/record/types"
-	"gitlab.bianjie.ai/cschain/cschain/modules/ibc/core/types"
+	recordtype "gitlab.cschain.tech/cschain/modules/ibc/applications/record/types"
+	"gitlab.cschain.tech/cschain/modules/ibc/core/types"
 )
 
 type Content struct {

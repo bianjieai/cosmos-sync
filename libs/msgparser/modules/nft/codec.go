@@ -2,7 +2,7 @@ package nft
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	"github.com/irisnet/irismod/modules/nft"
+	"gitlab.cschain.tech/csmod/modules/nft"
 )
 
 func init() {

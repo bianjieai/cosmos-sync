@@ -11,12 +11,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/tendermint/tendermint/types"
 
-	recordtypes "gitlab.bianjie.ai/cschain/cschain/modules/ibc/applications/record/types"
-	bcos "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/bcos/types"
-	brochain "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/brochain/types"
-	fabric "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/fabric/types"
-	tendermint "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/tendermint/types"
-	wutong "gitlab.bianjie.ai/cschain/cschain/modules/ibc/light-clients/wutong/types"
+	recordtypes "gitlab.cschain.tech/cschain/modules/ibc/applications/record/types"
+	bcos "gitlab.cschain.tech/cschain/modules/ibc/light-clients/bcos/types"
+	brochain "gitlab.cschain.tech/cschain/modules/ibc/light-clients/brochain/types"
+	fabric "gitlab.cschain.tech/cschain/modules/ibc/light-clients/fabric/types"
+	tendermint "gitlab.cschain.tech/cschain/modules/ibc/light-clients/tendermint/types"
+	wutong "gitlab.cschain.tech/cschain/modules/ibc/light-clients/wutong/types"
 
 	enccodec "github.com/tharsis/ethermint/encoding/codec"
 )

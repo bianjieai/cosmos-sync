@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
-	"github.com/irisnet/irismod/modules/service"
+	"gitlab.cschain.tech/csmod/modules/service"
 )
 
 func init() {

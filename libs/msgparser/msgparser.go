@@ -39,11 +39,11 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 	data := types.MsgTypeURL(v)
 	if strings.HasPrefix(data, "/cosmos.bank.") {
 		route = BankRouteKey
-	} else if strings.HasPrefix(data, "/irismod.nft.") {
+	} else if strings.HasPrefix(data, "/csmod.nft.") {
 		route = NftRouteKey
-	} else if strings.HasPrefix(data, "/irismod.record.") {
+	} else if strings.HasPrefix(data, "/csmod.record.") {
 		route = RecordRouteKey
-	} else if strings.HasPrefix(data, "/irismod.service.") {
+	} else if strings.HasPrefix(data, "/csmod.service.") {
 		route = ServiceRouteKey
 	} else if strings.HasPrefix(data, "/iritamod.identity.") {
 		route = IdentityRouteKey

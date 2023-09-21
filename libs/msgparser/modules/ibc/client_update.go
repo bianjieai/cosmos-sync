@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
 	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
-	"gitlab.bianjie.ai/cschain/cschain/modules/ibc/core/types"
+	"gitlab.cschain.tech/cschain/modules/ibc/core/types"
 )
 
 // MsgUpdateClient defines a message to update an IBC client

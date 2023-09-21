@@ -5,11 +5,11 @@ import (
 	"github.com/bianjieai/iritamod/modules/identity"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
-	nft "github.com/irisnet/irismod/modules/nft/types"
-	record "github.com/irisnet/irismod/modules/record/types"
-	service "github.com/irisnet/irismod/modules/service/types"
 	evm "github.com/tharsis/ethermint/x/evm/types"
-	cschainibc "gitlab.bianjie.ai/cschain/cschain/modules/ibc/core/types"
+	cschainibc "gitlab.cschain.tech/cschain/modules/ibc/core/types"
+	nft "gitlab.cschain.tech/csmod/modules/nft/types"
+	record "gitlab.cschain.tech/csmod/modules/record/types"
+	service "gitlab.cschain.tech/csmod/modules/service/types"
 )
 
 const (
