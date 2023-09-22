@@ -1,8 +1,7 @@
 package models
 
 import (
-	"fmt"
-	"github.com/kaifei-bianjie/common-parser/types"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 )
 
 const (
@@ -37,10 +36,7 @@ type (
 )
 
 func (d EvmTx) Name() string {
-	if GetSrvConf().ChainId == "" {
-		return CollectionNameExEvmTx
-	}
-	return fmt.Sprintf("ex_%v_evm_tx", GetSrvConf().ChainId)
+	return CollectionNameExEvmTx
 }
 
 func (d EvmTx) EnsureIndexes() {

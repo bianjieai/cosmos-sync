@@ -1,8 +1,7 @@
 package models
 
 import (
-	"fmt"
-	"github.com/kaifei-bianjie/common-parser/types"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/qiniu/qmgo/options"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -54,10 +53,7 @@ type (
 )
 
 func (d Tx) Name() string {
-	if GetSrvConf().ChainId == "" {
-		return CollectionNameTx
-	}
-	return fmt.Sprintf("sync_%v_tx", GetSrvConf().ChainId)
+	return CollectionNameTx
 }
 
 func (d Tx) EnsureIndexes() {

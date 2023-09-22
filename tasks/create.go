@@ -36,7 +36,7 @@ func (s *syncTaskService) StartCreateTask() {
 	logger.Info("init create task")
 
 	// buffer channel to limit goroutine num
-	chanLimit := make(chan bool, s.conf.Server.WorkerNumCreateTask)
+	chanLimit := make(chan bool, 1)
 
 	for {
 		chanLimit <- true

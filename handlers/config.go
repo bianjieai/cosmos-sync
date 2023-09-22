@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/kaifei-bianjie/common-parser/codec"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
 )
 
 const (

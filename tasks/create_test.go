@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 	}
 	models.Init(cfg)
 	pool.Init(cfg)
-	handlers.InitRouter(cfg)
+	handlers.InitMsgParser()
 	testCfg = cfg
 	m.Run()
 }

@@ -4,45 +4,26 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"github.com/bianjieai/cosmos-sync/config"
 	"github.com/bianjieai/cosmos-sync/libs/logger"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/evm"
+	msgtypes "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/cosmos-sync/libs/pool"
 	"github.com/bianjieai/cosmos-sync/models"
 	"github.com/bianjieai/cosmos-sync/utils"
 	"github.com/bianjieai/cosmos-sync/utils/constant"
-	common_parser "github.com/kaifei-bianjie/common-parser"
-	"github.com/kaifei-bianjie/common-parser/codec"
-	msgtypes "github.com/kaifei-bianjie/common-parser/types"
-	. "github.com/kaifei-bianjie/irismod-parser/modules"
-	"github.com/kaifei-bianjie/irismod-parser/modules/mt"
-	. "github.com/kaifei-bianjie/iritachain-mod-parser/modules"
-	"github.com/kaifei-bianjie/iritachain-mod-parser/modules/evm"
 	types2 "github.com/tendermint/tendermint/abci/types"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
-	"strings"
 	"time"
 )
 
 var _parser msgparser.MsgParser
 
-func InitRouter(conf *config.Config) {
-	if conf.Server.OnlySupportModule != "" {
-		resRouteClient := make(map[string]common_parser.Client, 0)
-		modules := strings.Split(conf.Server.OnlySupportModule, ",")
-		for _, one := range modules {
-			fn, exist := msgparser.RouteClientMap[one]
-			if !exist {
-				logger.Fatal("no support module: " + one)
-			}
-			resRouteClient[one] = fn
-		}
-		if len(resRouteClient) > 0 {
-			msgparser.RouteClientMap = resRouteClient
-		}
-	}
+func InitMsgParser() {
 	_parser = msgparser.NewMsgParser()
 }
 
@@ -170,22 +151,6 @@ func parseTx(txBytes types.Tx, txResult *types2.ResponseDeliverTx, block *types.
 						logger.Int64("height", block.Height))
 				}
 			}
-		case MsgTypeMTIssueDenom:
-			if docTx.Status == constant.TxStatusFail {
-				break
-			}
-
-			// get denom_id from events then set to msg, because this msg hasn't denom_id
-			denomId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeIssueDenom, AttrKeyDenomId)
-			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTIssueDenom).Id = denomId
-		case MsgTypeMintMT:
-			if docTx.Status == constant.TxStatusFail {
-				break
-			}
-
-			// get mt_id from events then set to msg, because this msg hasn't mt_id
-			mtId := ParseAttrValueFromEvents(docTx.EventsNew[i].Events, EventTypeMintMT, AttrKeyMTId)
-			msgDocInfo.DocTxMsg.Msg.(*mt.DocMsgMTMint).Id = mtId
 		}
 
 		for _, signer := range v.GetSigners() {
@@ -254,26 +219,6 @@ func removeDuplicatesFromSlice(data []string) (result []string) {
 		result = append(result, one)
 	}
 	return
-}
-
-const (
-	EventTypeIssueDenom = "issue_denom"
-	EventTypeMintMT     = "mint_mt"
-	AttrKeyDenomId      = "denom_id"
-	AttrKeyMTId         = "mt_id"
-)
-
-func ParseAttrValueFromEvents(events []models.Event, typ, attrKey string) string {
-	for _, val := range events {
-		if val.Type == typ {
-			for _, attr := range val.Attributes {
-				if attr.Key == attrKey {
-					return attr.Value
-				}
-			}
-		}
-	}
-	return ""
 }
 
 func GetFeeGranteeFromEvents(events []types2.Event) string {

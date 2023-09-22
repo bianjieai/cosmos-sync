@@ -24,7 +24,6 @@ type (
 
 	ServerConf struct {
 		NodeUrls                  string `mapstructure:"node_urls"`
-		WorkerNumCreateTask       int    `mapstructure:"worker_num_create_task"`
 		WorkerNumExecuteTask      int    `mapstructure:"worker_num_execute_task"`
 		WorkerMaxSleepTime        int    `mapstructure:"worker_max_sleep_time"`
 		BlockNumPerWorkerHandle   int    `mapstructure:"block_num_per_worker_handle"`
@@ -32,14 +31,8 @@ type (
 
 		MaxConnectionNum   int    `mapstructure:"max_connection_num"`
 		InitConnectionNum  int    `mapstructure:"init_connection_num"`
-		ChainId            string `mapstructure:"chain_id"`
 		ChainBlockInterval int    `mapstructure:"chain_block_interval"`
-		BehindBlockNum     int    `mapstructure:"behind_block_num"`
-
-		//Bech32AccPrefix   string `mapstructure:"bech32_acc_prefix"`
-		PromethousPort    string `mapstructure:"promethous_port"`
-		OnlySupportModule string `mapstructure:"only_support_module"`
-		IsJsonRpcProtocol bool   `mapstructure:"is_json_rpc_protocol"`
+		PromethousPort     string `mapstructure:"promethous_port"`
 	}
 	Redis struct {
 		Addrs          string `mapstructure:"addrs"`

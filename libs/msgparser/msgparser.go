@@ -2,14 +2,17 @@ package msgparser
 
 import (
 	"github.com/bianjieai/cosmos-sync/libs/logger"
-	common_parser "github.com/kaifei-bianjie/common-parser"
-	. "github.com/kaifei-bianjie/common-parser/modules"
-	"github.com/kaifei-bianjie/common-parser/types"
-	cosmosmod_parser "github.com/kaifei-bianjie/cosmosmod-parser"
-	cschain_mod_parser "github.com/kaifei-bianjie/cschain-mod-parser"
-	irismod_parser "github.com/kaifei-bianjie/irismod-parser"
-	iritachain_mod_parser "github.com/kaifei-bianjie/iritachain-mod-parser"
-	iritamod_parser "github.com/kaifei-bianjie/iritamod-parser"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/codec"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	. "github.com/bianjieai/cosmos-sync/libs/msgparser/modules"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/bank"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/evm"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/identity"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/nft"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/record"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/service"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"strings"
 )
 
@@ -18,13 +21,7 @@ type MsgParser interface {
 }
 
 var (
-	cosmosModClient     cosmosmod_parser.MsgClient
-	irisModClient       irismod_parser.MsgClient
-	iritaModClient      iritamod_parser.MsgClient
-	cschainModClient    cschain_mod_parser.MsgClient
-	iritaChainModClient iritachain_mod_parser.MsgClient
-
-	RouteClientMap map[string]common_parser.Client
+	RouteClientMap map[string]modules.Client
 )
 
 func NewMsgParser() MsgParser {
@@ -42,38 +39,12 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 	data := types.MsgTypeURL(v)
 	if strings.HasPrefix(data, "/cosmos.bank.") {
 		route = BankRouteKey
-	} else if strings.HasPrefix(data, "/cosmos.crisis.") {
-		route = CrisisRouteKey
-	} else if strings.HasPrefix(data, "/cosmos.distribution.") {
-		route = DistributionRouteKey
-	} else if strings.HasPrefix(data, "/cosmos.slashing.") {
-		route = SlashingRouteKey
-	} else if strings.HasPrefix(data, "/cosmos.evidence.") {
-		route = EvidenceRouteKey
-	} else if strings.HasPrefix(data, "/cosmos.staking.") {
-		route = StakingRouteKey
-	} else if strings.HasPrefix(data, "/cosmos.gov.") {
-		route = GovRouteKey
-	} else if strings.HasPrefix(data, "/cosmos.feegrant") {
-		route = FeegrantRouteKey
-	} else if strings.HasPrefix(data, "/irismod.nft.") {
+	} else if strings.HasPrefix(data, "/csmod.nft.") {
 		route = NftRouteKey
-	} else if strings.HasPrefix(data, "/irismod.mt.") {
-		route = MtRouteKey
-	} else if strings.HasPrefix(data, "/irismod.coinswap.") {
-		route = CoinswapRouteKey
-	} else if strings.HasPrefix(data, "/irismod.token.") {
-		route = TokenRouteKey
-	} else if strings.HasPrefix(data, "/irismod.record.") {
+	} else if strings.HasPrefix(data, "/csmod.record.") {
 		route = RecordRouteKey
-	} else if strings.HasPrefix(data, "/irismod.service.") {
+	} else if strings.HasPrefix(data, "/csmod.service.") {
 		route = ServiceRouteKey
-	} else if strings.HasPrefix(data, "/irismod.htlc.") {
-		route = HtlcRouteKey
-	} else if strings.HasPrefix(data, "/irismod.random.") {
-		route = RandomRouteKey
-	} else if strings.HasPrefix(data, "/irismod.oracle.") {
-		route = OracleRouteKey
 	} else if strings.HasPrefix(data, "/iritamod.identity.") {
 		route = IdentityRouteKey
 	} else if strings.HasPrefix(data, "/cschain.ibc.") {
@@ -106,33 +77,14 @@ func (parser *msgParser) HandleTxMsg(v types.SdkMsg) MsgDocInfo {
 }
 
 func init() {
-	cosmosModClient = cosmosmod_parser.NewMsgClient()
-	irisModClient = irismod_parser.NewMsgClient()
-	iritaModClient = iritamod_parser.NewMsgClient()
-	cschainModClient = cschain_mod_parser.NewMsgClient()
-	iritaChainModClient = iritachain_mod_parser.NewMsgClient()
-
-	RouteClientMap = map[string]common_parser.Client{
-		BankRouteKey:         cosmosModClient.Bank,
-		CrisisRouteKey:       cosmosModClient.Crisis,
-		DistributionRouteKey: cosmosModClient.Distribution,
-		SlashingRouteKey:     cosmosModClient.Slashing,
-		EvidenceRouteKey:     cosmosModClient.Evidence,
-		StakingRouteKey:      cosmosModClient.Staking,
-		GovRouteKey:          cosmosModClient.Gov,
-		FeegrantRouteKey:     cosmosModClient.Feegrant,
-		NftRouteKey:          irisModClient.Nft,
-		MtRouteKey:           irisModClient.Mt,
-		CoinswapRouteKey:     irisModClient.Coinswap,
-		TokenRouteKey:        irisModClient.Token,
-		RecordRouteKey:       irisModClient.Record,
-		ServiceRouteKey:      irisModClient.Service,
-		HtlcRouteKey:         irisModClient.Htlc,
-		RandomRouteKey:       irisModClient.Random,
-		OracleRouteKey:       irisModClient.Oracle,
-		IdentityRouteKey:     iritaModClient.Identity,
-		IbcRouteKey:          cschainModClient.Ibc,
-		IbcTransferRouteKey:  cschainModClient.Ibc,
-		EvmRouteKey:          iritaChainModClient.Evm,
+	codec.MakeEncodingConfig()
+	RouteClientMap = map[string]modules.Client{
+		BankRouteKey:     bank.NewClient(),
+		NftRouteKey:      nft.NewClient(),
+		RecordRouteKey:   record.NewClient(),
+		ServiceRouteKey:  service.NewClient(),
+		IdentityRouteKey: identity.NewClient(),
+		IbcRouteKey:      ibc.NewClient(),
+		EvmRouteKey:      evm.NewClient(),
 	}
 }

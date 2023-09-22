@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 	models.Init(cfg)
 	pool.Init(cfg)
-	handlers.InitRouter(cfg)
+	handlers.InitMsgParser()
 	s.Config = cfg
 }
 
