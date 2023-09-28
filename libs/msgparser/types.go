@@ -8,6 +8,7 @@ const (
 	RecordRouteKey   string = "record"
 	IbcRouteKey      string = "ibc"
 	EvmRouteKey      string = "evm"
+	NodeRouteKey     string = "node"
 )
 
 type LegacyTx struct {
