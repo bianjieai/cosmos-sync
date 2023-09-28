@@ -10,6 +10,7 @@ import (
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/ibc"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/identity"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/nft"
+	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/node"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/record"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/modules/service"
 	"github.com/bianjieai/cosmos-sync/libs/msgparser/types"
@@ -51,6 +52,8 @@ func (parser msgParser) getModule(v types.SdkMsg) string {
 		route = IbcRouteKey
 	} else if strings.HasPrefix(data, "/ethermint.evm.") {
 		route = EvmRouteKey
+	} else if strings.HasPrefix(data, "/iritamod.node.") {
+		route = NodeRouteKey
 	} else {
 		route = data
 	}
@@ -86,5 +89,6 @@ func init() {
 		IdentityRouteKey: identity.NewClient(),
 		IbcRouteKey:      ibc.NewClient(),
 		EvmRouteKey:      evm.NewClient(),
+		NodeRouteKey:     node.NewClient(),
 	}
 }

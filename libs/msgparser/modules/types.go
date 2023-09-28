@@ -3,6 +3,7 @@ package modules
 import (
 	models "github.com/bianjieai/cosmos-sync/libs/msgparser/types"
 	"github.com/bianjieai/iritamod/modules/identity"
+	"github.com/bianjieai/iritamod/modules/node"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
 	evm "github.com/tharsis/ethermint/x/evm/types"
@@ -53,6 +54,13 @@ const (
 	//identity
 	MsgTypeUpdateIdentity = "update_identity"
 	MsgTypeCreateIdentity = "create_identity"
+
+	//node
+	MsgTypeCreateValidator = "create_validator" // type for MsgCreateValidator
+	MsgTypeUpdateValidator = "update_validator" // type for MsgUpdateValidator
+	MsgTypeRemoveValidator = "remove_validator" // type for MsgRemoveValidator
+	MsgTypeGrantNode       = "grant_node"       // type for MsgGrantNode
+	MsgTypeRevokeNode      = "revoke_node"      // type for MsgRevokeNode
 )
 
 type (
@@ -86,6 +94,12 @@ type (
 
 	MsgCreateIdentity = identity.MsgCreateIdentity
 	MsgUpdateIdentity = identity.MsgUpdateIdentity
+
+	MsgNodeCreate = node.MsgCreateValidator
+	MsgNodeUpdate = node.MsgUpdateValidator
+	MsgNodeRemove = node.MsgRemoveValidator
+	MsgNodeGrant  = node.MsgGrantNode
+	MsgNodeRevoke = node.MsgRevokeNode
 )
 
 const (
